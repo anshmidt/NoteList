@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -74,17 +75,13 @@ dependencies {
     //Database
     def room_version = "2.4.0"
     implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    //annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     //Dependency injection
     def koin_version = "3.3.0"
     implementation "io.insert-koin:koin-android:$koin_version"
-//    def koin_version = "1.0.2"
-//    implementation "org.koin:koin-android:$koin_version"
-//    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
-//    testImplementation "org.koin:koin-test:$koin_version"
-//    androidTestImplementation "org.koin:koin-test:$koin_version"
-//    implementation "org.koin:koin-core-ext:$koin_version"
 
     //ViewModel
     def viewmodel_version = "2.6.0-alpha05"
@@ -92,4 +89,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$viewmodel_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$viewmodel_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$viewmodel_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+
+    //DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 }

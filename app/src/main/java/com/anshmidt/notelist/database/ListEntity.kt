@@ -5,14 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = ListEntity.TABLE_NAME,
-    foreignKeys = [ForeignKey(
-        entity = NoteEntity::class,
-        parentColumns = ["list_id"],
-        childColumns = [ListEntity.ID_COLUMN_NAME]
-    )]
-)
+@Entity(tableName = ListEntity.TABLE_NAME)
 data class ListEntity(
     @ColumnInfo(name = ID_COLUMN_NAME)
     @PrimaryKey(autoGenerate = true)

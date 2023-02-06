@@ -3,9 +3,6 @@ package com.anshmidt.notelist
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -14,84 +11,70 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.ui.theme.NoteListTheme
+import com.anshmidt.notelist.viewmodel.NoteListViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val viewModel: NoteListViewModel by viewModel()
+
         setContent {
             NoteListTheme {
-                MyScreenContent()
+                MainScreen(viewModel)
             }
         }
     }
 }
 
 @Composable
-fun MyScreenContent(names: List<String> = List(100) { "number $it" }) {
-    var counterState by remember {
-        mutableStateOf(0)
-    }
+fun MainScreen(
+    viewModel: NoteListViewModel
+) {
+    //val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxHeight()) {
-        NamesList(names = names, modifier = Modifier.weight(1f))
-        Counter(
-            count = counterState,
-            updateCount = { newCount ->
-                counterState = newCount
-            }
+        Notes(
+            notes = uiState.notes,
+            modifier = Modifier.weight(1f)
         )
-        if (counterState > 5) {
-            Text(text = "I love counting")
-        }
     }
 }
 
 @Composable
-fun NamesList(names: List<String>, modifier: Modifier) {
+fun Notes(notes: List<NoteEntity>, modifier: Modifier) {
     LazyColumn(modifier = modifier) {
-        items(items = names) {
-            Greeting(name = it)
+        items(items = notes) {
+            Note(noteEntity = it)
             Divider()
         }
     }
 }
 
-@Composable
-fun Counter(count: Int, updateCount: (Int) -> Unit) {
-    Button(onClick = { updateCount(count + 2) }) {
-        Text(text = "Click number $count")
-    }
-}
+
 
 @Composable
-fun Greeting(name: String) {
-    var isSelected by remember {
-        mutableStateOf(false)
-    }
-    val targetColorValue = if (isSelected) MaterialTheme.colors.primary else Color.Transparent
-    val targetColor by animateColorAsState(
-        targetValue = targetColorValue,
-        animationSpec = tween(durationMillis = 4000)
-    )
-    Surface(color = targetColor) {
+fun Note(noteEntity: NoteEntity) {
+    Surface {
         Text(
-            text = "Hello $name",
+            text = noteEntity.text,
             modifier = Modifier
-                .clickable { isSelected = !isSelected }
                 .padding(16.dp)
         )
     }
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    NoteListTheme {
-        MyScreenContent()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    NoteListTheme {
+//        MainScreen()
+//    }
+//}

@@ -1,11 +1,15 @@
 package com.anshmidt.notelist.database
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
+import androidx.room.*
 
-@Entity(tableName = NoteEntity.TABLE_NAME)
+@Entity(
+    tableName = NoteEntity.TABLE_NAME,
+    foreignKeys = [ForeignKey(
+        entity = ListEntity::class,
+        parentColumns = [ListEntity.ID_COLUMN_NAME],
+        childColumns = [NoteEntity.LIST_ID_COLUMN_NAME]
+    )]
+)
 data class NoteEntity(
     @ColumnInfo(name = ID_COLUMN_NAME)
     @PrimaryKey(autoGenerate = true)
