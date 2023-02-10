@@ -5,26 +5,28 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
-private val DarkColorPalette = darkColors(
-        primary = Purple200,
-        primaryVariant = Purple700,
-        secondary = Teal200
-)
+
 
 private val LightColorPalette = lightColors(
-        primary = Purple500,
-        primaryVariant = Purple700,
-        secondary = Teal200
-
-        /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
+    primary = Green500,
+    primaryVariant = Green700,
     onPrimary = Color.White,
+    secondary = Green500,
+    secondaryVariant = Green700,
+    onSecondary = Color.White,
+    background = Color.White
+)
+
+private val DarkColorPalette = darkColors(
+    primary = Green200,
+    primaryVariant = Green500,
+    onPrimary = Color.Black,
+    secondary = Green200,
+    secondaryVariant = Green500,
     onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    background = Color.Black
 )
 
 @Composable
@@ -36,9 +38,10 @@ fun NoteListTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composab
     }
 
     MaterialTheme(
-            colors = colors,
-            typography = Typography,
-            shapes = Shapes,
-            content = content
+        colors = colors,
+        typography = Typography,
+        shapes = Shapes,
+        content = content
     )
 }
+

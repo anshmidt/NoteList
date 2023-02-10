@@ -2,6 +2,7 @@ package com.anshmidt.notelist.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.ui.MainUiState
 import kotlinx.coroutines.flow.*
@@ -10,7 +11,7 @@ class NoteListViewModel(
     val noteRepository: NoteRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MainUiState())
+    private val _uiState = MutableStateFlow(getEmptyMainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     init {
@@ -18,20 +19,28 @@ class NoteListViewModel(
     }
 
     fun onViewCreated() {
-        noteRepository.getNotesInList(0).onEach { notes ->
-            _uiState.value = MainUiState(notes)
+        val tempList = ListEntity(
+            id = 0,
+            name = "Sample list",
+            inTrash = false,
+            timestamp = 0L
+        )
+        noteRepository.getNotesInList(tempList.id).onEach { notes ->
+            _uiState.value = MainUiState(notes, tempList)
         }.catch {error ->
-            _uiState.value = MainUiState(emptyList())
+            _uiState.value = getEmptyMainUiState()
         }.launchIn(viewModelScope)
-//        _uiState.value = MainUiState(notes = )
-//            noteRepository.getNotesInList(0)
     }
 
-//    fun loadNotes(): Flow<MainUiState> = flow {
-//        noteRepository.getNotesInList(0).collect() { notes ->
-//            val uiState = MainUiState(notes)
-//            emit(uiState)
-//        }
-//    }
+    private fun getEmptyMainUiState() = MainUiState(
+        notes = emptyList(),
+        list = ListEntity(
+            id = 0,
+            name = "",
+            inTrash = false,
+            timestamp = 0L
+        )
+    )
+
 
 }
