@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 data class ListEntity(
     @ColumnInfo(name = ID_COLUMN_NAME)
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
 
     @ColumnInfo(name = NAME_COLUMN_NAME)
     val name: String,

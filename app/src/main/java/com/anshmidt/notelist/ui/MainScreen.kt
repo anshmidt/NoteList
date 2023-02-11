@@ -1,56 +1,34 @@
-package com.anshmidt.notelist
+package com.anshmidt.notelist.ui
 
 import android.content.res.Configuration
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.room.util.TableInfo.Column
 import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.database.Priority
-import com.anshmidt.notelist.ui.ListPreviewProvider
 import com.anshmidt.notelist.ui.theme.NoteListTheme
 import com.anshmidt.notelist.viewmodel.NoteListViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.android.material.color.MaterialColors
-import org.koin.androidx.viewmodel.ext.android.viewModel
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val viewModel: NoteListViewModel by viewModel()
-
-        setContent {
-            NoteListTheme {
-                MainScreen(viewModel = viewModel)
-            }
-        }
-    }
-}
 
 @Composable
 fun MainScreen(
@@ -62,26 +40,85 @@ fun MainScreen(
 
     Scaffold(
         topBar = { TopBar(selectedList = uiState.list) },
-        floatingActionButton = { AddNoteButton() },
+        floatingActionButton = {
+            AddNoteButton(
+                onAddNoteButtonClicked = viewModel::onAddNoteButtonClicked
+            )
+        },
         content = { padding ->
             Notes(
                 notes = uiState.notes,
+                onNoteDismissed = { dismissedNote ->
+                      viewModel.onNoteDismissed(dismissedNote)
+                },
                 modifier = Modifier.padding(padding)
             )
         }
     )
 }
 
+
+
+
+@Preview
 @Composable
-fun Notes(notes: List<NoteEntity>, modifier: Modifier) {
+fun TopBar(@PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity) {
+    TopAppBar(
+        elevation = 0.dp,
+        title = {
+            Text(
+                text = selectedList.name,
+                color = MaterialTheme.colors.primary
+            )
+        },
+        backgroundColor = Color.Transparent,
+//        navigationIcon = {
+//            IconButton(onClick = {/* Do Something*/ }) {
+//                Icon(Icons.Filled.ArrowBack, null)
+//            }
+//        },
+        actions = {
+            SearchIcon()
+            MoreIcon()
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@Composable
+fun Notes(notes: List<NoteEntity>, onNoteDismissed: (NoteEntity) -> Unit, modifier: Modifier) {
     LazyColumn(modifier = modifier) {
-        items(items = notes) {
-            Note(noteEntity = it)
+        items(
+            items = notes,
+            key = { it.id }
+        ) { noteEntity ->
+            //Note(noteEntity = it)
+            //var unread by remember { mutableStateOf(false) }
+//            val dismissState = rememberDismissState(
+//                confirmStateChange = {
+//                    if (it == DismissValue.DismissedToEnd) unread = !unread
+//                    it != DismissValue.DismissedToEnd
+//                }
+//            )
+            val dismissState = rememberDismissState(
+                confirmStateChange = {
+                    onNoteDismissed(noteEntity)
+                    true
+                }
+            )
+            SwipeToDismiss(
+                state = dismissState,
+                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                background = {},
+                modifier = Modifier
+                    .animateItemPlacement(),
+                dismissContent = {
+                    Note(noteEntity = noteEntity)
+                }
+            )
         }
     }
 }
-
-
 
 @Composable
 fun Note(noteEntity: NoteEntity) {
@@ -115,30 +152,6 @@ fun StatusBar() {
     }
 }
 
-@Preview
-@Composable
-fun TopBar(@PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity) {
-    TopAppBar(
-        elevation = 0.dp,
-        title = {
-            Text(
-                text = selectedList.name,
-                color = MaterialTheme.colors.primary
-            )
-        },
-        backgroundColor = Color.Transparent,
-//        navigationIcon = {
-//            IconButton(onClick = {/* Do Something*/ }) {
-//                Icon(Icons.Filled.ArrowBack, null)
-//            }
-//        },
-        actions = {
-            SearchIcon()
-            MoreIcon()
-        }
-    )
-}
-
 @Composable
 fun SearchIcon() {
     IconButton(onClick = {/* Do Something*/ }) {
@@ -162,10 +175,10 @@ fun MoreIcon() {
 }
 
 @Composable
-fun AddNoteButton() {
+fun AddNoteButton(onAddNoteButtonClicked: () -> Unit) {
     FloatingActionButton(
         onClick = {
-            //OnClick Method
+            onAddNoteButtonClicked()
         },
         shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 50)),
     ) {
@@ -201,6 +214,6 @@ fun DefaultPreview() {
     )
 
     NoteListTheme {
-        Notes(notes, modifier = Modifier)
+        Notes(notes, modifier = Modifier, onNoteDismissed = {})
     }
 }

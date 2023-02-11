@@ -13,7 +13,7 @@ import androidx.room.*
 data class NoteEntity(
     @ColumnInfo(name = ID_COLUMN_NAME)
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
 
     @ColumnInfo(name = TIMESTAMP_COLUMN_NAME)
     val timestamp: Long,
@@ -23,7 +23,7 @@ data class NoteEntity(
 
     @ColumnInfo(name = PRIORITY_COLUMN_NAME)
     @TypeConverters(PriorityConverter::class)
-    val priority: Priority,
+    val priority: Priority = Priority.NORMAL,
 
     @ColumnInfo(name = LIST_ID_COLUMN_NAME)
     val listId: Int,
