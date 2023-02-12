@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">NoteList</string>
+    <string name="menu_title_rename_list">Rename list</string>
+    <string name="menu_title_move_list_to_trash">Move list to Trash</string>
+    <string name="menu_title_copy_list_to_clipboard">Copy list to clipboard</string>
+    <string name="menu_title_add_notes_from_clipboard">Add notes from clipboard</string>
+    <string name="menu_title_open_trash">Open Trash</string>
 </resources>
