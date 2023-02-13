@@ -1,4 +1,4 @@
-package com.anshmidt.notelist.datasources
+package com.anshmidt.notelist.sharedpreferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore

@@ -2,9 +2,9 @@ package com.anshmidt.notelist.di
 
 import androidx.room.Room
 import com.anshmidt.notelist.database.NotesDatabase
-import com.anshmidt.notelist.datasources.DataStoreStorage
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
+import com.anshmidt.notelist.sharedpreferences.DataStoreStorage
 import com.anshmidt.notelist.viewmodel.NoteListViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -20,7 +20,7 @@ val appModule = module {
         ).build()
     }
     single { DataStoreStorage(androidContext()) }
-    single { NoteRepository(get()) }
-    single { ListRepository(get()) }
+    single { NoteRepository(get(), get()) }
+    single { ListRepository(get(), get()) }
     viewModel { NoteListViewModel(get(), get()) }
 }

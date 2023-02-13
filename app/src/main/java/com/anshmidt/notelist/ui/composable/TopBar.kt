@@ -11,26 +11,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.R
 import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.ui.ListPreviewProvider
 
-@Preview
+
 @Composable
-fun TopBar(@PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity) {
-    var isExpanded by remember { mutableStateOf(false) }
+fun TopBar(
+    lists: List<ListEntity>,
+    @PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity,
+    onListSelected: (ListEntity) -> Unit,
+    onMoveListToTrashClicked: (ListEntity) -> Unit,
+    onAddNewListButtonClicked: () -> Unit
+) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
 
     TopAppBar(
         elevation = 0.dp,
         title = {
-            ListMenu()
-//            Text(
-//                text = selectedList.name,
-//                color = MaterialTheme.colors.primary
-//            )
+            ListMenu(
+                items = lists,
+                defaultSelectedItem = selectedList,
+                onListSelected = onListSelected,
+                onAddNewListButtonClicked = onAddNewListButtonClicked
+            )
         },
         backgroundColor = Color.Transparent,
 //        navigationIcon = {
@@ -41,11 +47,11 @@ fun TopBar(@PreviewParameter(ListPreviewProvider::class) selectedList: ListEntit
         actions = {
             SearchIcon()
             MoreIcon(onClick = {
-                isExpanded = !isExpanded
+                isMenuExpanded = !isMenuExpanded
             })
             DropdownMenu(
-                expanded = isExpanded,
-                onDismissRequest = { isExpanded = false }
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false }
             ) {
                 MenuItem(
                     icon = Icons.Outlined.Edit,
@@ -55,7 +61,9 @@ fun TopBar(@PreviewParameter(ListPreviewProvider::class) selectedList: ListEntit
                 MenuItem(
                     icon = Icons.Outlined.DeleteForever,
                     text = stringResource(R.string.menu_title_move_list_to_trash),
-                    onClick = {}
+                    onClick = {
+                        onMoveListToTrashClicked(selectedList)
+                    }
                 )
                 MenuItem(
                     icon = Icons.Outlined.DeleteSweep,

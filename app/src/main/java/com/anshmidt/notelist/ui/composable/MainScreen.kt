@@ -29,7 +29,19 @@ fun MainScreen(
     StatusBar()
 
     Scaffold(
-        topBar = { TopBar(selectedList = uiState.list) },
+        topBar = {
+            TopBar(
+                lists = uiState.lists,
+                selectedList = uiState.selectedList,
+                onMoveListToTrashClicked = { selectedList ->
+                    viewModel.onMoveListToTrashClicked(selectedList)
+                },
+                onListSelected = { selectedList ->
+                    viewModel.onListOpened(selectedList)
+                },
+                onAddNewListButtonClicked = viewModel::onAddNewListButtonClicked
+            )
+         },
         floatingActionButton = {
             AddNoteButton(
                 onAddNoteButtonClicked = viewModel::onAddNoteButtonClicked

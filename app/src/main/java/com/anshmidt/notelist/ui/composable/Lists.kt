@@ -3,17 +3,21 @@ package com.anshmidt.notelist.ui.composable
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.anshmidt.notelist.R
+import com.anshmidt.notelist.database.ListEntity
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ListMenu() {
-    val listItems = arrayOf("Favorites", "Options", "Settings", "Share",
-        "asdfsd", "Favorites", "Options", "Settings", "Share", "Favorites", "Options", "Settings", "Share",
-        "Favorites", "Options", "Settings", "Share","Favorites", "Options", "Settings", "Share",)
-
-    var selectedItem by remember {
-        mutableStateOf(listItems[0])
-    }
+fun ListMenu(
+    items: List<ListEntity>,
+    defaultSelectedItem: ListEntity,
+    onListSelected: (ListEntity) -> Unit,
+    onAddNewListButtonClicked: () -> Unit
+) {
+//    var selectedItem by remember {
+//        mutableStateOf(defaultSelectedItem)
+//    }
 
     var expanded by remember {
         mutableStateOf(false)
@@ -25,30 +29,19 @@ fun ListMenu() {
             expanded = !expanded
         }
     ) {
-        TextField(
-            value = selectedItem,
-            onValueChange = {},
-            readOnly = true,
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = MaterialTheme.colors.primary,
-                backgroundColor = MaterialTheme.colors.background,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            )
-        )
+        SelectedListTitle(listTitle = defaultSelectedItem.name)
 
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            listItems.forEach { selectedOption ->
+            items.forEach { item ->
                 // menu item
                 DropdownMenuItem(onClick = {
-                    selectedItem = selectedOption
                     expanded = false
+                    onListSelected(item)
                 }) {
-                    Text(text = selectedOption)
+                    Text(text = item.name)
                 }
             }
 
@@ -56,12 +49,28 @@ fun ListMenu() {
                 expanded = false
             }) {
                 Button(
-                    onClick = {}
+                    onClick = onAddNewListButtonClicked
                 ) {
-                    Text(text = "Add new list")
+                    Text(text = stringResource(R.string.button_add_new_list))
                 }
             }
 
         }
     }
+}
+
+@Composable
+fun SelectedListTitle(listTitle: String) {
+    TextField(
+        value = listTitle,
+        onValueChange = {},
+        readOnly = true,
+        colors = TextFieldDefaults.textFieldColors(
+            textColor = MaterialTheme.colors.primary,
+            backgroundColor = MaterialTheme.colors.background,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        )
+    )
 }

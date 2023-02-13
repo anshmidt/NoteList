@@ -1,6 +1,6 @@
 package com.anshmidt.notelist.viewmodel
 
-import android.view.KeyEvent.DispatcherState
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshmidt.notelist.database.ListEntity
@@ -25,34 +25,99 @@ class NoteListViewModel(
     }
 
     fun onViewCreated() {
-        val tempList = ListEntity(
-            id = 1,
-            name = "Sample list",
-            inTrash = false,
-            timestamp = 0L
-        )
 
-//        //temp
+
 //        viewModelScope.launch(Dispatchers.IO) {
-//            listRepository.addList(tempList)
+//
+//            flow {
+//                delay(2000)
+//                emit(MainUiState(
+//                    lists = emptyList(),
+//                    selectedList = ListEntity(name = "Updated", inTrash = false, timestamp = 0L),
+//                    notes = emptyList()
+//                ))
+//            }.collect {
+//                _uiState.value = it
+////                _uiState.value = _uiState.value.copy(notes = listOf(NoteEntity(text = "d", timestamp = 0L, listId = 1, inTrash = false)))
+//                Log.d("viewmodel", "Collected")
+//            }
 //        }
 
-        noteRepository.getNotesInList(tempList.id).onEach { notes ->
-            _uiState.value = MainUiState(notes, tempList)
-        }.catch {error ->
-            _uiState.value = getEmptyMainUiState()
-        }.launchIn(viewModelScope)
+
+//        viewModelScope.launch(Dispatchers.IO) {
+//            listRepository.getLastOpenedList()
+//            //noteRepository.getNotesInLastOpenedList()
+//                .collect { lastOpenedList ->
+//                Log.d("viewmodel", "Creating UiState with $lastOpenedList")
+//                _uiState.update { MainUiState(
+//                    notes = emptyList(),
+//                     selectedList = lastOpenedList,
+//                    lists = emptyList()
+//                ) }
+//                _uiState.value = MainUiState(
+//                    notes = emptyList(),
+//                    selectedList = lastOpenedList,
+////                    selectedList = ListEntity(id = 1, name = "test", inTrash = false, timestamp = 0L),
+////                    lists = emptyList()
+//                    lists = listOf(
+//                        ListEntity(id = 1, name = "testFromLists", inTrash = false, timestamp = 0L),
+//                        ListEntity(id = 2, name = "testFromLists2", inTrash = false, timestamp = 0L),
+//                        ListEntity(id = 3, name = "testFromLists3", inTrash = false, timestamp = 0L)
+//                    )
+//                )
+//            }
+//        }
+
+
+
+
+
+
+
+
+
+
+
+        viewModelScope.launch(Dispatchers.IO) {
+            combine(
+                noteRepository.getNotesInLastOpenedList(),
+                listRepository.getLastOpenedList(),
+                listRepository.getAllLists()
+            ) { notes, lastOpenedList, lists ->
+                MainUiState(
+                    notes = notes,
+                    selectedList = lastOpenedList,
+                    lists = lists
+                )
+            }.catch { error ->
+                _uiState.value = getEmptyMainUiState()
+            }.collect { mainUiState ->
+                _uiState.value = mainUiState
+            }
+        }
+
+
+
+
+
+
+
+
     }
 
-    private fun getEmptyMainUiState() = MainUiState(
-        notes = emptyList(),
-        list = ListEntity(
-            id = 1,
-            name = "",
-            inTrash = false,
-            timestamp = 0L
+    private fun getEmptyMainUiState(): MainUiState {
+        Log.d("viewmodel", "Creating UiState with emptyState")
+        return MainUiState(
+            notes = emptyList(),
+            selectedList = ListEntity(
+                id = 1,
+                name = "",
+                inTrash = false,
+                timestamp = 0L
+            ),
+            lists = emptyList()
         )
-    )
+    }
 
     private fun deleteNote(note: NoteEntity) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -72,6 +137,30 @@ class NoteListViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val tempText = System.currentTimeMillis().toString()
             noteRepository.addNote(tempText)
+        }
+    }
+
+    fun onMoveListToTrashClicked(selectedList: ListEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            listRepository.deleteList(selectedList)
+        }
+    }
+
+    fun onAddNewListButtonClicked() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newList = ListEntity(
+                name = "list${System.currentTimeMillis()}",
+                timestamp = 0L,
+                inTrash = false
+            )
+            listRepository.addList(newList)
+        }
+    }
+
+    fun onListOpened(listEntity: ListEntity) {
+        _uiState.value = _uiState.value.copy(selectedList = listEntity)
+        viewModelScope.launch(Dispatchers.IO) {
+            listRepository.saveLastOpenedList(listEntity)
         }
     }
 
