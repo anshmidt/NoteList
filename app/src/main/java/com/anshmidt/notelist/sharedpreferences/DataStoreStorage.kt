@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.anshmidt.notelist.database.DefaultData
 import kotlinx.coroutines.flow.map
 
 class DataStoreStorage(private val context: Context) {
@@ -20,13 +21,14 @@ class DataStoreStorage(private val context: Context) {
     }
 
     fun getLastOpenedListId() = dataStore.data.map { pref ->
-        pref[intPreferencesKey(LAST_OPENED_LIST_ID_KEY)] ?: DEFAULT_LAST_OPENED_LIST_ID
+        pref[intPreferencesKey(LAST_OPENED_LIST_ID_KEY)] ?: getDefaultLastOpenedListId()
     }
+
+    private fun getDefaultLastOpenedListId() = DefaultData(context).defaultList.id
 
     companion object {
         const val PREFERENCE_NAME = "AlarmDataStore"
 
         private const val LAST_OPENED_LIST_ID_KEY = "selectedListId"
-        private const val DEFAULT_LAST_OPENED_LIST_ID = 0
     }
 }

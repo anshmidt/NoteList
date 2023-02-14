@@ -2,7 +2,6 @@ package com.anshmidt.notelist.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(tableName = ListEntity.TABLE_NAME)
@@ -15,7 +14,7 @@ data class ListEntity(
     val name: String,
 
     @ColumnInfo(name = IN_TRASH_COLUMN_NAME)
-    val inTrash: Boolean,
+    val inTrash: Boolean = false,
 
     @ColumnInfo(name = TIMESTAMP_COLUMN_NAME)
     val timestamp: Long
