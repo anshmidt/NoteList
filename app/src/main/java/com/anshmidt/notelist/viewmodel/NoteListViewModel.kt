@@ -1,6 +1,5 @@
 package com.anshmidt.notelist.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshmidt.notelist.database.ListEntity
@@ -9,7 +8,10 @@ import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.ui.MainUiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class NoteListViewModel(
@@ -24,89 +26,30 @@ class NoteListViewModel(
         onViewCreated()
     }
 
-    fun onViewCreated() {
-
-
-//        viewModelScope.launch(Dispatchers.IO) {
-//
-//            flow {
-//                delay(2000)
-//                emit(MainUiState(
-//                    lists = emptyList(),
-//                    selectedList = ListEntity(name = "Updated", inTrash = false, timestamp = 0L),
-//                    notes = emptyList()
-//                ))
-//            }.collect {
-//                _uiState.value = it
-////                _uiState.value = _uiState.value.copy(notes = listOf(NoteEntity(text = "d", timestamp = 0L, listId = 1, inTrash = false)))
-//                Log.d("viewmodel", "Collected")
-//            }
-//        }
-
-
-//        viewModelScope.launch(Dispatchers.IO) {
-//            listRepository.getLastOpenedList()
-//            //noteRepository.getNotesInLastOpenedList()
-//                .collect { lastOpenedList ->
-//                Log.d("viewmodel", "Creating UiState with $lastOpenedList")
-//                _uiState.update { MainUiState(
-//                    notes = emptyList(),
-//                     selectedList = lastOpenedList,
-//                    lists = emptyList()
-//                ) }
-//                _uiState.value = MainUiState(
-//                    notes = emptyList(),
-//                    selectedList = lastOpenedList,
-////                    selectedList = ListEntity(id = 1, name = "test", inTrash = false, timestamp = 0L),
-////                    lists = emptyList()
-//                    lists = listOf(
-//                        ListEntity(id = 1, name = "testFromLists", inTrash = false, timestamp = 0L),
-//                        ListEntity(id = 2, name = "testFromLists2", inTrash = false, timestamp = 0L),
-//                        ListEntity(id = 3, name = "testFromLists3", inTrash = false, timestamp = 0L)
-//                    )
-//                )
-//            }
-//        }
-
-
-
-
-
-
-
-
-
-
-
+    private fun onViewCreated() {
         viewModelScope.launch(Dispatchers.IO) {
             combine(
                 noteRepository.getNotesInLastOpenedList(),
                 listRepository.getLastOpenedList(),
                 listRepository.getAllLists()
             ) { notes, lastOpenedList, lists ->
-                MainUiState(
-                    notes = notes,
-                    selectedList = lastOpenedList,
-                    lists = lists
-                )
-            }.catch { error ->
-                _uiState.value = getEmptyMainUiState()
-            }.collect { mainUiState ->
-                _uiState.value = mainUiState
-            }
+                    if (lastOpenedList == null) {
+                        getEmptyMainUiState()
+                    } else {
+                        MainUiState(
+                            notes = notes,
+                            selectedList = lastOpenedList,
+                            lists = lists
+                        )
+                    }
+                }
+                .collect {
+                    _uiState.value = it
+                }
         }
-
-
-
-
-
-
-
-
     }
 
     private fun getEmptyMainUiState(): MainUiState {
-        Log.d("viewmodel", "Creating UiState with emptyState")
         return MainUiState(
             notes = emptyList(),
             selectedList = ListEntity(

@@ -6,6 +6,7 @@ import com.anshmidt.notelist.sharedpreferences.DataStoreStorage
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
 
 class ListRepository(
     val notesDatabase: NotesDatabase,
@@ -24,18 +25,31 @@ class ListRepository(
         notesDatabase.listDao().deleteList(listEntity)
     }
 
+    /**
+     * If list not found by id, it returns null
+     */
     @OptIn(FlowPreview::class)
-    fun getLastOpenedList(): Flow<ListEntity> {
-//        return flowOf(ListEntity(
-//            id = 1,
-//            name = "RepositoryMock",
-//            inTrash = false,
-//            timestamp = 0L
-//        )).onStart { delay(2000) }
+    fun getLastOpenedList(): Flow<ListEntity?> {
         return dataStoreStorage.getLastOpenedListId().flatMapConcat { lastOpenedListId ->
             notesDatabase.listDao().getListById(lastOpenedListId)
         }
     }
+
+    @OptIn(FlowPreview::class)
+    private fun getFirstFoundListIfLastOpenedNotFound(
+        lastOpenedListFlow: Flow<ListEntity?>
+    ): Flow<ListEntity> {
+        return lastOpenedListFlow.flatMapConcat { lastOpenedList ->
+            if (lastOpenedList == null) {
+                notesDatabase.listDao().getFirstFoundList()
+            } else {
+                flow {
+                    emit(lastOpenedList)
+                }
+            }
+        }
+    }
+
 
     suspend fun saveLastOpenedList(listEntity: ListEntity) {
         dataStoreStorage.saveLastOpenedListId(listId = listEntity.id)
