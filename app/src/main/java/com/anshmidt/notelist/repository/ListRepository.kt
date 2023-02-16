@@ -35,6 +35,10 @@ class ListRepository(
         }
     }
 
+    fun getLastOpenedListId(): Flow<Int> {
+        return dataStoreStorage.getLastOpenedListId()
+    }
+
     @OptIn(FlowPreview::class)
     private fun getFirstFoundListIfLastOpenedNotFound(
         lastOpenedListFlow: Flow<ListEntity?>

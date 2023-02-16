@@ -1,5 +1,6 @@
 package com.anshmidt.notelist.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshmidt.notelist.database.ListEntity
@@ -8,10 +9,7 @@ import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.ui.MainUiState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class NoteListViewModel(
@@ -33,6 +31,7 @@ class NoteListViewModel(
                 listRepository.getLastOpenedList(),
                 listRepository.getAllLists()
             ) { notes, lastOpenedList, lists ->
+                    Log.d(TAG, "displaying notes in list $lastOpenedList")
                     if (lastOpenedList == null) {
                         getEmptyMainUiState()
                     } else {
@@ -78,8 +77,12 @@ class NoteListViewModel(
 
     private fun addNote() {
         viewModelScope.launch(Dispatchers.IO) {
-            val tempText = System.currentTimeMillis().toString()
-            noteRepository.addNote(tempText)
+            listRepository.getLastOpenedListId().first { lastOpenedListId ->
+                noteRepository.addNote(
+                    listId = lastOpenedListId
+                )
+                return@first true
+            }
         }
     }
 
@@ -101,10 +104,27 @@ class NoteListViewModel(
     }
 
     fun onListOpened(listEntity: ListEntity) {
-        _uiState.value = _uiState.value.copy(selectedList = listEntity)
+//        viewModelScope.launch(Dispatchers.IO) {
+//            listRepository.saveLastOpenedList(listEntity)
+//        }
+
         viewModelScope.launch(Dispatchers.IO) {
-            listRepository.saveLastOpenedList(listEntity)
+            noteRepository.getNotesInList(listEntity.id).collect { notes ->
+                val lists = _uiState.value.lists
+                val selectedList = listEntity
+                Log.d(TAG, "list opened: $selectedList")
+                _uiState.value = MainUiState(
+                    notes = notes,
+                    selectedList = selectedList,
+                    lists = lists
+                )
+                listRepository.saveLastOpenedList(listEntity)
+            }
         }
+    }
+
+    companion object {
+        val TAG = NoteListViewModel::class.java.simpleName
     }
 
 
