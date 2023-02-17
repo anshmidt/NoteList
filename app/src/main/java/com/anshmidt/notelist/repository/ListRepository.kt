@@ -19,9 +19,7 @@ class ListRepository(
         return notesDatabase.listDao().getAllLists().onEach { Log.d(TAG, "getAllLists: $it") }
     }
 
-    suspend fun addList(listEntity: ListEntity) {
-        notesDatabase.listDao().addList(listEntity)
-    }
+    suspend fun addList(listEntity: ListEntity): Long = notesDatabase.listDao().addList(listEntity)
 
     suspend fun deleteList(listEntity: ListEntity) {
         notesDatabase.listDao().deleteList(listEntity)

@@ -9,7 +9,7 @@ interface ListDao {
     fun getAllLists(): Flow<List<ListEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addList(listEntity: ListEntity)
+    suspend fun addList(listEntity: ListEntity): Long
 
     @Delete
     suspend fun deleteList(listEntity: ListEntity)

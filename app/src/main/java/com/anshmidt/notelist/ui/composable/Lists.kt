@@ -15,9 +15,6 @@ fun ListMenu(
     onListSelected: (ListEntity) -> Unit,
     onAddNewListButtonClicked: () -> Unit
 ) {
-//    var selectedItem by remember {
-//        mutableStateOf(defaultSelectedItem)
-//    }
 
     var expanded by remember {
         mutableStateOf(false)
@@ -45,11 +42,12 @@ fun ListMenu(
                 }
             }
 
-            DropdownMenuItem(onClick = {
-                expanded = false
-            }) {
+            DropdownMenuItem(onClick = {}) {
                 Button(
-                    onClick = onAddNewListButtonClicked
+                    onClick = {
+                        expanded = false
+                        onAddNewListButtonClicked()
+                    }
                 ) {
                     Text(text = stringResource(R.string.button_add_new_list))
                 }
