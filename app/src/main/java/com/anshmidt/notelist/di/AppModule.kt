@@ -9,7 +9,7 @@ import com.anshmidt.notelist.database.NotesDatabase
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.sharedpreferences.DataStoreStorage
-import com.anshmidt.notelist.viewmodel.NoteListViewModel
+import com.anshmidt.notelist.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -45,5 +45,5 @@ val appModule = module {
     single { DataStoreStorage(androidContext()) }
     single { NoteRepository(get(), get()) }
     single { ListRepository(get(), get()) }
-    viewModel { NoteListViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get()) }
 }

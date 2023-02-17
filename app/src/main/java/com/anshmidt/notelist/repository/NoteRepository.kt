@@ -1,11 +1,13 @@
 package com.anshmidt.notelist.repository
 
+import android.util.Log
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.database.NotesDatabase
 import com.anshmidt.notelist.sharedpreferences.DataStoreStorage
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.onEach
 
 class NoteRepository(
     val notesDatabase: NotesDatabase,
@@ -13,7 +15,8 @@ class NoteRepository(
 ) {
 
     fun getNotesInList(listId: Int): Flow<List<NoteEntity>> {
-        return notesDatabase.noteDao().getNotesFromList(listId)
+        return notesDatabase.noteDao().getNotesFromList(listId).onEach { Log.d(ListRepository.TAG, "getNotesInList: $it") }
+//            .onStart { delay(2000) }
     }
 
     @OptIn(FlowPreview::class)

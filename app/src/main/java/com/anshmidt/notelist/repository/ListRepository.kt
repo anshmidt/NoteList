@@ -1,5 +1,6 @@
 package com.anshmidt.notelist.repository
 
+import android.util.Log
 import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.database.NotesDatabase
 import com.anshmidt.notelist.sharedpreferences.DataStoreStorage
@@ -7,6 +8,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 
 class ListRepository(
     val notesDatabase: NotesDatabase,
@@ -14,7 +16,7 @@ class ListRepository(
 ) {
 
     fun getAllLists(): Flow<List<ListEntity>> {
-        return notesDatabase.listDao().getAllLists()
+        return notesDatabase.listDao().getAllLists().onEach { Log.d(TAG, "getAllLists: $it") }
     }
 
     suspend fun addList(listEntity: ListEntity) {
@@ -36,7 +38,7 @@ class ListRepository(
     }
 
     fun getLastOpenedListId(): Flow<Int> {
-        return dataStoreStorage.getLastOpenedListId()
+        return dataStoreStorage.getLastOpenedListId().onEach { Log.d(TAG, "getLastOpenedListId: $it") }
     }
 
     @OptIn(FlowPreview::class)
@@ -56,6 +58,11 @@ class ListRepository(
 
 
     suspend fun saveLastOpenedList(listEntity: ListEntity) {
+        Log.d(TAG, "saveLastOpenedList: $listEntity")
         dataStoreStorage.saveLastOpenedListId(listId = listEntity.id)
+    }
+
+    companion object {
+        val TAG = ListRepository::class.java.simpleName
     }
 }

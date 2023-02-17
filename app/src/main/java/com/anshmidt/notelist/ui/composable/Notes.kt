@@ -23,14 +23,6 @@ fun Notes(notes: List<NoteEntity>, onNoteDismissed: (NoteEntity) -> Unit, modifi
             items = notes,
             key = { it.id }
         ) { noteEntity ->
-            //Note(noteEntity = it)
-            //var unread by remember { mutableStateOf(false) }
-//            val dismissState = rememberDismissState(
-//                confirmStateChange = {
-//                    if (it == DismissValue.DismissedToEnd) unread = !unread
-//                    it != DismissValue.DismissedToEnd
-//                }
-//            )
             val dismissState = rememberDismissState(
                 confirmStateChange = {
                     onNoteDismissed(noteEntity)

@@ -17,22 +17,24 @@ import com.anshmidt.notelist.ui.composable.AddNoteButton
 import com.anshmidt.notelist.ui.composable.Notes
 import com.anshmidt.notelist.ui.composable.TopBar
 import com.anshmidt.notelist.ui.theme.NoteListTheme
-import com.anshmidt.notelist.viewmodel.NoteListViewModel
+import com.anshmidt.notelist.viewmodel.MainViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun MainScreen(
-    viewModel: NoteListViewModel
+    viewModel: MainViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    //val uiState by viewModel.uiState.collectAsState()
+    val listsUiState by viewModel.listsUiState.collectAsState()
+    val notesUiState by viewModel.notesUiState.collectAsState()
 
     StatusBar()
 
     Scaffold(
         topBar = {
             TopBar(
-                lists = uiState.lists,
-                selectedList = uiState.selectedList,
+                lists = listsUiState.lists,
+                selectedList = listsUiState.selectedList,
                 onMoveListToTrashClicked = { selectedList ->
                     viewModel.onMoveListToTrashClicked(selectedList)
                 },
@@ -49,7 +51,7 @@ fun MainScreen(
         },
         content = { padding ->
             Notes(
-                notes = uiState.notes,
+                notes = notesUiState.notes,
                 onNoteDismissed = { dismissedNote ->
                       viewModel.onNoteDismissed(dismissedNote)
                 },
