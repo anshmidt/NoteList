@@ -7,6 +7,7 @@ import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
+import com.anshmidt.notelist.ui.NotesMode
 import com.anshmidt.notelist.ui.uistate.ListsUiState
 import com.anshmidt.notelist.ui.uistate.NotesUiState
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +43,7 @@ class MainViewModel(
         }.onEach { notes ->
             _notesUiState.value = NotesUiState(
                 notes = notes,
-                editModeOn = false
+                mode = NotesMode.View
             )
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
@@ -63,7 +64,7 @@ class MainViewModel(
 
     private fun getEmptyNotesUiState() = NotesUiState(
         notes = emptyList(),
-        editModeOn = false
+        mode = NotesMode.View
     )
 
     private fun getEmptyListsUiState() = ListsUiState(
@@ -140,7 +141,7 @@ class MainViewModel(
     }
 
     fun onNoteClicked(note: NoteEntity) {
-        _notesUiState.value = _notesUiState.value.copy(editModeOn = true)
+        _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.Edit(focusedNote = note))
     }
 
     companion object {

@@ -47,7 +47,7 @@ fun MainScreen(
         content = { padding ->
             Notes(
                 notes = notesUiState.notes,
-                editModeOn = notesUiState.editModeOn,
+                mode = notesUiState.mode,
                 onNoteClicked = { clickedNote ->
                     viewModel.onNoteClicked(clickedNote)
                 },

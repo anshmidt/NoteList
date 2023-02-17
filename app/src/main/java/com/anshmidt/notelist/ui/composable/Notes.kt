@@ -11,20 +11,20 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.database.NoteEntity
+import com.anshmidt.notelist.ui.NotesMode
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun Notes(
     notes: List<NoteEntity>,
-    editModeOn: Boolean,
+    mode: NotesMode,
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteDismissed: (NoteEntity) -> Unit,
     modifier: Modifier
@@ -49,7 +49,7 @@ fun Notes(
                 dismissContent = {
                     Note(
                         noteEntity = noteEntity,
-                        editModeOn = editModeOn,
+                        mode = mode,
                         onNoteClicked = onNoteClicked
                     )
                 }
@@ -59,7 +59,7 @@ fun Notes(
 }
 
 @Composable
-fun Note(noteEntity: NoteEntity, editModeOn: Boolean, onNoteClicked: (NoteEntity) -> Unit) {
+fun Note(noteEntity: NoteEntity, mode: NotesMode, onNoteClicked: (NoteEntity) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -67,36 +67,40 @@ fun Note(noteEntity: NoteEntity, editModeOn: Boolean, onNoteClicked: (NoteEntity
             .clickable { onNoteClicked(noteEntity) },
         elevation = 4.dp
     ) {
-        NoteCardContent(noteEntity = noteEntity, editModeOn = editModeOn)
+        NoteCardContent(noteEntity = noteEntity, mode = mode)
     }
 }
 
 @Composable
-fun NoteCardContent(noteEntity: NoteEntity, editModeOn: Boolean) {
-    if (editModeOn) {
-
-        val focusRequester = remember { FocusRequester() }
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+fun NoteCardContent(noteEntity: NoteEntity, mode: NotesMode) {
+    when (mode) {
+        is NotesMode.Edit -> {
+            val focusRequester = FocusRequester()
+            SideEffect {
+                if (mode.focusedNote == noteEntity) {
+                    focusRequester.requestFocus()
+                }
+            }
+            OutlinedTextField(
+                value = noteEntity.text,
+                onValueChange = {},
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    backgroundColor = MaterialTheme.colors.background,
+                    focusedBorderColor = MaterialTheme.colors.primary,
+                    unfocusedBorderColor = Color.Transparent
+                ),
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .padding(0.dp)
+            )
         }
-        OutlinedTextField(
-            value = noteEntity.text,
-            onValueChange = {},
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-                focusedBorderColor = MaterialTheme.colors.primary,
-                unfocusedBorderColor = Color.Transparent
-            ),
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .padding(0.dp)
-        )
-    } else {
-        Text(
-            text = noteEntity.text,
-            modifier = Modifier
-                .padding(16.dp)
-        )
+        is NotesMode.View -> {
+            Text(
+                text = noteEntity.text,
+                modifier = Modifier
+                    .padding(16.dp)
+            )
+        }
     }
 }
 
