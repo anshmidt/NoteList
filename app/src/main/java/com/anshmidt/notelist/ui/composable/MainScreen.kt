@@ -1,6 +1,5 @@
 package com.anshmidt.notelist.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -10,13 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import com.anshmidt.notelist.database.NoteEntity
-import com.anshmidt.notelist.database.Priority
 import com.anshmidt.notelist.ui.composable.AddNoteButton
 import com.anshmidt.notelist.ui.composable.Notes
 import com.anshmidt.notelist.ui.composable.TopBar
-import com.anshmidt.notelist.ui.theme.NoteListTheme
 import com.anshmidt.notelist.viewmodel.MainViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -52,8 +47,12 @@ fun MainScreen(
         content = { padding ->
             Notes(
                 notes = notesUiState.notes,
+                editModeOn = notesUiState.editModeOn,
+                onNoteClicked = { clickedNote ->
+                    viewModel.onNoteClicked(clickedNote)
+                },
                 onNoteDismissed = { dismissedNote ->
-                      viewModel.onNoteDismissed(dismissedNote)
+                    viewModel.onNoteDismissed(dismissedNote)
                 },
                 modifier = Modifier.padding(padding)
             )
@@ -77,31 +76,3 @@ fun StatusBar() {
     }
 }
 
-
-@Preview(showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun DefaultPreview() {
-    val notes = listOf(
-        NoteEntity(
-            id = 0,
-            timestamp = 1L,
-            text = "Note1\nsecond line",
-            priority = Priority.NORMAL,
-            listId = 0,
-            inTrash = false
-        ),
-        NoteEntity(
-            id = 1,
-            timestamp = 1L,
-            text = "Note2",
-            priority = Priority.NORMAL,
-            listId = 0,
-            inTrash = false
-        )
-    )
-
-    NoteListTheme {
-        Notes(notes, modifier = Modifier, onNoteDismissed = {})
-    }
-}

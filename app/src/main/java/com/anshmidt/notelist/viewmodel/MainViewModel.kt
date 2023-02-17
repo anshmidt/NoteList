@@ -40,7 +40,10 @@ class MainViewModel(
         listRepository.getLastOpenedListId().flatMapLatest { lastOpenedListId ->
             noteRepository.getNotesInList(lastOpenedListId)
         }.onEach { notes ->
-            _notesUiState.value = NotesUiState(notes = notes)
+            _notesUiState.value = NotesUiState(
+                notes = notes,
+                editModeOn = false
+            )
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
 
@@ -58,7 +61,10 @@ class MainViewModel(
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
 
-    private fun getEmptyNotesUiState() = NotesUiState(notes = emptyList())
+    private fun getEmptyNotesUiState() = NotesUiState(
+        notes = emptyList(),
+        editModeOn = false
+    )
 
     private fun getEmptyListsUiState() = ListsUiState(
         selectedList = ListEntity(
@@ -127,10 +133,14 @@ class MainViewModel(
         }
     }
 
-    fun onListOpened(listEntity: ListEntity) {
+    fun onListOpened(list: ListEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            listRepository.saveLastOpenedList(listEntity)
+            listRepository.saveLastOpenedList(list)
         }
+    }
+
+    fun onNoteClicked(note: NoteEntity) {
+        _notesUiState.value = _notesUiState.value.copy(editModeOn = true)
     }
 
     companion object {
