@@ -29,6 +29,7 @@ fun MainScreen(
         topBar = {
             TopBar(
                 lists = listsUiState.lists,
+                mode = listsUiState.mode,
                 selectedList = listsUiState.selectedList,
                 onMoveListToTrashClicked = { selectedList ->
                     viewModel.onMoveListToTrashClicked(selectedList)
@@ -36,7 +37,8 @@ fun MainScreen(
                 onListSelected = { selectedList ->
                     viewModel.onListOpened(selectedList)
                 },
-                onAddNewListButtonClicked = viewModel::onAddNewListButtonClicked
+                onAddNewListButtonClicked = viewModel::onAddNewListButtonClicked,
+                onDoneIconClicked = viewModel::onDoneIconClicked
             )
          },
         floatingActionButton = {

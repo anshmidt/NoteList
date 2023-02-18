@@ -74,7 +74,8 @@ class MainViewModel(
             inTrash = false,
             timestamp = 0L
         ),
-        lists = emptyList()
+        lists = emptyList(),
+        mode = NotesMode.View
     )
 
     private fun getListsUiState(selectedListId: Int, lists: List<ListEntity>): ListsUiState {
@@ -84,7 +85,8 @@ class MainViewModel(
         } else {
             ListsUiState(
                 selectedList = selectedList,
-                lists = lists
+                lists = lists,
+                mode = NotesMode.View
             )
         }
     }
@@ -141,7 +143,15 @@ class MainViewModel(
     }
 
     fun onNoteClicked(note: NoteEntity) {
+        // Enter Edit mode
         _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.Edit(focusedNote = note))
+        _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.Edit(focusedNote = note))
+    }
+
+    fun onDoneIconClicked() {
+        // Exit Edit mode, return to View mode
+        _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.View)
+        _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.View)
     }
 
     companion object {

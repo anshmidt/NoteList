@@ -16,15 +16,18 @@ import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.R
 import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.ui.ListPreviewProvider
+import com.anshmidt.notelist.ui.NotesMode
 
 
 @Composable
 fun TopBar(
     lists: List<ListEntity>,
+    mode: NotesMode,
     @PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity,
     onListSelected: (ListEntity) -> Unit,
     onMoveListToTrashClicked: (ListEntity) -> Unit,
-    onAddNewListButtonClicked: () -> Unit
+    onAddNewListButtonClicked: () -> Unit,
+    onDoneIconClicked: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -39,11 +42,9 @@ fun TopBar(
             )
         },
         backgroundColor = Color.Transparent,
-//        navigationIcon = {
-//            IconButton(onClick = {/* Do Something*/ }) {
-//                Icon(Icons.Filled.ArrowBack, null)
-//            }
-//        },
+        navigationIcon = if (mode is NotesMode.Edit) {{
+            DoneIcon(onDoneIconClicked)
+        }} else null,
         actions = {
             SearchIcon()
             MoreIcon(onClick = {
@@ -100,6 +101,17 @@ fun SearchIcon() {
     IconButton(onClick = {/* Do Something*/ }) {
         Icon(
             imageVector = Icons.Filled.Search,
+            contentDescription = null,
+            tint = MaterialTheme.colors.primary
+        )
+    }
+}
+
+@Composable
+fun DoneIcon(onDoneIconClicked: () -> Unit) {
+    IconButton(onClick = onDoneIconClicked) {
+        Icon(
+            imageVector = Icons.Filled.Check,
             contentDescription = null,
             tint = MaterialTheme.colors.primary
         )
