@@ -41,9 +41,10 @@ class MainViewModel(
         listRepository.getLastOpenedListId().flatMapLatest { lastOpenedListId ->
             noteRepository.getNotesInList(lastOpenedListId)
         }.onEach { notes ->
+            val currentMode = _notesUiState.value.mode
             _notesUiState.value = NotesUiState(
                 notes = notes,
-                mode = NotesMode.View
+                mode = currentMode
             )
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
@@ -152,6 +153,12 @@ class MainViewModel(
         // Exit Edit mode, return to View mode
         _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.View)
         _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.View)
+    }
+
+    fun onNoteEdited(note: NoteEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.updateNote(note)
+        }
     }
 
     companion object {

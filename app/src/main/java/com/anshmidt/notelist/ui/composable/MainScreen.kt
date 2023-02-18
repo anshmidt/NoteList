@@ -56,6 +56,9 @@ fun MainScreen(
                 onNoteDismissed = { dismissedNote ->
                     viewModel.onNoteDismissed(dismissedNote)
                 },
+                onNoteEdited = { editedNote ->
+                    viewModel.onNoteEdited(editedNote)
+                },
                 modifier = Modifier.padding(padding)
             )
         }

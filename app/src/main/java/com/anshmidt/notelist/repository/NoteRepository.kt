@@ -42,7 +42,9 @@ class NoteRepository(
         )
     }
 
-
+    suspend fun updateNote(note: NoteEntity) {
+        notesDatabase.noteDao().updateNote(note)
+    }
 
 
 
