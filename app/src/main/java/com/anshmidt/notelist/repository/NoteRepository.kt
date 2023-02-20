@@ -30,17 +30,7 @@ class NoteRepository(
         notesDatabase.noteDao().deleteNote(noteEntity)
     }
 
-    suspend fun addNote(listId: Int) {
-        val timeOfCreation = System.currentTimeMillis()
-        notesDatabase.noteDao().addNote(
-            NoteEntity(
-                timestamp = timeOfCreation,
-                text = timeOfCreation.toString(),
-                listId = listId,
-                inTrash = false
-            )
-        )
-    }
+    suspend fun addNote(note: NoteEntity): Long = notesDatabase.noteDao().addNote(note)
 
     suspend fun updateNote(note: NoteEntity) {
         notesDatabase.noteDao().updateNote(note)

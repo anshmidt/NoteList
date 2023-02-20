@@ -103,18 +103,26 @@ class MainViewModel(
     }
 
     fun onAddNoteButtonClicked() {
-        addNote()
-    }
+        val selectedListId = _listsUiState.value.selectedList.id
 
-    private fun addNote() {
+        val newNoteWithoutId = NoteEntity(
+            timestamp = System.currentTimeMillis(),
+            text = "",
+            listId = selectedListId,
+            inTrash = false
+        )
+
         viewModelScope.launch(Dispatchers.IO) {
-            listRepository.getLastOpenedListId().first { lastOpenedListId ->
-                noteRepository.addNote(
-                    listId = lastOpenedListId
-                )
-                return@first true
+            val newNoteId = noteRepository.addNote(newNoteWithoutId).toInt()
+            val newNote = newNoteWithoutId.copy(id = newNoteId)
+
+            if (_listsUiState.value.mode == NotesMode.View) {
+                _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.Edit(focusedNote = newNote))
+                _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.Edit(focusedNote = newNote))
             }
         }
+
+
     }
 
     fun onMoveListToTrashClicked(selectedList: ListEntity) {

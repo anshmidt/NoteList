@@ -2,15 +2,22 @@ package com.anshmidt.notelist.ui.composable
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -18,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.ui.NotesMode
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -29,6 +37,7 @@ fun Notes(
     onNoteEdited: (NoteEntity) -> Unit,
     modifier: Modifier
 ) {
+    val listState = rememberLazyListState()
     LazyColumn(modifier = modifier) {
         items(
             items = notes,
@@ -51,10 +60,14 @@ fun Notes(
                         noteEntity = noteEntity,
                         mode = mode,
                         onNoteClicked = onNoteClicked,
-                        onNoteEdited = onNoteEdited
+                        onNoteEdited = onNoteEdited,
+                        listState = listState
                     )
                 }
             )
+        }
+        item {
+            Spacer(Modifier.height(400.dp))
         }
     }
 }
@@ -64,13 +77,20 @@ fun Note(
     noteEntity: NoteEntity,
     mode: NotesMode,
     onNoteClicked: (NoteEntity) -> Unit,
-    onNoteEdited: (NoteEntity) -> Unit
+    onNoteEdited: (NoteEntity) -> Unit,
+    listState: LazyListState
 ) {
+    val coroutineScope = rememberCoroutineScope()
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onNoteClicked(noteEntity) },
+            .clickable {
+                onNoteClicked(noteEntity)
+                coroutineScope.launch {
+                    listState.scrollToItem(10, 0)
+                }
+            },
         elevation = 4.dp
     ) {
         NoteCardContent(
@@ -95,11 +115,11 @@ fun NoteCardContent(
                     focusRequester.requestFocus()
                 }
             }
-            var text by remember { mutableStateOf(note.text) }
+            //var text by remember { mutableStateOf(note.text) }
             OutlinedTextField(
-                value = text,
+                value = note.text,
                 onValueChange = { newText ->
-                    text = newText
+                    //text = newText
                     val editedNote = note.copy(text = newText)
                     onNoteEdited(editedNote)
                 },
@@ -117,7 +137,7 @@ fun NoteCardContent(
             Text(
                 text = note.text,
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(17.dp)
             )
         }
     }
