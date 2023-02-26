@@ -1,24 +1,26 @@
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LowPriority
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
+import com.anshmidt.notelist.database.Priority
+import com.anshmidt.notelist.database.convertToString
+import com.anshmidt.notelist.database.decrease
+import com.anshmidt.notelist.database.increase
 
 @Preview
 @Composable
@@ -74,20 +76,36 @@ private fun BottomSheetItem(
 
 @Composable
 private fun PrioritySelector() {
-    PrioritySelectorIcon(imageVector = Icons.Filled.KeyboardArrowDown)
+    var priority by remember {
+        mutableStateOf(Priority.NORMAL)
+    }
+
+    PrioritySelectorIcon(
+        imageVector = Icons.Filled.KeyboardArrowDown,
+        onClick = {
+            priority = priority.decrease()
+        }
+    )
     Text(
-        text = "Normal",
+        text = priority.convertToString(LocalContext.current),
         fontSize = 20.sp
     )
-    PrioritySelectorIcon(imageVector = Icons.Filled.KeyboardArrowUp)
+    PrioritySelectorIcon(
+        imageVector = Icons.Filled.KeyboardArrowUp,
+        onClick = {
+            priority = priority.increase()
+        }
+    )
 }
 
 @Composable
-private fun PrioritySelectorIcon(imageVector: ImageVector) {
-    Icon(
-        imageVector = imageVector,
-        contentDescription = null,
-        tint = MaterialTheme.colors.onBackground,
-        modifier = Modifier.padding(12.dp)
-    )
+private fun PrioritySelectorIcon(imageVector: ImageVector, onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            tint = MaterialTheme.colors.onBackground,
+            modifier = Modifier.padding(12.dp)
+        )
+    }
 }

@@ -11,4 +11,8 @@
 
     <string name="default_data_list_name">My first list</string>
     <string name="default_data_note_text">My first note</string>
+
+    <string name="priority_minor">Minor</string>
+    <string name="priority_normal">Normal</string>
+    <string name="priority_major">Major</string>
 </resources>
