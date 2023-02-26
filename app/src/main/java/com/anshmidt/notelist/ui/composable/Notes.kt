@@ -22,8 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.database.NoteEntity
+import com.anshmidt.notelist.database.Priority
 import com.anshmidt.notelist.ui.NotesMode
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -163,3 +165,10 @@ fun AddNoteButton(onAddNoteButtonClicked: () -> Unit) {
         )
     }
 }
+
+fun Priority.getFontWeight() = when(this) {
+    Priority.MINOR -> FontWeight.Light
+    Priority.NORMAL -> FontWeight.Normal
+    Priority.MAJOR -> FontWeight.Bold
+}
+

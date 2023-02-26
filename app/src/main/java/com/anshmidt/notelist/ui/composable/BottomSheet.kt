@@ -21,6 +21,7 @@ import com.anshmidt.notelist.database.Priority
 import com.anshmidt.notelist.database.convertToString
 import com.anshmidt.notelist.database.decrease
 import com.anshmidt.notelist.database.increase
+import com.anshmidt.notelist.ui.composable.getFontWeight
 
 @Preview
 @Composable
@@ -80,22 +81,29 @@ private fun PrioritySelector() {
         mutableStateOf(Priority.NORMAL)
     }
 
-    PrioritySelectorIcon(
-        imageVector = Icons.Filled.KeyboardArrowDown,
-        onClick = {
-            priority = priority.decrease()
-        }
-    )
-    Text(
-        text = priority.convertToString(LocalContext.current),
-        fontSize = 20.sp
-    )
-    PrioritySelectorIcon(
-        imageVector = Icons.Filled.KeyboardArrowUp,
-        onClick = {
-            priority = priority.increase()
-        }
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.width(170.dp)
+    ) {
+        PrioritySelectorIcon(
+            imageVector = Icons.Filled.KeyboardArrowDown,
+            onClick = {
+                priority = priority.decrease()
+            }
+        )
+        Text(
+            text = priority.convertToString(LocalContext.current),
+            fontSize = 20.sp,
+            fontWeight = priority.getFontWeight()
+        )
+        PrioritySelectorIcon(
+            imageVector = Icons.Filled.KeyboardArrowUp,
+            onClick = {
+                priority = priority.increase()
+            }
+        )
+    }
 }
 
 @Composable
