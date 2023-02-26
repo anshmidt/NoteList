@@ -87,7 +87,7 @@ fun TopBar(
 }
 
 @Composable
-fun MenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
+private fun MenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
     DropdownMenuItem(onClick = onClick) {
         Row() {
             Icon(icon, contentDescription = text)
@@ -97,7 +97,7 @@ fun MenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun SearchIcon() {
+private fun SearchIcon() {
     IconButton(onClick = {/* Do Something*/ }) {
         Icon(
             imageVector = Icons.Filled.Search,
@@ -108,7 +108,7 @@ fun SearchIcon() {
 }
 
 @Composable
-fun DoneIcon(onDoneIconClicked: () -> Unit) {
+private fun DoneIcon(onDoneIconClicked: () -> Unit) {
     IconButton(onClick = onDoneIconClicked) {
         Icon(
             imageVector = Icons.Filled.Check,
@@ -119,7 +119,7 @@ fun DoneIcon(onDoneIconClicked: () -> Unit) {
 }
 
 @Composable
-fun MoreIcon(onClick: () -> Unit) {
+private fun MoreIcon(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
         Icon(
             imageVector = Icons.Filled.MoreVert,

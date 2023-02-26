@@ -75,7 +75,7 @@ fun Notes(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Note(
+private fun Note(
     noteEntity: NoteEntity,
     mode: NotesMode,
     onNoteClicked: (NoteEntity) -> Unit,
@@ -107,7 +107,7 @@ fun Note(
 }
 
 @Composable
-fun NoteCardContent(
+private fun NoteCardContent(
     note: NoteEntity,
     mode: NotesMode,
     onNoteEdited: (NoteEntity) -> Unit

@@ -58,7 +58,7 @@ fun ListMenu(
 }
 
 @Composable
-fun SelectedListTitle(listTitle: String) {
+private fun SelectedListTitle(listTitle: String) {
     TextField(
         value = listTitle,
         onValueChange = {},

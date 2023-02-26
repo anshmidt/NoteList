@@ -94,7 +94,7 @@ fun MainScreen(
 
 
 @Composable
-fun StatusBar() {
+private fun StatusBar() {
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = !isSystemInDarkTheme()
     val backgroundColor = if (isSystemInDarkTheme()) Color.Black else Color.White
