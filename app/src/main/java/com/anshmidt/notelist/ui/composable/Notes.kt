@@ -1,7 +1,7 @@
 package com.anshmidt.notelist.ui.composable
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.ui.NotesMode
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -33,6 +32,7 @@ fun Notes(
     notes: List<NoteEntity>,
     mode: NotesMode,
     onNoteClicked: (NoteEntity) -> Unit,
+    onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteDismissed: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
     modifier: Modifier
@@ -60,6 +60,7 @@ fun Notes(
                         noteEntity = noteEntity,
                         mode = mode,
                         onNoteClicked = onNoteClicked,
+                        onNoteLongClicked = onNoteLongClicked,
                         onNoteEdited = onNoteEdited,
                         listState = listState
                     )
@@ -72,11 +73,13 @@ fun Notes(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Note(
     noteEntity: NoteEntity,
     mode: NotesMode,
     onNoteClicked: (NoteEntity) -> Unit,
+    onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
     listState: LazyListState
 ) {
@@ -85,12 +88,14 @@ fun Note(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable {
-                onNoteClicked(noteEntity)
-                coroutineScope.launch {
-                    listState.scrollToItem(10, 0)
+            .combinedClickable(
+                onClick = {
+                    onNoteClicked(noteEntity)
+                },
+                onLongClick = {
+                    onNoteLongClicked(noteEntity)
                 }
-            },
+            ),
         elevation = 4.dp
     ) {
         NoteCardContent(
