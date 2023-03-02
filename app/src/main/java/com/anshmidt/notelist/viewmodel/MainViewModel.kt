@@ -127,10 +127,10 @@ class MainViewModel(
         }
     }
 
-    fun onAddNewListButtonClicked() {
+    fun onNewListNameEntered(newListName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val newListWithoutId = ListEntity(
-                name = "list${System.currentTimeMillis()}",
+                name = newListName,
                 timestamp = 0L,
                 inTrash = false
             )

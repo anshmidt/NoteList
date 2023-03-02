@@ -20,7 +20,7 @@ import com.anshmidt.notelist.R
 fun ListNameDialog(
     currentListName: String? = null, // null is used when new list is added
     onDialogDismissed: () -> Unit = {},
-    onListRenamed: (String?) -> Unit = {}
+    onListRenamed: (String) -> Unit = {}
 ) {
     var listName by remember {
         mutableStateOf(currentListName.orEmpty())

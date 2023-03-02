@@ -97,9 +97,14 @@ fun MainScreen(
     }
 
     if (listNameDialogOpened) {
-        ListNameDialog(onDialogDismissed = {
-            listNameDialogOpened = !listNameDialogOpened
-        })
+        ListNameDialog(
+            onDialogDismissed = {
+                listNameDialogOpened = !listNameDialogOpened
+            },
+            onListRenamed = { newListName ->
+                viewModel.onNewListNameEntered(newListName = newListName)
+            }
+        )
     }
 }
 
