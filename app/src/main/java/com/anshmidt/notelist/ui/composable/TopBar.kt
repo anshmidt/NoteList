@@ -59,6 +59,7 @@ fun TopBar(
                     icon = Icons.Outlined.Edit,
                     text = stringResource(R.string.menu_title_rename_list),
                     onClick = {
+                        isMenuExpanded = false
                         onRenameListIconClicked()
                     }
                 )
@@ -66,6 +67,7 @@ fun TopBar(
                     icon = Icons.Outlined.DeleteForever,
                     text = stringResource(R.string.menu_title_move_list_to_trash),
                     onClick = {
+                        isMenuExpanded = false
                         onMoveListToTrashClicked(selectedList)
                     }
                 )
