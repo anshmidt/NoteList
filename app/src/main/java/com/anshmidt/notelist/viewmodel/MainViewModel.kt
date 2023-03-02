@@ -117,13 +117,17 @@ class MainViewModel(
                 _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.Edit(focusedNote = newNote))
             }
         }
-
-
     }
 
     fun onMoveListToTrashClicked(selectedList: ListEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            listRepository.deleteList(selectedList)
+            // Currently selected list is getting removed, so we should open another list
+            listRepository.getAnyOtherListId(listId = selectedList.id).first { newSelectedListId ->
+                listRepository.saveLastOpenedList(newSelectedListId)
+                noteRepository.deleteAllNotesFromList(selectedList.id)
+                listRepository.deleteList(selectedList)
+                return@first true
+            }
         }
     }
 

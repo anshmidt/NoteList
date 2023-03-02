@@ -26,4 +26,8 @@ interface ListDao {
      */
     @Query("SELECT * FROM ${ListEntity.TABLE_NAME} WHERE ${ListEntity.IN_TRASH_COLUMN_NAME}<>0 LIMIT 1")
     fun getFirstFoundList(): Flow<ListEntity>
+
+    @Query("SELECT ${ListEntity.ID_COLUMN_NAME} FROM ${ListEntity.TABLE_NAME} "+
+                "WHERE ${ListEntity.ID_COLUMN_NAME}<>:listId LIMIT 1")
+    fun getAnyOtherListId(listId: Int): Flow<Int>
 }

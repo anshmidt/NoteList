@@ -1,8 +1,8 @@
 package com.anshmidt.notelist.repository
 
 import android.util.Log
+import com.anshmidt.notelist.database.AppDatabase
 import com.anshmidt.notelist.database.ListEntity
-import com.anshmidt.notelist.database.NotesDatabase
 import com.anshmidt.notelist.sharedpreferences.DataStoreStorage
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -11,22 +11,22 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 
 class ListRepository(
-    val notesDatabase: NotesDatabase,
+    val appDatabase: AppDatabase,
     val dataStoreStorage: DataStoreStorage
 ) {
 
     fun getAllLists(): Flow<List<ListEntity>> {
-        return notesDatabase.listDao().getAllLists().onEach { Log.d(TAG, "getAllLists: $it") }
+        return appDatabase.listDao().getAllLists().onEach { Log.d(TAG, "getAllLists: $it") }
     }
 
-    suspend fun addList(listEntity: ListEntity): Long = notesDatabase.listDao().addList(listEntity)
+    suspend fun addList(listEntity: ListEntity): Long = appDatabase.listDao().addList(listEntity)
 
     suspend fun deleteList(listEntity: ListEntity) {
-        notesDatabase.listDao().deleteList(listEntity)
+        appDatabase.listDao().deleteList(listEntity)
     }
 
     suspend fun updateList(listEntity: ListEntity) {
-        notesDatabase.listDao().updateList(listEntity)
+        appDatabase.listDao().updateList(listEntity)
     }
 
     /**
@@ -35,7 +35,7 @@ class ListRepository(
     @OptIn(FlowPreview::class)
     fun getLastOpenedList(): Flow<ListEntity?> {
         return dataStoreStorage.getLastOpenedListId().flatMapConcat { lastOpenedListId ->
-            notesDatabase.listDao().getListById(lastOpenedListId)
+            appDatabase.listDao().getListById(lastOpenedListId)
         }
     }
 
@@ -49,7 +49,7 @@ class ListRepository(
     ): Flow<ListEntity> {
         return lastOpenedListFlow.flatMapConcat { lastOpenedList ->
             if (lastOpenedList == null) {
-                notesDatabase.listDao().getFirstFoundList()
+                appDatabase.listDao().getFirstFoundList()
             } else {
                 flow {
                     emit(lastOpenedList)
@@ -58,10 +58,21 @@ class ListRepository(
         }
     }
 
+    /**
+     * Returns id of any existing list except of the provided one.
+     */
+    fun getAnyOtherListId(listId: Int): Flow<Int> {
+        return appDatabase.listDao().getAnyOtherListId(listId)
+    }
+
 
     suspend fun saveLastOpenedList(listEntity: ListEntity) {
         Log.d(TAG, "saveLastOpenedList: $listEntity")
         dataStoreStorage.saveLastOpenedListId(listId = listEntity.id)
+    }
+
+    suspend fun saveLastOpenedList(listId: Int) {
+        dataStoreStorage.saveLastOpenedListId(listId = listId)
     }
 
     companion object {

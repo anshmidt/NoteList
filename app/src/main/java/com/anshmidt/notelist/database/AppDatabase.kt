@@ -11,11 +11,11 @@ import androidx.room.RoomDatabase
     version = 1,
     exportSchema = false
 )
-abstract class NotesDatabase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
     abstract fun listDao(): ListDao
 
     companion object {
-        const val DATABASE_NAME = "notes_database"
+        const val DATABASE_NAME = "app_database"
     }
 }
