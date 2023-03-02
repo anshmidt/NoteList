@@ -141,6 +141,13 @@ class MainViewModel(
         }
     }
 
+    fun onListRenamed(newListName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newList = _listsUiState.value.selectedList.copy(name = newListName)
+            listRepository.updateList(newList)
+        }
+    }
+
     fun onListOpened(list: ListEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             listRepository.saveLastOpenedList(list)

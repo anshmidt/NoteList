@@ -25,6 +25,10 @@ class ListRepository(
         notesDatabase.listDao().deleteList(listEntity)
     }
 
+    suspend fun updateList(listEntity: ListEntity) {
+        notesDatabase.listDao().updateList(listEntity)
+    }
+
     /**
      * If list not found by id, it returns null
      */

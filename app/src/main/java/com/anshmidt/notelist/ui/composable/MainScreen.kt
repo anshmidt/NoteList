@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     viewModel: MainViewModel
 ) {
-    //val uiState by viewModel.uiState.collectAsState()
     val listsUiState by viewModel.listsUiState.collectAsState()
     val notesUiState by viewModel.notesUiState.collectAsState()
 
@@ -32,7 +31,8 @@ fun MainScreen(
         initialValue = ModalBottomSheetValue.Hidden
     )
     val coroutineScope = rememberCoroutineScope()
-    var listNameDialogOpened by remember { mutableStateOf(false) }
+    var newListNameDialogOpened by remember { mutableStateOf(false) }
+    var renameListDialogOpened by remember { mutableStateOf(false) }
 
     BackHandler(sheetState.isVisible) {
         coroutineScope.launch { sheetState.hide() }
@@ -58,11 +58,13 @@ fun MainScreen(
                     onListSelected = { selectedList ->
                         viewModel.onListOpened(selectedList)
                     },
-//                    onAddNewListButtonClicked = viewModel::onAddNewListButtonClicked,
                     onAddNewListButtonClicked = {
-                        listNameDialogOpened = !listNameDialogOpened
+                        newListNameDialogOpened = !newListNameDialogOpened
                     },
-                    onDoneIconClicked = viewModel::onDoneIconClicked
+                    onDoneIconClicked = viewModel::onDoneIconClicked,
+                    onRenameListIconClicked = {
+                        renameListDialogOpened = !renameListDialogOpened
+                    }
                 )
             },
             floatingActionButton = {
@@ -96,14 +98,26 @@ fun MainScreen(
 
     }
 
-    if (listNameDialogOpened) {
+    if (newListNameDialogOpened) {
         ListNameDialog(
             onDialogDismissed = {
-                listNameDialogOpened = !listNameDialogOpened
+                newListNameDialogOpened = !newListNameDialogOpened
             },
             onListRenamed = { newListName ->
                 viewModel.onNewListNameEntered(newListName = newListName)
-            }
+            },
+            currentListName = null
+        )
+    }
+    if (renameListDialogOpened) {
+        ListNameDialog(
+            onDialogDismissed = {
+                renameListDialogOpened = !renameListDialogOpened
+            },
+            onListRenamed = { newListName ->
+                viewModel.onListRenamed(newListName = newListName)
+            },
+            currentListName = listsUiState.selectedList.name
         )
     }
 }

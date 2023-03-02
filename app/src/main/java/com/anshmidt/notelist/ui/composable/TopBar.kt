@@ -27,7 +27,8 @@ fun TopBar(
     onListSelected: (ListEntity) -> Unit,
     onMoveListToTrashClicked: (ListEntity) -> Unit,
     onAddNewListButtonClicked: () -> Unit,
-    onDoneIconClicked: () -> Unit
+    onDoneIconClicked: () -> Unit,
+    onRenameListIconClicked: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -57,7 +58,9 @@ fun TopBar(
                 MenuItem(
                     icon = Icons.Outlined.Edit,
                     text = stringResource(R.string.menu_title_rename_list),
-                    onClick = {}
+                    onClick = {
+                        onRenameListIconClicked()
+                    }
                 )
                 MenuItem(
                     icon = Icons.Outlined.DeleteForever,

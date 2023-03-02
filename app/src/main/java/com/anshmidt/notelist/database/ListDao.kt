@@ -14,6 +14,9 @@ interface ListDao {
     @Delete
     suspend fun deleteList(listEntity: ListEntity)
 
+    @Update
+    suspend fun updateList(listEntity: ListEntity)
+
     @Query("SELECT * FROM ${ListEntity.TABLE_NAME} WHERE ${ListEntity.ID_COLUMN_NAME}=:id")
     fun getListById(id: Int): Flow<ListEntity?>
 
