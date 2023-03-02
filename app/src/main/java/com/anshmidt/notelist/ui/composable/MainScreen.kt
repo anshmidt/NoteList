@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.ui.composable.AddNoteButton
+import com.anshmidt.notelist.ui.composable.ListNameDialog
 import com.anshmidt.notelist.ui.composable.Notes
 import com.anshmidt.notelist.ui.composable.TopBar
 import com.anshmidt.notelist.viewmodel.MainViewModel
@@ -31,6 +32,7 @@ fun MainScreen(
         initialValue = ModalBottomSheetValue.Hidden
     )
     val coroutineScope = rememberCoroutineScope()
+    var listNameDialogOpened by remember { mutableStateOf(false) }
 
     BackHandler(sheetState.isVisible) {
         coroutineScope.launch { sheetState.hide() }
@@ -56,7 +58,10 @@ fun MainScreen(
                     onListSelected = { selectedList ->
                         viewModel.onListOpened(selectedList)
                     },
-                    onAddNewListButtonClicked = viewModel::onAddNewListButtonClicked,
+//                    onAddNewListButtonClicked = viewModel::onAddNewListButtonClicked,
+                    onAddNewListButtonClicked = {
+                        listNameDialogOpened = !listNameDialogOpened
+                    },
                     onDoneIconClicked = viewModel::onDoneIconClicked
                 )
             },
@@ -89,6 +94,12 @@ fun MainScreen(
             }
         )
 
+    }
+
+    if (listNameDialogOpened) {
+        ListNameDialog(onDialogDismissed = {
+            listNameDialogOpened = !listNameDialogOpened
+        })
     }
 }
 

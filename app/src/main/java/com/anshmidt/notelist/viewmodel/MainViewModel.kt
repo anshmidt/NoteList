@@ -28,10 +28,6 @@ class MainViewModel(
     val listsUiState: StateFlow<ListsUiState> = _listsUiState.asStateFlow()
 
     init {
-        onViewCreated()
-    }
-
-    private fun onViewCreated() {
         displayNotes()
         displayLists()
     }
