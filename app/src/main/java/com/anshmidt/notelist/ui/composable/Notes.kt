@@ -14,10 +14,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -37,6 +34,7 @@ fun Notes(
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteDismissed: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
+    selectedItem: NoteEntity?,
     modifier: Modifier
 ) {
     val listState = rememberLazyListState()
@@ -51,6 +49,10 @@ fun Notes(
                     true
                 }
             )
+            val isItemSelected = selectedItem?.let {
+                it.id == noteEntity.id
+            } ?: false
+
             SwipeToDismiss(
                 state = dismissState,
                 directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
@@ -64,7 +66,8 @@ fun Notes(
                         onNoteClicked = onNoteClicked,
                         onNoteLongClicked = onNoteLongClicked,
                         onNoteEdited = onNoteEdited,
-                        listState = listState
+                        listState = listState,
+                        isSelected = isItemSelected
                     )
                 }
             )
@@ -83,6 +86,7 @@ private fun Note(
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
+    isSelected: Boolean,
     listState: LazyListState
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -98,7 +102,11 @@ private fun Note(
                     onNoteLongClicked(noteEntity)
                 }
             ),
-        elevation = 4.dp
+        elevation = 4.dp,
+        backgroundColor = if (isSelected)
+            MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
+        else
+            MaterialTheme.colors.background
     ) {
         NoteCardContent(
             note = noteEntity,
