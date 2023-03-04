@@ -104,7 +104,7 @@ private fun Note(
             ),
         elevation = 4.dp,
         backgroundColor = if (isSelected)
-            MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
+            MaterialTheme.colors.onBackground.copy(alpha = 0.4f)
         else
             MaterialTheme.colors.background
     ) {
