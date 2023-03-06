@@ -15,7 +15,8 @@ class NoteRepository(
 ) {
 
     fun getNotesInList(listId: Int): Flow<List<NoteEntity>> {
-        return appDatabase.noteDao().getNotesFromList(listId).onEach { Log.d(ListRepository.TAG, "getNotesInList: $it") }
+        return appDatabase.noteDao().getNotesFromList(listId)
+            .onEach { Log.d(ListRepository.TAG, "getNotesInList: $it") }
 //            .onStart { delay(2000) }
     }
 

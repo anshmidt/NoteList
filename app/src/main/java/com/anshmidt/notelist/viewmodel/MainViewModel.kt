@@ -164,10 +164,6 @@ class MainViewModel(
         _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.Edit(focusedNote = note))
     }
 
-    fun onNoteLongClicked(note: NoteEntity) {
-
-    }
-
     fun onDoneIconClicked() {
         // Exit Edit mode, return to View mode
         _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.View)
