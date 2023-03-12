@@ -1,8 +1,9 @@
 package com.anshmidt.notelist.ui.composable
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.anshmidt.notelist.R
 import com.anshmidt.notelist.database.ListEntity
@@ -59,16 +60,9 @@ fun ListMenu(
 
 @Composable
 fun SelectedListTitle(listTitle: String) {
-    TextField(
-        value = listTitle,
-        onValueChange = {},
-        readOnly = true,
-        colors = TextFieldDefaults.textFieldColors(
-            textColor = MaterialTheme.colors.primary,
-            backgroundColor = MaterialTheme.colors.background,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent
-        )
+    Text(
+        text = listTitle,
+        color = MaterialTheme.colors.primary,
+        modifier = Modifier.fillMaxWidth()
     )
 }
