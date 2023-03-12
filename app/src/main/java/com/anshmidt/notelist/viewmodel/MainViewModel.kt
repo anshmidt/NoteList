@@ -96,7 +96,8 @@ class MainViewModel(
 
     private fun deleteNote(note: NoteEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            noteRepository.deleteNote(note)
+            //noteRepository.deleteNote(note)
+            noteRepository.moveNoteToTrash(noteId = note.id)
         }
     }
 
@@ -130,8 +131,10 @@ class MainViewModel(
             // Currently selected list is getting removed, so we should open another list
             listRepository.getAnyOtherListId(listId = selectedList.id).first { newSelectedListId ->
                 listRepository.saveLastOpenedList(newSelectedListId)
-                noteRepository.deleteAllNotesFromList(selectedList.id)
-                listRepository.deleteList(selectedList)
+                //noteRepository.deleteAllNotesFromList(selectedList.id)
+                noteRepository.moveToTrashAllNotesFromList(listId = selectedList.id)
+                //listRepository.deleteList(selectedList)
+                listRepository.moveListToTrash(listId = selectedList.id)
                 return@first true
             }
         }

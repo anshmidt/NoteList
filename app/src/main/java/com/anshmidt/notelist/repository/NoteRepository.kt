@@ -27,8 +27,12 @@ class NoteRepository(
         }
     }
 
-    suspend fun deleteNote(noteEntity: NoteEntity) {
-        appDatabase.noteDao().deleteNote(noteEntity)
+//    suspend fun deleteNote(noteEntity: NoteEntity) {
+//        appDatabase.noteDao().deleteNote(noteEntity)
+//    }
+
+    suspend fun moveNoteToTrash(noteId: Int) {
+        appDatabase.noteDao().moveNoteToTrash(noteId = noteId)
     }
 
     suspend fun addNote(note: NoteEntity): Long = appDatabase.noteDao().addNote(note)
@@ -37,8 +41,12 @@ class NoteRepository(
         appDatabase.noteDao().updateNote(note)
     }
 
-    suspend fun deleteAllNotesFromList(listId: Int) {
-        appDatabase.noteDao().deleteAllNotesFromList(listId)
+//    suspend fun deleteAllNotesFromList(listId: Int) {
+//        appDatabase.noteDao().deleteAllNotesFromList(listId)
+//    }
+
+    suspend fun moveToTrashAllNotesFromList(listId: Int) {
+        appDatabase.noteDao().moveToTrashAllNotesFromList(listId = listId)
     }
 
 
