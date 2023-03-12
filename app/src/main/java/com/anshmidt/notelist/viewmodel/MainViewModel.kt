@@ -1,8 +1,5 @@
 package com.anshmidt.notelist.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshmidt.notelist.database.DefaultData
@@ -10,9 +7,10 @@ import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
-import com.anshmidt.notelist.ui.NotesMode
 import com.anshmidt.notelist.ui.uistate.ListsUiState
+import com.anshmidt.notelist.ui.uistate.EditMode
 import com.anshmidt.notelist.ui.uistate.NotesUiState
+import com.anshmidt.notelist.ui.uistate.ScreenMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -20,18 +18,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
 class MainViewModel(
-    val noteRepository: NoteRepository,
-    val listRepository: ListRepository
+    private val noteRepository: NoteRepository,
+    private val listRepository: ListRepository
 ) : ViewModel() {
 
     private val _notesUiState = MutableStateFlow(getEmptyNotesUiState())
     val notesUiState: StateFlow<NotesUiState> = _notesUiState.asStateFlow()
 
-    var notesMutableState by mutableStateOf(getEmptyNotesUiState())
-        private set
-
     private val _listsUiState = MutableStateFlow(getEmptyListsUiState())
     val listsUiState: StateFlow<ListsUiState> = _listsUiState.asStateFlow()
+
+    private val _screenModeState = MutableStateFlow(ScreenMode.Normal)
+    val screenModeState: StateFlow<ScreenMode> = _screenModeState.asStateFlow()
 
     init {
         displayNotes()
@@ -67,7 +65,7 @@ class MainViewModel(
 
     private fun getEmptyNotesUiState() = NotesUiState(
         notes = emptyList(),
-        mode = NotesMode.View
+        mode = EditMode.View
     )
 
     private fun getEmptyListsUiState() = ListsUiState(
@@ -78,7 +76,7 @@ class MainViewModel(
             timestamp = 0L
         ),
         lists = emptyList(),
-        mode = NotesMode.View
+        mode = EditMode.View
     )
 
     private fun getListsUiState(selectedListId: Int, lists: List<ListEntity>): ListsUiState {
@@ -89,7 +87,7 @@ class MainViewModel(
             ListsUiState(
                 selectedList = selectedList,
                 lists = lists,
-                mode = NotesMode.View
+                mode = EditMode.View
             )
         }
     }
@@ -119,9 +117,9 @@ class MainViewModel(
             val newNoteId = noteRepository.addNote(newNoteWithoutId).toInt()
             val newNote = newNoteWithoutId.copy(id = newNoteId)
 
-            if (_listsUiState.value.mode == NotesMode.View) {
-                _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.Edit(focusedNote = newNote))
-                _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.Edit(focusedNote = newNote))
+            if (_listsUiState.value.mode == EditMode.View) {
+                _notesUiState.value = _notesUiState.value.copy(mode = EditMode.Edit(focusedNote = newNote))
+                _listsUiState.value = _listsUiState.value.copy(mode = EditMode.Edit(focusedNote = newNote))
             }
         }
     }
@@ -169,14 +167,14 @@ class MainViewModel(
 
     fun onNoteClicked(note: NoteEntity) {
         // Enter Edit mode
-        _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.Edit(focusedNote = note))
-        _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.Edit(focusedNote = note))
+        _notesUiState.value = _notesUiState.value.copy(mode = EditMode.Edit(focusedNote = note))
+        _listsUiState.value = _listsUiState.value.copy(mode = EditMode.Edit(focusedNote = note))
     }
 
     fun onDoneIconClicked() {
         // Exit Edit mode, return to View mode
-        _notesUiState.value = _notesUiState.value.copy(mode = NotesMode.View)
-        _listsUiState.value = _listsUiState.value.copy(mode = NotesMode.View)
+        _notesUiState.value = _notesUiState.value.copy(mode = EditMode.View)
+        _listsUiState.value = _listsUiState.value.copy(mode = EditMode.View)
     }
 
     fun onNoteEdited(note: NoteEntity) {

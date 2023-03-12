@@ -23,13 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.database.Priority
-import com.anshmidt.notelist.ui.NotesMode
+import com.anshmidt.notelist.ui.uistate.EditMode
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun Notes(
     notes: List<NoteEntity>,
-    mode: NotesMode,
+    mode: EditMode,
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteDismissed: (NoteEntity) -> Unit,
@@ -82,7 +82,7 @@ fun Notes(
 @Composable
 private fun Note(
     noteEntity: NoteEntity,
-    mode: NotesMode,
+    mode: EditMode,
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
@@ -119,11 +119,11 @@ private fun Note(
 @Composable
 private fun NoteCardContent(
     note: NoteEntity,
-    mode: NotesMode,
+    mode: EditMode,
     onNoteEdited: (NoteEntity) -> Unit
 ) {
     when (mode) {
-        is NotesMode.Edit -> {
+        is EditMode.Edit -> {
             val focusRequester = remember { FocusRequester() }
             SideEffect {
                 if (mode.focusedNote == note) {
@@ -148,7 +148,7 @@ private fun NoteCardContent(
                     .padding(0.dp)
             )
         }
-        is NotesMode.View -> {
+        is EditMode.View -> {
             Text(
                 text = note.text,
                 modifier = Modifier

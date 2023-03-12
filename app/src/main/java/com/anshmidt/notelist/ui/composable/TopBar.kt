@@ -16,13 +16,15 @@ import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.R
 import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.ui.ListPreviewProvider
-import com.anshmidt.notelist.ui.NotesMode
+import com.anshmidt.notelist.ui.uistate.EditMode
+import com.anshmidt.notelist.ui.uistate.ScreenMode
 
 
 @Composable
 fun TopBar(
     lists: List<ListEntity>,
-    mode: NotesMode,
+    editMode: EditMode,
+    screenMode: ScreenMode,
     @PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity,
     onListSelected: (ListEntity) -> Unit,
     onMoveListToTrashClicked: (ListEntity) -> Unit,
@@ -35,15 +37,16 @@ fun TopBar(
     TopAppBar(
         elevation = 0.dp,
         title = {
-            ListMenu(
-                items = lists,
-                defaultSelectedItem = selectedList,
+            TopBarTitle(
+                screenMode = screenMode,
+                lists = lists,
+                selectedList = selectedList,
                 onListSelected = onListSelected,
                 onAddNewListButtonClicked = onAddNewListButtonClicked
             )
         },
         backgroundColor = Color.Transparent,
-        navigationIcon = if (mode is NotesMode.Edit) {{
+        navigationIcon = if (editMode is EditMode.Edit) {{
             DoneIcon(onDoneIconClicked)
         }} else null,
         actions = {
@@ -89,6 +92,29 @@ fun TopBar(
             }
         }
     )
+}
+
+@Composable
+private fun TopBarTitle(
+    screenMode: ScreenMode,
+    lists: List<ListEntity>,
+    selectedList: ListEntity,
+    onListSelected: (ListEntity) -> Unit,
+    onAddNewListButtonClicked: () -> Unit
+) {
+    when (screenMode) {
+        ScreenMode.Normal -> {
+            ListMenu(
+                items = lists,
+                defaultSelectedItem = selectedList,
+                onListSelected = onListSelected,
+                onAddNewListButtonClicked = onAddNewListButtonClicked
+            )
+        }
+        ScreenMode.Trash -> {
+            SelectedListTitle(listTitle = stringResource(id = R.string.trash_screen_title))
+        }
+    }
 }
 
 @Composable

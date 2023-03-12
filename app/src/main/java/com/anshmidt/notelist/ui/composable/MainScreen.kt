@@ -27,6 +27,7 @@ fun MainScreen(
 ) {
     val listsUiState by viewModel.listsUiState.collectAsState()
     val notesUiState by viewModel.notesUiState.collectAsState()
+    val screenModeState by viewModel.screenModeState.collectAsState()
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -63,7 +64,8 @@ fun MainScreen(
             topBar = {
                 TopBar(
                     lists = listsUiState.lists,
-                    mode = listsUiState.mode,
+                    editMode = listsUiState.mode,
+                    screenMode = screenModeState,
                     selectedList = listsUiState.selectedList,
                     onMoveListToTrashClicked = { selectedList ->
                         viewModel.onMoveListToTrashClicked(selectedList)
