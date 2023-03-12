@@ -1,5 +1,8 @@
 package com.anshmidt.notelist.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshmidt.notelist.database.DefaultData
@@ -23,6 +26,9 @@ class MainViewModel(
 
     private val _notesUiState = MutableStateFlow(getEmptyNotesUiState())
     val notesUiState: StateFlow<NotesUiState> = _notesUiState.asStateFlow()
+
+    var notesMutableState by mutableStateOf(getEmptyNotesUiState())
+        private set
 
     private val _listsUiState = MutableStateFlow(getEmptyListsUiState())
     val listsUiState: StateFlow<ListsUiState> = _listsUiState.asStateFlow()

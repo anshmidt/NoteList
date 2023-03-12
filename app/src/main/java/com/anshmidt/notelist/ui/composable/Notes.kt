@@ -130,11 +130,11 @@ private fun NoteCardContent(
                     focusRequester.requestFocus()
                 }
             }
-            //var text by remember { mutableStateOf(note.text) }
+            var text by remember { mutableStateOf(note.text) }
             OutlinedTextField(
-                value = note.text,
+                value = text,
                 onValueChange = { newText ->
-                    //text = newText
+                    text = newText
                     val editedNote = note.copy(text = newText)
                     onNoteEdited(editedNote)
                 },
