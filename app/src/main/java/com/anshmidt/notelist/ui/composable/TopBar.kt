@@ -30,7 +30,9 @@ fun TopBar(
     onMoveListToTrashClicked: (ListEntity) -> Unit,
     onAddNewListButtonClicked: () -> Unit,
     onDoneIconClicked: () -> Unit,
-    onRenameListIconClicked: () -> Unit
+    onUpIconClicked: () -> Unit,
+    onRenameListIconClicked: () -> Unit,
+    onOpenTrashClicked: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -46,9 +48,12 @@ fun TopBar(
             )
         },
         backgroundColor = Color.Transparent,
-        navigationIcon = if (editMode is EditMode.Edit) {{
-            DoneIcon(onDoneIconClicked)
-        }} else null,
+        navigationIcon = NavigationIconOrNull(
+            screenMode = screenMode,
+            editMode = editMode,
+            onDoneIconClicked = onDoneIconClicked,
+            onUpIconClicked = onUpIconClicked
+        ),
         actions = {
             SearchIcon()
             MoreIcon(onClick = {
@@ -77,7 +82,10 @@ fun TopBar(
                 MenuItem(
                     icon = Icons.Outlined.DeleteSweep,
                     text = stringResource(R.string.menu_title_open_trash),
-                    onClick = {}
+                    onClick = {
+                        isMenuExpanded = false
+                        onOpenTrashClicked()
+                    }
                 )
                 MenuItem(
                     icon = Icons.Outlined.ContentCopy,
@@ -150,6 +158,17 @@ private fun DoneIcon(onDoneIconClicked: () -> Unit) {
 }
 
 @Composable
+private fun UpIcon(onUpIconClicked: () -> Unit) {
+    IconButton(onClick = onUpIconClicked) {
+        Icon(
+            imageVector = Icons.Filled.ArrowBack,
+            contentDescription = null,
+            tint = MaterialTheme.colors.primary
+        )
+    }
+}
+
+@Composable
 private fun MoreIcon(onClick: () -> Unit) {
     IconButton(onClick = onClick) {
         Icon(
@@ -158,4 +177,17 @@ private fun MoreIcon(onClick: () -> Unit) {
             tint = MaterialTheme.colors.primary
         )
     }
+}
+
+private fun NavigationIconOrNull(
+    screenMode: ScreenMode,
+    editMode: EditMode,
+    onDoneIconClicked: () -> Unit,
+    onUpIconClicked: () -> Unit
+): @Composable (() -> Unit)? {
+    return if (editMode is EditMode.Edit) {{
+        DoneIcon(onDoneIconClicked)
+    }} else if (screenMode is ScreenMode.Trash) {{
+        UpIcon(onUpIconClicked)
+    }} else null
 }

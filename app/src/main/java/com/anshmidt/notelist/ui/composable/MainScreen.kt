@@ -77,9 +77,11 @@ fun MainScreen(
                         newListNameDialogOpened = !newListNameDialogOpened
                     },
                     onDoneIconClicked = viewModel::onDoneIconClicked,
+                    onUpIconClicked = viewModel::onUpIconClicked,
                     onRenameListIconClicked = {
                         renameListDialogOpened = !renameListDialogOpened
-                    }
+                    },
+                    onOpenTrashClicked = viewModel::onOpenTrashClicked
                 )
             },
             floatingActionButton = {

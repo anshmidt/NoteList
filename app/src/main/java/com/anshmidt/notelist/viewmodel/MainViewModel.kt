@@ -7,8 +7,8 @@ import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
-import com.anshmidt.notelist.ui.uistate.ListsUiState
 import com.anshmidt.notelist.ui.uistate.EditMode
+import com.anshmidt.notelist.ui.uistate.ListsUiState
 import com.anshmidt.notelist.ui.uistate.NotesUiState
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +28,7 @@ class MainViewModel(
     private val _listsUiState = MutableStateFlow(getEmptyListsUiState())
     val listsUiState: StateFlow<ListsUiState> = _listsUiState.asStateFlow()
 
-    private val _screenModeState = MutableStateFlow(ScreenMode.Normal)
+    private val _screenModeState: MutableStateFlow<ScreenMode> = MutableStateFlow(ScreenMode.Normal)
     val screenModeState: StateFlow<ScreenMode> = _screenModeState.asStateFlow()
 
     init {
@@ -177,10 +177,22 @@ class MainViewModel(
         _listsUiState.value = _listsUiState.value.copy(mode = EditMode.View)
     }
 
+    fun onUpIconClicked() {
+        // Return to Normal mode
+        _screenModeState.value = ScreenMode.Normal
+    }
+
     fun onNoteEdited(note: NoteEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.updateNote(note)
         }
+    }
+
+    fun onOpenTrashClicked() {
+        _screenModeState.value = ScreenMode.Trash
+        // Exit Edit mode if needed
+        _notesUiState.value = _notesUiState.value.copy(mode = EditMode.View)
+        _listsUiState.value = _listsUiState.value.copy(mode = EditMode.View)
     }
 
     companion object {
