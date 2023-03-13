@@ -32,7 +32,7 @@ data class NoteEntity(
     val inTrash: Boolean = false
 ) {
     @Ignore
-    val listName: String? = null
+    var listName: String? = null
 
     companion object {
         const val TABLE_NAME = "notes"

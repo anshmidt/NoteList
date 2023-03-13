@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.anshmidt.notelist.database.DefaultData
 import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.database.NoteEntity
+import com.anshmidt.notelist.database.toNoteEntity
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.ui.uistate.ListsUiState
@@ -44,6 +45,18 @@ class MainViewModel(
                 notes = notes
             )
         }.launchIn(viewModelScope + Dispatchers.IO)
+    }
+
+    private fun displayNotesInTrash() {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.getAllNotesInTrash().first { notesWithListEntity ->
+                val notes = notesWithListEntity.map { noteWithListEntity ->
+                    noteWithListEntity.toNoteEntity()
+                }
+                _notesUiState.value = NotesUiState(notes = notes)
+                return@first true
+            }
+        }
     }
 
     private fun displayLists() {
@@ -169,8 +182,9 @@ class MainViewModel(
     }
 
     fun onUpIconClicked() {
-        // Return to View mode
+        // Return from Trash mode to View mode
         _screenModeState.value = ScreenMode.View
+        displayNotes()
     }
 
     fun onNoteEdited(note: NoteEntity) {
@@ -181,6 +195,7 @@ class MainViewModel(
 
     fun onOpenTrashClicked() {
         _screenModeState.value = ScreenMode.Trash
+        displayNotesInTrash()
     }
 
     companion object {
