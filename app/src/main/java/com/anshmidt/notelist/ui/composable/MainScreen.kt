@@ -64,7 +64,6 @@ fun MainScreen(
             topBar = {
                 TopBar(
                     lists = listsUiState.lists,
-                    editMode = listsUiState.mode,
                     screenMode = screenModeState,
                     selectedList = listsUiState.selectedList,
                     onMoveListToTrashClicked = { selectedList ->
@@ -92,7 +91,7 @@ fun MainScreen(
             content = { padding ->
                 Notes(
                     notes = notesUiState.notes,
-                    mode = notesUiState.mode,
+                    screenMode = screenModeState,
                     onNoteClicked = { clickedNote ->
                         viewModel.onNoteClicked(clickedNote)
                     },

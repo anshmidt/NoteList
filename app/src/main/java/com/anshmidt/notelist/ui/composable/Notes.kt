@@ -23,13 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.database.Priority
-import com.anshmidt.notelist.ui.uistate.EditMode
+import com.anshmidt.notelist.ui.uistate.ScreenMode
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun Notes(
     notes: List<NoteEntity>,
-    mode: EditMode,
+    screenMode: ScreenMode,
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteDismissed: (NoteEntity) -> Unit,
@@ -62,7 +62,7 @@ fun Notes(
                 dismissContent = {
                     Note(
                         noteEntity = noteEntity,
-                        mode = mode,
+                        screenMode = screenMode,
                         onNoteClicked = onNoteClicked,
                         onNoteLongClicked = onNoteLongClicked,
                         onNoteEdited = onNoteEdited,
@@ -82,7 +82,7 @@ fun Notes(
 @Composable
 private fun Note(
     noteEntity: NoteEntity,
-    mode: EditMode,
+    screenMode: ScreenMode,
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
@@ -110,7 +110,7 @@ private fun Note(
     ) {
         NoteCardContent(
             note = noteEntity,
-            mode = mode,
+            screenMode = screenMode,
             onNoteEdited = onNoteEdited
         )
     }
@@ -119,14 +119,14 @@ private fun Note(
 @Composable
 private fun NoteCardContent(
     note: NoteEntity,
-    mode: EditMode,
+    screenMode: ScreenMode,
     onNoteEdited: (NoteEntity) -> Unit
 ) {
-    when (mode) {
-        is EditMode.Edit -> {
+    when (screenMode) {
+        is ScreenMode.Edit -> {
             val focusRequester = remember { FocusRequester() }
             SideEffect {
-                if (mode.focusedNote == note) {
+                if (screenMode.focusedNote == note) {
                     focusRequester.requestFocus()
                 }
             }
@@ -148,7 +148,7 @@ private fun NoteCardContent(
                     .padding(0.dp)
             )
         }
-        is EditMode.View -> {
+        is ScreenMode.View, ScreenMode.Trash -> {
             Text(
                 text = note.text,
                 modifier = Modifier

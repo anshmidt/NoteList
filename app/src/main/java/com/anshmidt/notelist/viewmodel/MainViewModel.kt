@@ -7,7 +7,6 @@ import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
-import com.anshmidt.notelist.ui.uistate.EditMode
 import com.anshmidt.notelist.ui.uistate.ListsUiState
 import com.anshmidt.notelist.ui.uistate.NotesUiState
 import com.anshmidt.notelist.ui.uistate.ScreenMode
@@ -28,7 +27,7 @@ class MainViewModel(
     private val _listsUiState = MutableStateFlow(getEmptyListsUiState())
     val listsUiState: StateFlow<ListsUiState> = _listsUiState.asStateFlow()
 
-    private val _screenModeState: MutableStateFlow<ScreenMode> = MutableStateFlow(ScreenMode.Normal)
+    private val _screenModeState: MutableStateFlow<ScreenMode> = MutableStateFlow(ScreenMode.View)
     val screenModeState: StateFlow<ScreenMode> = _screenModeState.asStateFlow()
 
     init {
@@ -41,10 +40,8 @@ class MainViewModel(
         listRepository.getLastOpenedListId().flatMapLatest { lastOpenedListId ->
             noteRepository.getNotesInList(lastOpenedListId)
         }.onEach { notes ->
-            val currentMode = _notesUiState.value.mode
             _notesUiState.value = NotesUiState(
-                notes = notes,
-                mode = currentMode
+                notes = notes
             )
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
@@ -64,8 +61,7 @@ class MainViewModel(
     }
 
     private fun getEmptyNotesUiState() = NotesUiState(
-        notes = emptyList(),
-        mode = EditMode.View
+        notes = emptyList()
     )
 
     private fun getEmptyListsUiState() = ListsUiState(
@@ -75,8 +71,7 @@ class MainViewModel(
             inTrash = false,
             timestamp = 0L
         ),
-        lists = emptyList(),
-        mode = EditMode.View
+        lists = emptyList()
     )
 
     private fun getListsUiState(selectedListId: Int, lists: List<ListEntity>): ListsUiState {
@@ -86,8 +81,7 @@ class MainViewModel(
         } else {
             ListsUiState(
                 selectedList = selectedList,
-                lists = lists,
-                mode = EditMode.View
+                lists = lists
             )
         }
     }
@@ -117,9 +111,8 @@ class MainViewModel(
             val newNoteId = noteRepository.addNote(newNoteWithoutId).toInt()
             val newNote = newNoteWithoutId.copy(id = newNoteId)
 
-            if (_listsUiState.value.mode == EditMode.View) {
-                _notesUiState.value = _notesUiState.value.copy(mode = EditMode.Edit(focusedNote = newNote))
-                _listsUiState.value = _listsUiState.value.copy(mode = EditMode.Edit(focusedNote = newNote))
+            if (_screenModeState.value == ScreenMode.View) {
+                _screenModeState.value = ScreenMode.Edit(focusedNote = newNote)
             }
         }
     }
@@ -166,20 +159,18 @@ class MainViewModel(
     }
 
     fun onNoteClicked(note: NoteEntity) {
-        // Enter Edit mode
-        _notesUiState.value = _notesUiState.value.copy(mode = EditMode.Edit(focusedNote = note))
-        _listsUiState.value = _listsUiState.value.copy(mode = EditMode.Edit(focusedNote = note))
+        // Switch to Edit mode
+        _screenModeState.value = ScreenMode.Edit(focusedNote = note)
     }
 
     fun onDoneIconClicked() {
         // Exit Edit mode, return to View mode
-        _notesUiState.value = _notesUiState.value.copy(mode = EditMode.View)
-        _listsUiState.value = _listsUiState.value.copy(mode = EditMode.View)
+        _screenModeState.value = ScreenMode.View
     }
 
     fun onUpIconClicked() {
-        // Return to Normal mode
-        _screenModeState.value = ScreenMode.Normal
+        // Return to View mode
+        _screenModeState.value = ScreenMode.View
     }
 
     fun onNoteEdited(note: NoteEntity) {
@@ -190,9 +181,6 @@ class MainViewModel(
 
     fun onOpenTrashClicked() {
         _screenModeState.value = ScreenMode.Trash
-        // Exit Edit mode if needed
-        _notesUiState.value = _notesUiState.value.copy(mode = EditMode.View)
-        _listsUiState.value = _listsUiState.value.copy(mode = EditMode.View)
     }
 
     companion object {

@@ -16,14 +16,12 @@ import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.R
 import com.anshmidt.notelist.database.ListEntity
 import com.anshmidt.notelist.ui.ListPreviewProvider
-import com.anshmidt.notelist.ui.uistate.EditMode
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 
 
 @Composable
 fun TopBar(
     lists: List<ListEntity>,
-    editMode: EditMode,
     screenMode: ScreenMode,
     @PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity,
     onListSelected: (ListEntity) -> Unit,
@@ -50,7 +48,6 @@ fun TopBar(
         backgroundColor = Color.Transparent,
         navigationIcon = NavigationIconOrNull(
             screenMode = screenMode,
-            editMode = editMode,
             onDoneIconClicked = onDoneIconClicked,
             onUpIconClicked = onUpIconClicked
         ),
@@ -111,7 +108,7 @@ private fun TopBarTitle(
     onAddNewListButtonClicked: () -> Unit
 ) {
     when (screenMode) {
-        ScreenMode.Normal -> {
+        is ScreenMode.View, is ScreenMode.Edit -> {
             ListMenu(
                 items = lists,
                 defaultSelectedItem = selectedList,
@@ -119,7 +116,7 @@ private fun TopBarTitle(
                 onAddNewListButtonClicked = onAddNewListButtonClicked
             )
         }
-        ScreenMode.Trash -> {
+        is ScreenMode.Trash -> {
             SelectedListTitle(listTitle = stringResource(id = R.string.trash_screen_title))
         }
     }
@@ -181,11 +178,10 @@ private fun MoreIcon(onClick: () -> Unit) {
 
 private fun NavigationIconOrNull(
     screenMode: ScreenMode,
-    editMode: EditMode,
     onDoneIconClicked: () -> Unit,
     onUpIconClicked: () -> Unit
 ): @Composable (() -> Unit)? {
-    return if (editMode is EditMode.Edit) {{
+    return if (screenMode is ScreenMode.Edit) {{
         DoneIcon(onDoneIconClicked)
     }} else if (screenMode is ScreenMode.Trash) {{
         UpIcon(onUpIconClicked)
