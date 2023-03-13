@@ -108,7 +108,9 @@ private fun Note(
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .combinedClickable(
                 onClick = {
-                    onNoteClicked(noteEntity)
+                    if (screenMode is ScreenMode.View) {
+                        onNoteClicked(noteEntity)
+                    }
                 },
                 onLongClick = {
                     onNoteLongClicked(noteEntity)
