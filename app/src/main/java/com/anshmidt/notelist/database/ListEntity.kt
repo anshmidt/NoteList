@@ -4,26 +4,26 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = ListEntity.TABLE_NAME)
+@Entity(tableName = ListEntity.TABLE)
 data class ListEntity(
-    @ColumnInfo(name = ID_COLUMN_NAME)
+    @ColumnInfo(name = ID_COLUMN)
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    @ColumnInfo(name = NAME_COLUMN_NAME)
+    @ColumnInfo(name = NAME_COLUMN)
     val name: String,
 
-    @ColumnInfo(name = IN_TRASH_COLUMN_NAME)
+    @ColumnInfo(name = IN_TRASH_COLUMN)
     val inTrash: Boolean = false,
 
-    @ColumnInfo(name = TIMESTAMP_COLUMN_NAME)
+    @ColumnInfo(name = TIMESTAMP_COLUMN)
     val timestamp: Long
 ) {
     companion object {
-        const val TABLE_NAME = "lists"
-        const val ID_COLUMN_NAME = "id"
-        const val NAME_COLUMN_NAME = "name"
-        const val IN_TRASH_COLUMN_NAME = "in_trash"
-        const val TIMESTAMP_COLUMN_NAME = "timestamp"
+        const val TABLE = "lists"
+        const val ID_COLUMN = "id"
+        const val NAME_COLUMN = "name"
+        const val IN_TRASH_COLUMN = "in_trash"
+        const val TIMESTAMP_COLUMN = "timestamp"
     }
 }

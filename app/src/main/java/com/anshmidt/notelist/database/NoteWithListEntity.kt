@@ -9,16 +9,12 @@ import androidx.room.Embedded
 data class NoteWithListEntity(
     @Embedded
     val noteEntity: NoteEntity,
+
     @ColumnInfo(name = LIST_NAME_COLUMN)
-//    @Relation(
-//        entity = ListEntity::class,
-//        parentColumn = NoteEntity.LIST_ID_COLUMN_NAME,
-//        entityColumn = ListEntity.ID_COLUMN_NAME
-//    )
     val listName: String
 ) {
     companion object {
-        const val LIST_NAME_COLUMN = "listName"
+        const val LIST_NAME_COLUMN = "list_name"
     }
 }
 
