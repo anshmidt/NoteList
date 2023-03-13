@@ -41,34 +41,48 @@ fun Notes(
             items = notes,
             key = { it.id }
         ) { noteEntity ->
-            val dismissState = rememberDismissState(
-                confirmStateChange = {
-                    onNoteDismissed(noteEntity)
-                    true
-                }
-            )
             val isItemSelected = selectedItem?.let {
                 it.id == noteEntity.id
             } ?: false
 
-            SwipeToDismiss(
-                state = dismissState,
-                directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                background = {},
-                modifier = Modifier
-                    .animateItemPlacement(),
-                dismissContent = {
-                    Note(
-                        noteEntity = noteEntity,
-                        screenMode = screenMode,
-                        onNoteClicked = onNoteClicked,
-                        onNoteLongClicked = onNoteLongClicked,
-                        onNoteEdited = onNoteEdited,
-                        listState = listState,
-                        isSelected = isItemSelected
-                    )
-                }
-            )
+            // Swipe to dismiss disabled in Trash mode
+            if (screenMode is ScreenMode.Trash) {
+                Note(
+                    noteEntity = noteEntity,
+                    screenMode = screenMode,
+                    onNoteClicked = onNoteClicked,
+                    onNoteLongClicked = onNoteLongClicked,
+                    onNoteEdited = onNoteEdited,
+                    listState = listState,
+                    isSelected = isItemSelected
+                )
+            } else {
+                val dismissState = rememberDismissState(
+                    confirmStateChange = {
+                        onNoteDismissed(noteEntity)
+                        true
+                    }
+                )
+
+                SwipeToDismiss(
+                    state = dismissState,
+                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+                    background = {},
+                    modifier = Modifier
+                        .animateItemPlacement(),
+                    dismissContent = {
+                        Note(
+                            noteEntity = noteEntity,
+                            screenMode = screenMode,
+                            onNoteClicked = onNoteClicked,
+                            onNoteLongClicked = onNoteLongClicked,
+                            onNoteEdited = onNoteEdited,
+                            listState = listState,
+                            isSelected = isItemSelected
+                        )
+                    }
+                )
+            }
         }
         item {
             Spacer(Modifier.height(400.dp))
