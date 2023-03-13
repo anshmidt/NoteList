@@ -60,40 +60,51 @@ fun TopBar(
                 expanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false }
             ) {
-                MenuItem(
-                    icon = Icons.Outlined.Edit,
-                    text = stringResource(R.string.menu_title_rename_list),
-                    onClick = {
-                        isMenuExpanded = false
-                        onRenameListIconClicked()
-                    }
-                )
-                MenuItem(
-                    icon = Icons.Outlined.DeleteForever,
-                    text = stringResource(R.string.menu_title_move_list_to_trash),
-                    onClick = {
-                        isMenuExpanded = false
-                        onMoveListToTrashClicked(selectedList)
-                    }
-                )
-                MenuItem(
-                    icon = Icons.Outlined.DeleteSweep,
-                    text = stringResource(R.string.menu_title_open_trash),
-                    onClick = {
-                        isMenuExpanded = false
-                        onOpenTrashClicked()
-                    }
-                )
-                MenuItem(
-                    icon = Icons.Outlined.ContentCopy,
-                    text = stringResource(R.string.menu_title_copy_list_to_clipboard),
-                    onClick = {}
-                )
-                MenuItem(
-                    icon = Icons.Outlined.AddToPhotos,
-                    text = stringResource(R.string.menu_title_add_notes_from_clipboard),
-                    onClick = {}
-                )
+                if (screenMode == ScreenMode.Trash) {
+                    MenuItem(
+                        icon = Icons.Outlined.PlaylistRemove,
+                        text = stringResource(id = R.string.menu_title_empty_trash),
+                        onClick = {
+                            isMenuExpanded = false
+                            // TODO
+                        }
+                    )
+                } else {
+                    MenuItem(
+                        icon = Icons.Outlined.Edit,
+                        text = stringResource(R.string.menu_title_rename_list),
+                        onClick = {
+                            isMenuExpanded = false
+                            onRenameListIconClicked()
+                        }
+                    )
+                    MenuItem(
+                        icon = Icons.Outlined.DeleteForever,
+                        text = stringResource(R.string.menu_title_move_list_to_trash),
+                        onClick = {
+                            isMenuExpanded = false
+                            onMoveListToTrashClicked(selectedList)
+                        }
+                    )
+                    MenuItem(
+                        icon = Icons.Outlined.DeleteSweep,
+                        text = stringResource(R.string.menu_title_open_trash),
+                        onClick = {
+                            isMenuExpanded = false
+                            onOpenTrashClicked()
+                        }
+                    )
+                    MenuItem(
+                        icon = Icons.Outlined.ContentCopy,
+                        text = stringResource(R.string.menu_title_copy_list_to_clipboard),
+                        onClick = {}
+                    )
+                    MenuItem(
+                        icon = Icons.Outlined.AddToPhotos,
+                        text = stringResource(R.string.menu_title_add_notes_from_clipboard),
+                        onClick = {}
+                    )
+                }
             }
         }
     )
