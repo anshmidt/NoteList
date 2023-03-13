@@ -31,6 +31,9 @@ data class NoteEntity(
     @ColumnInfo(name = IN_TRASH_COLUMN_NAME)
     val inTrash: Boolean = false
 ) {
+    @Ignore
+    val listName: String? = null
+
     companion object {
         const val TABLE_NAME = "notes"
         const val ID_COLUMN_NAME = "id"

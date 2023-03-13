@@ -2,10 +2,7 @@ package com.anshmidt.notelist.ui.composable
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -21,6 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.database.Priority
 import com.anshmidt.notelist.ui.uistate.ScreenMode
@@ -118,6 +116,43 @@ private fun Note(
 
 @Composable
 private fun NoteCardContent(
+    note: NoteEntity,
+    screenMode: ScreenMode,
+    onNoteEdited: (NoteEntity) -> Unit
+) {
+    Column {
+        ListName(
+            listName = note.listName,
+            screenMode = screenMode
+        )
+        NoteText(
+            note = note,
+            screenMode = screenMode,
+            onNoteEdited = onNoteEdited
+        )
+    }
+}
+
+@Composable
+fun ListName(
+    listName: String?,
+    screenMode: ScreenMode
+) {
+    if (screenMode is ScreenMode.Trash) {
+        if (!listName.isNullOrEmpty()) {
+            Text(
+                text = listName,
+                fontSize = 14.sp,
+                color = MaterialTheme.colors.primary.copy(alpha = 0.4f),
+                modifier = Modifier
+                    .padding(top = 17.dp, bottom = 0.dp, start = 17.dp, end = 17.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun NoteText(
     note: NoteEntity,
     screenMode: ScreenMode,
     onNoteEdited: (NoteEntity) -> Unit
