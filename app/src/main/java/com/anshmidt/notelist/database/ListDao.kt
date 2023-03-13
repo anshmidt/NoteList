@@ -18,6 +18,10 @@ interface ListDao {
             "WHERE ${ListEntity.ID_COLUMN}=:listId")
     suspend fun moveListToTrash(listId: Int)
 
+    @Query("UPDATE ${ListEntity.TABLE} SET ${ListEntity.IN_TRASH_COLUMN}=0 "+
+            "WHERE ${ListEntity.ID_COLUMN}=:listId")
+    suspend fun removeListFromTrash(listId: Int)
+
     @Update
     suspend fun updateList(listEntity: ListEntity)
 

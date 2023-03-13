@@ -111,9 +111,15 @@ class MainViewModel(
     }
 
     fun onPutBackClicked(selectedNote: NoteEntity?) {
+        /**
+         * It's possible that list of the note is in trash.
+         * In order to avoid that, we mark the note as "not in trash",
+         * and we mark the list as "not in trash".
+         */
         selectedNote?.let { note ->
             viewModelScope.launch(Dispatchers.IO) {
                 noteRepository.removeNoteFromTrash(noteId = note.id)
+                listRepository.removeListFromTrash(listId = note.listId)
             }
         }
     }
