@@ -1,12 +1,10 @@
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.LowPriority
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,10 +20,25 @@ import com.anshmidt.notelist.database.convertToString
 import com.anshmidt.notelist.database.decrease
 import com.anshmidt.notelist.database.increase
 import com.anshmidt.notelist.ui.composable.getFontWeight
+import com.anshmidt.notelist.ui.uistate.ScreenMode
+
+@Composable
+fun BottomSheet(
+    screenMode: ScreenMode,
+    onPutBackClicked: () -> Unit
+) {
+    if (screenMode is ScreenMode.Trash) {
+        BottomSheetInTrashMode(
+            onPutBackClicked = onPutBackClicked
+        )
+    } else {
+        BottomSheetInViewMode()
+    }
+}
 
 @Preview
 @Composable
-fun BottomSheet() {
+private fun BottomSheetInViewMode() {
     Column(
         modifier = Modifier.padding(horizontal = 24.dp)
     ) {
@@ -43,6 +56,23 @@ fun BottomSheet() {
         BottomSheetItem(
             icon = Icons.Filled.ArrowForward,
             title = stringResource(R.string.move_title_bottom_sheet),
+            content = {}
+        )
+    }
+}
+
+@Composable
+private fun BottomSheetInTrashMode(onPutBackClicked: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 24.dp)
+            .clickable {
+                onPutBackClicked()
+            }
+    ) {
+        BottomSheetItem(
+            icon = Icons.Filled.Undo,
+            title = stringResource(R.string.put_back_bottom_sheet),
             content = {}
         )
     }

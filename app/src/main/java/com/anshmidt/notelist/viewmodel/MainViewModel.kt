@@ -41,22 +41,22 @@ class MainViewModel(
         listRepository.getLastOpenedListId().flatMapLatest { lastOpenedListId ->
             noteRepository.getNotesInList(lastOpenedListId)
         }.onEach { notes ->
-            _notesUiState.value = NotesUiState(
-                notes = notes
-            )
+            // Do nothing in case of Trash mode
+            if (_screenModeState.value !is ScreenMode.Trash) {
+                _notesUiState.value = NotesUiState(
+                    notes = notes
+                )
+            }
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
 
     private fun displayNotesInTrash() {
-        viewModelScope.launch(Dispatchers.IO) {
-            noteRepository.getAllNotesInTrash().first { notesWithListEntity ->
-                val notes = notesWithListEntity.map { noteWithListEntity ->
-                    noteWithListEntity.toNoteEntity()
-                }
-                _notesUiState.value = NotesUiState(notes = notes)
-                return@first true
+        noteRepository.getAllNotesInTrash().onEach { notesWithListEntity ->
+            val notes = notesWithListEntity.map { noteWithListEntity ->
+                noteWithListEntity.toNoteEntity()
             }
-        }
+            _notesUiState.value = NotesUiState(notes = notes)
+        }.launchIn(viewModelScope + Dispatchers.IO)
     }
 
     private fun displayLists() {
@@ -108,6 +108,14 @@ class MainViewModel(
 
     fun onNoteDismissed(note: NoteEntity) {
         deleteNote(note = note)
+    }
+
+    fun onPutBackClicked(selectedNote: NoteEntity?) {
+        selectedNote?.let { note ->
+            viewModelScope.launch(Dispatchers.IO) {
+                noteRepository.removeNoteFromTrash(noteId = note.id)
+            }
+        }
     }
 
     fun onAddNoteButtonClicked() {

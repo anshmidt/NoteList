@@ -32,6 +32,10 @@ interface NoteDao {
             "WHERE ${NoteEntity.ID_COLUMN}=:noteId")
     suspend fun moveNoteToTrash(noteId: Int)
 
+    @Query("UPDATE ${NoteEntity.TABLE} SET ${NoteEntity.IN_TRASH_COLUMN}=0 "+
+            "WHERE ${NoteEntity.ID_COLUMN}=:noteId")
+    suspend fun removeNoteFromTrash(noteId: Int)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addNote(noteEntity: NoteEntity): Long
 

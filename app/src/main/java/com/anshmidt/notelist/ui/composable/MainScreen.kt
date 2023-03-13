@@ -57,7 +57,13 @@ fun MainScreen(
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        sheetContent = { BottomSheet() },
+        sheetContent = { BottomSheet(
+            screenMode = screenModeState,
+            onPutBackClicked = {
+                coroutineScope.launch { bottomSheetState.hide() }
+                viewModel.onPutBackClicked(selectedNote)
+            }
+        ) },
         modifier = Modifier.fillMaxSize()
     ) {
         Scaffold(

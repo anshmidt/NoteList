@@ -7,8 +7,10 @@
     <string name="menu_title_open_trash">Open Trash</string>
     <string name="trash_screen_title">Trash</string>
     <string name="button_add_new_list">Add new list</string>
+
     <string name="move_title_bottom_sheet">Move</string>
     <string name="priority_title_bottom_sheet">Priority</string>
+    <string name="put_back_bottom_sheet">Put back from trash</string>
 
     <string name="list_name_dialog_title">Enter list name:</string>
     <string name="list_name_dialog_positive_button">OK</string>

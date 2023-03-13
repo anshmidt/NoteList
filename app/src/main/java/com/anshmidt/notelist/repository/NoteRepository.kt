@@ -40,6 +40,10 @@ class NoteRepository(
         appDatabase.noteDao().moveNoteToTrash(noteId = noteId)
     }
 
+    suspend fun removeNoteFromTrash(noteId: Int) {
+        appDatabase.noteDao().removeNoteFromTrash(noteId = noteId)
+    }
+
     suspend fun addNote(note: NoteEntity): Long = appDatabase.noteDao().addNote(note)
 
     suspend fun updateNote(note: NoteEntity) {
