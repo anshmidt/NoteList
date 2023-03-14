@@ -212,6 +212,15 @@ class MainViewModel(
         displayNotesInTrash()
     }
 
+    fun onNoteMovedToAnotherList(selectedList: ListEntity, selectedNote: NoteEntity?) {
+        if (selectedNote == null) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedNote = selectedNote.copy(listId = selectedList.id)
+            noteRepository.updateNote(updatedNote)
+        }
+    }
+
     companion object {
         val TAG = MainViewModel::class.java.simpleName
     }

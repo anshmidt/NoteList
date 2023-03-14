@@ -1,5 +1,6 @@
 package com.anshmidt.notelist.ui.composable
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
@@ -70,7 +71,11 @@ private fun MoveNoteDialogContent(
         ) { key ->
             Text(
                 text = lists[key].name,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                modifier = Modifier
+                    .padding(horizontal = 24.dp, vertical = 10.dp)
+                    .clickable {
+                        onListSelected(lists[key])
+                    }
             )
         }
     }

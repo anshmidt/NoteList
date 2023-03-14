@@ -58,12 +58,12 @@ fun MainScreen(
         sheetContent = { BottomSheet(
             screenMode = screenModeState,
             onPutBackClicked = {
-                coroutineScope.launch { bottomSheetState.hide() }
                 viewModel.onPutBackClicked(selectedNote)
+                coroutineScope.launch { bottomSheetState.hide() }
             },
             onMoveClicked = {
-                coroutineScope.launch { bottomSheetState.hide() }
                 moveNoteDialogOpened = true
+                coroutineScope.launch { bottomSheetState.hide() }
             }
         ) },
         modifier = Modifier.fillMaxSize()
@@ -149,7 +149,10 @@ fun MainScreen(
     if (moveNoteDialogOpened) {
         MoveNoteDialog(
             lists = listsUiState.lists,
-            onListSelected = {},
+            onListSelected = { selectedList ->
+                moveNoteDialogOpened = false
+                viewModel.onNoteMovedToAnotherList(selectedList, selectedNote)
+            },
             onDialogDismissed = {
                 moveNoteDialogOpened = false
             }
