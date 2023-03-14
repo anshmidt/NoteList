@@ -17,6 +17,8 @@
     <string name="list_name_dialog_positive_button">OK</string>
     <string name="list_name_dialog_negative_button">Cancel</string>
 
+    <string name="move_note_dialog_title">Move note to another list:</string>
+
     <string name="default_data_list_name">My first list</string>
     <string name="default_data_note_text">My first note</string>
 

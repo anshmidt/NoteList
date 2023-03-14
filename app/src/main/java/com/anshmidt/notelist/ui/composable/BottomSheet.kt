@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
@@ -25,20 +24,24 @@ import com.anshmidt.notelist.ui.uistate.ScreenMode
 @Composable
 fun BottomSheet(
     screenMode: ScreenMode,
-    onPutBackClicked: () -> Unit
+    onPutBackClicked: () -> Unit,
+    onMoveClicked: () -> Unit
 ) {
     if (screenMode is ScreenMode.Trash) {
         BottomSheetInTrashMode(
             onPutBackClicked = onPutBackClicked
         )
     } else {
-        BottomSheetInViewMode()
+        BottomSheetInViewMode(
+            onMoveClicked = onMoveClicked
+        )
     }
 }
 
-@Preview
 @Composable
-private fun BottomSheetInViewMode() {
+private fun BottomSheetInViewMode(
+    onMoveClicked: () -> Unit
+) {
     Column(
         modifier = Modifier.padding(horizontal = 24.dp)
     ) {
@@ -56,7 +59,8 @@ private fun BottomSheetInViewMode() {
         BottomSheetItem(
             icon = Icons.Filled.ArrowForward,
             title = stringResource(R.string.move_title_bottom_sheet),
-            content = {}
+            content = {},
+            onClick = onMoveClicked
         )
     }
 }
@@ -66,14 +70,12 @@ private fun BottomSheetInTrashMode(onPutBackClicked: () -> Unit) {
     Column(
         modifier = Modifier
             .padding(horizontal = 24.dp)
-            .clickable {
-                onPutBackClicked()
-            }
     ) {
         BottomSheetItem(
             icon = Icons.Filled.Undo,
             title = stringResource(R.string.put_back_bottom_sheet),
-            content = {}
+            content = {},
+            onClick = onPutBackClicked
         )
     }
 }
@@ -82,13 +84,15 @@ private fun BottomSheetInTrashMode(onPutBackClicked: () -> Unit) {
 private fun BottomSheetItem(
     icon: ImageVector,
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
-            .background(color = MaterialTheme.colors.background),
+            .background(color = MaterialTheme.colors.background)
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

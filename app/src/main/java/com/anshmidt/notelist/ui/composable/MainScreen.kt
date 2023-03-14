@@ -12,10 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.database.NoteEntity
-import com.anshmidt.notelist.ui.composable.AddNoteButton
-import com.anshmidt.notelist.ui.composable.ListNameDialog
-import com.anshmidt.notelist.ui.composable.Notes
-import com.anshmidt.notelist.ui.composable.TopBar
+import com.anshmidt.notelist.ui.composable.*
 import com.anshmidt.notelist.viewmodel.MainViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
@@ -38,6 +35,7 @@ fun MainScreen(
     val coroutineScope = rememberCoroutineScope()
     var newListNameDialogOpened by remember { mutableStateOf(false) }
     var renameListDialogOpened by remember { mutableStateOf(false) }
+    var moveNoteDialogOpened by remember { mutableStateOf(false) }
 
     BackHandler(bottomSheetState.isVisible) {
         coroutineScope.launch { bottomSheetState.hide() }
@@ -62,6 +60,10 @@ fun MainScreen(
             onPutBackClicked = {
                 coroutineScope.launch { bottomSheetState.hide() }
                 viewModel.onPutBackClicked(selectedNote)
+            },
+            onMoveClicked = {
+                coroutineScope.launch { bottomSheetState.hide() }
+                moveNoteDialogOpened = true
             }
         ) },
         modifier = Modifier.fillMaxSize()
@@ -142,6 +144,15 @@ fun MainScreen(
                 viewModel.onListRenamed(newListName = newListName)
             },
             currentListName = listsUiState.selectedList.name
+        )
+    }
+    if (moveNoteDialogOpened) {
+        MoveNoteDialog(
+            lists = listsUiState.lists,
+            onListSelected = {},
+            onDialogDismissed = {
+                moveNoteDialogOpened = false
+            }
         )
     }
 }
