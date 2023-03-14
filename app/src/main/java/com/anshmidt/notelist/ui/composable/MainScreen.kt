@@ -35,7 +35,7 @@ fun MainScreen(
     val coroutineScope = rememberCoroutineScope()
     var newListNameDialogOpened by remember { mutableStateOf(false) }
     var renameListDialogOpened by remember { mutableStateOf(false) }
-    var moveNoteDialogOpened by remember { mutableStateOf(false) }
+    var moveNoteDialogOpened by remember { mutableStateOf(Pair<Boolean, NoteEntity?>(false, null)) }
 
     BackHandler(bottomSheetState.isVisible) {
         coroutineScope.launch { bottomSheetState.hide() }
@@ -62,7 +62,7 @@ fun MainScreen(
                 coroutineScope.launch { bottomSheetState.hide() }
             },
             onMoveClicked = {
-                moveNoteDialogOpened = true
+                moveNoteDialogOpened = Pair(true, selectedNote)
                 coroutineScope.launch { bottomSheetState.hide() }
             }
         ) },
@@ -146,15 +146,15 @@ fun MainScreen(
             currentListName = listsUiState.selectedList.name
         )
     }
-    if (moveNoteDialogOpened) {
+    if (moveNoteDialogOpened.first) {
         MoveNoteDialog(
             lists = listsUiState.lists,
             onListSelected = { selectedList ->
-                moveNoteDialogOpened = false
-                viewModel.onNoteMovedToAnotherList(selectedList, selectedNote)
+                viewModel.onNoteMovedToAnotherList(selectedList, moveNoteDialogOpened.second)
+                moveNoteDialogOpened = Pair(false, null)
             },
             onDialogDismissed = {
-                moveNoteDialogOpened = false
+                moveNoteDialogOpened = Pair(false, null)
             }
         )
     }
