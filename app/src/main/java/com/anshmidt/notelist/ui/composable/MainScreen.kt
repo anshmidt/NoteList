@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.ui.composable.*
+import com.anshmidt.notelist.ui.uistate.MoveNoteDialogState
 import com.anshmidt.notelist.viewmodel.MainViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
@@ -35,7 +36,9 @@ fun MainScreen(
     val coroutineScope = rememberCoroutineScope()
     var newListNameDialogOpened by remember { mutableStateOf(false) }
     var renameListDialogOpened by remember { mutableStateOf(false) }
-    var moveNoteDialogOpened by remember { mutableStateOf(Pair<Boolean, NoteEntity?>(false, null)) }
+    var moveNoteDialogState by remember {
+        mutableStateOf(MoveNoteDialogState(false, null))
+    }
 
     BackHandler(bottomSheetState.isVisible) {
         coroutineScope.launch { bottomSheetState.hide() }
@@ -62,7 +65,7 @@ fun MainScreen(
                 coroutineScope.launch { bottomSheetState.hide() }
             },
             onMoveClicked = {
-                moveNoteDialogOpened = Pair(true, selectedNote)
+                moveNoteDialogState = MoveNoteDialogState(true, selectedNote)
                 coroutineScope.launch { bottomSheetState.hide() }
             }
         ) },
@@ -146,15 +149,15 @@ fun MainScreen(
             currentListName = listsUiState.selectedList.name
         )
     }
-    if (moveNoteDialogOpened.first) {
+    if (moveNoteDialogState.isOpened) {
         MoveNoteDialog(
             lists = listsUiState.lists,
             onListSelected = { selectedList ->
-                viewModel.onNoteMovedToAnotherList(selectedList, moveNoteDialogOpened.second)
-                moveNoteDialogOpened = Pair(false, null)
+                viewModel.onNoteMovedToAnotherList(selectedList, moveNoteDialogState.selectedNote)
+                moveNoteDialogState = MoveNoteDialogState(false, null)
             },
             onDialogDismissed = {
-                moveNoteDialogOpened = Pair(false, null)
+                moveNoteDialogState = MoveNoteDialogState(false, null)
             }
         )
     }
