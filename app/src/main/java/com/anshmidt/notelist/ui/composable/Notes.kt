@@ -3,10 +3,9 @@ package com.anshmidt.notelist.ui.composable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -15,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.database.Priority
 import com.anshmidt.notelist.ui.uistate.ScreenMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -36,57 +39,89 @@ fun Notes(
     modifier: Modifier
 ) {
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    //val bringIntoViewRequester = remember { BringIntoViewRequester() }
+
+//    LaunchedEffect(screenMode) {
+//        coroutineScope.launch {
+//            listState.scrollToItem(0)
+//        }
+//    }
+
     LazyColumn(modifier = modifier) {
-        items(
-            items = notes,
-            key = { it.id }
-        ) { noteEntity ->
-            val isItemSelected = selectedItem?.let {
-                it.id == noteEntity.id
-            } ?: false
+//        itemsIndexed(notes) { index, noteEntity ->
+//            key(index) {
+        itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
 
-            // Swipe to dismiss disabled in Trash mode
-            if (screenMode is ScreenMode.Trash) {
-                Note(
-                    noteEntity = noteEntity,
-                    screenMode = screenMode,
-                    onNoteClicked = onNoteClicked,
-                    onNoteLongClicked = onNoteLongClicked,
-                    onNoteEdited = onNoteEdited,
-                    listState = listState,
-                    isSelected = isItemSelected
-                )
-            } else {
-                val dismissState = rememberDismissState(
-                    confirmStateChange = {
-                        onNoteDismissed(noteEntity)
-                        true
-                    }
-                )
 
-                SwipeToDismiss(
-                    state = dismissState,
-                    directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
-                    background = {},
-                    modifier = Modifier
-                        .animateItemPlacement(),
-                    dismissContent = {
-                        Note(
-                            noteEntity = noteEntity,
-                            screenMode = screenMode,
-                            onNoteClicked = onNoteClicked,
-                            onNoteLongClicked = onNoteLongClicked,
-                            onNoteEdited = onNoteEdited,
-                            listState = listState,
-                            isSelected = isItemSelected
-                        )
+
+
+//        items(
+//            items = notes,
+//            key = { it.id }
+//        ) { noteEntity ->
+                val isItemSelected = selectedItem?.let {
+                    it.id == noteEntity.id
+                } ?: false
+
+                if (selectedItem != null) {
+                    LaunchedEffect(Unit) {
+                        coroutineScope.launch {
+                            listState.scrollToItem(index)
+                        }
                     }
-                )
+                }
+
+                // Swipe to dismiss disabled in Trash mode
+                if (screenMode is ScreenMode.Trash) {
+                    Note(
+                        noteEntity = noteEntity,
+                        screenMode = screenMode,
+                        onNoteClicked = onNoteClicked,
+                        onNoteLongClicked = onNoteLongClicked,
+                        onNoteEdited = onNoteEdited,
+                        listState = listState,
+                        isSelected = isItemSelected,
+                        coroutineScope = coroutineScope,
+                        onTextFieldFocused = {}
+                    )
+                } else {
+                    val dismissState = rememberDismissState(
+                        confirmStateChange = {
+                            onNoteDismissed(noteEntity)
+                            true
+                        }
+                    )
+
+                    SwipeToDismiss(
+                        state = dismissState,
+                        directions = setOf(
+                            DismissDirection.StartToEnd,
+                            DismissDirection.EndToStart
+                        ),
+                        background = {},
+                        modifier = Modifier
+                            .animateItemPlacement(),
+                        dismissContent = {
+                            Note(
+                                noteEntity = noteEntity,
+                                screenMode = screenMode,
+                                onNoteClicked = onNoteClicked,
+                                onNoteLongClicked = onNoteLongClicked,
+                                onNoteEdited = onNoteEdited,
+                                listState = listState,
+                                isSelected = isItemSelected,
+                                coroutineScope = coroutineScope,
+                                onTextFieldFocused = {}
+                            )
+                        }
+                    )
+                }
             }
-        }
-        item {
-            Spacer(Modifier.height(400.dp))
-        }
+//        }
+//        item {
+//            Spacer(Modifier.height(400.dp))
+//        }
     }
 }
 
@@ -99,9 +134,10 @@ private fun Note(
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
     isSelected: Boolean,
-    listState: LazyListState
+    listState: LazyListState,
+    coroutineScope: CoroutineScope,
+    onTextFieldFocused: (NoteEntity) -> Unit
 ) {
-    val coroutineScope = rememberCoroutineScope()
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,24 +153,40 @@ private fun Note(
                 }
             ),
         elevation = 4.dp,
-        backgroundColor = if (isSelected)
-            MaterialTheme.colors.onBackground.copy(alpha = 0.4f)
-        else
-            MaterialTheme.colors.background
+        backgroundColor = getNoteBackground(
+            isNoteSelected = isSelected,
+            screenMode = screenMode
+        )
     ) {
         NoteCardContent(
             note = noteEntity,
             screenMode = screenMode,
-            onNoteEdited = onNoteEdited
+            isNoteSelected = isSelected,
+            onNoteEdited = onNoteEdited,
+            listState = listState,
+            coroutineScope = coroutineScope,
+            onTextFieldFocused = onTextFieldFocused
         )
     }
+}
+
+@Composable
+private fun getNoteBackground(isNoteSelected: Boolean, screenMode: ScreenMode): Color {
+    return if (isNoteSelected && screenMode is ScreenMode.View)
+        MaterialTheme.colors.onBackground.copy(alpha = 0.4f)
+    else
+        MaterialTheme.colors.background
 }
 
 @Composable
 private fun NoteCardContent(
     note: NoteEntity,
     screenMode: ScreenMode,
-    onNoteEdited: (NoteEntity) -> Unit
+    isNoteSelected: Boolean,
+    onNoteEdited: (NoteEntity) -> Unit,
+    listState: LazyListState,
+    coroutineScope: CoroutineScope,
+    onTextFieldFocused: (NoteEntity) -> Unit
 ) {
     Column {
         ListName(
@@ -144,7 +196,11 @@ private fun NoteCardContent(
         NoteText(
             note = note,
             screenMode = screenMode,
-            onNoteEdited = onNoteEdited
+            isNoteSelected = isNoteSelected,
+            onNoteEdited = onNoteEdited,
+            listState = listState,
+            coroutineScope = coroutineScope,
+            onTextFieldFocused = onTextFieldFocused
         )
     }
 }
@@ -167,20 +223,34 @@ fun ListName(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteText(
     note: NoteEntity,
     screenMode: ScreenMode,
-    onNoteEdited: (NoteEntity) -> Unit
+    isNoteSelected: Boolean,
+    onNoteEdited: (NoteEntity) -> Unit,
+    listState: LazyListState,
+    coroutineScope: CoroutineScope,
+    onTextFieldFocused: (NoteEntity) -> Unit
 ) {
     when (screenMode) {
         is ScreenMode.Edit -> {
             val focusRequester = remember { FocusRequester() }
+            val bringIntoViewRequester = remember { BringIntoViewRequester() }
             SideEffect {
-                if (screenMode.focusedNote == note) {
-                    focusRequester.requestFocus()
+                if (isNoteSelected) {
+                    //focusRequester.requestFocus()
+                    coroutineScope.launch {
+                        bringIntoViewRequester.bringIntoView()
+                        delay(420)
+                        //bringIntoViewRequester.bringIntoView()
+                        focusRequester.requestFocus()
+                        //listState.animateScrollToItem(0, 0)
+                    }
                 }
             }
+
             var text by remember { mutableStateOf(note.text) }
             OutlinedTextField(
                 value = text,
@@ -196,8 +266,14 @@ fun NoteText(
                 ),
                 modifier = Modifier
                     .focusRequester(focusRequester)
+                    .bringIntoViewRequester(bringIntoViewRequester)
                     .padding(0.dp)
                     .fillMaxWidth()
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            onTextFieldFocused(note)
+                        }
+                    }
             )
         }
         is ScreenMode.View, ScreenMode.Trash -> {

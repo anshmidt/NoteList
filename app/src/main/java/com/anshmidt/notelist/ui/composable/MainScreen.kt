@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.ui.composable.*
 import com.anshmidt.notelist.ui.uistate.MoveNoteDialogState
 import com.anshmidt.notelist.viewmodel.MainViewModel
@@ -26,13 +25,11 @@ fun MainScreen(
     val listsUiState by viewModel.listsUiState.collectAsState()
     val notesUiState by viewModel.notesUiState.collectAsState()
     val screenModeState by viewModel.screenModeState.collectAsState()
+    val selectedNoteState by viewModel.selectedNoteState.collectAsState()
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
     )
-    var selectedNote: NoteEntity? by remember {
-        mutableStateOf(null)
-    }
     val coroutineScope = rememberCoroutineScope()
     var newListNameDialogOpened by remember { mutableStateOf(false) }
     var renameListDialogOpened by remember { mutableStateOf(false) }
@@ -50,7 +47,7 @@ fun MainScreen(
         snapshotFlow { bottomSheetState.currentValue }
             .collect {
                 if (bottomSheetState.currentValue == ModalBottomSheetValue.Hidden) {
-                    selectedNote = null
+                    viewModel.onNoteSelected(null)
                 }
             }
     }
@@ -61,11 +58,11 @@ fun MainScreen(
         sheetContent = { BottomSheet(
             screenMode = screenModeState,
             onPutBackClicked = {
-                viewModel.onPutBackClicked(selectedNote)
+                viewModel.onPutBackClicked(selectedNoteState)
                 coroutineScope.launch { bottomSheetState.hide() }
             },
             onMoveClicked = {
-                moveNoteDialogState = MoveNoteDialogState(true, selectedNote)
+                moveNoteDialogState = MoveNoteDialogState(true, selectedNoteState)
                 coroutineScope.launch { bottomSheetState.hide() }
             }
         ) },
@@ -111,7 +108,7 @@ fun MainScreen(
                             if (bottomSheetState.isVisible) bottomSheetState.hide()
                             else bottomSheetState.show()
                         }
-                        selectedNote = longClickedNote
+                        viewModel.onNoteSelected(longClickedNote)
                     },
                     onNoteDismissed = { dismissedNote ->
                         viewModel.onNoteDismissed(dismissedNote)
@@ -119,7 +116,7 @@ fun MainScreen(
                     onNoteEdited = { editedNote ->
                         viewModel.onNoteEdited(editedNote)
                     },
-                    selectedItem = selectedNote,
+                    selectedItem = selectedNoteState,
                     modifier = Modifier.padding(padding)
                 )
             }

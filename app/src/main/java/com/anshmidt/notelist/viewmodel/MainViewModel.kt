@@ -31,6 +31,10 @@ class MainViewModel(
     private val _screenModeState: MutableStateFlow<ScreenMode> = MutableStateFlow(ScreenMode.View)
     val screenModeState: StateFlow<ScreenMode> = _screenModeState.asStateFlow()
 
+    private val _selectedNoteState: MutableStateFlow<NoteEntity?> = MutableStateFlow(null)
+    val selectedNoteState: StateFlow<NoteEntity?> = _selectedNoteState.asStateFlow()
+
+
     init {
         displayNotes()
         displayLists()
@@ -141,7 +145,8 @@ class MainViewModel(
 
             if (_screenModeState.value is ScreenMode.View ||
                 _screenModeState.value is ScreenMode.Edit) {
-                _screenModeState.value = ScreenMode.Edit(focusedNote = newNote)
+                _screenModeState.value = ScreenMode.Edit
+                _selectedNoteState.value = newNote
             }
         }
     }
@@ -189,12 +194,18 @@ class MainViewModel(
 
     fun onNoteClicked(note: NoteEntity) {
         // Switch to Edit mode
-        _screenModeState.value = ScreenMode.Edit(focusedNote = note)
+        _screenModeState.value = ScreenMode.Edit
+        _selectedNoteState.value = note
+    }
+
+    fun onNoteSelected(note: NoteEntity?) {
+        _selectedNoteState.value = note
     }
 
     fun onDoneIconClicked() {
         // Exit Edit mode, return to View mode
         _screenModeState.value = ScreenMode.View
+        _selectedNoteState.value = null
         // Delete empty notes in current list
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.deleteEmptyNotes(listId = _listsUiState.value.selectedList.id)
