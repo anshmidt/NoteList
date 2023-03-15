@@ -194,6 +194,10 @@ class MainViewModel(
     fun onDoneIconClicked() {
         // Exit Edit mode, return to View mode
         _screenModeState.value = ScreenMode.View
+        // Delete empty notes in current list
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.deleteEmptyNotes(listId = _listsUiState.value.selectedList.id)
+        }
     }
 
     fun onUpIconClicked() {

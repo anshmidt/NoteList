@@ -58,7 +58,9 @@ class NoteRepository(
         appDatabase.noteDao().moveToTrashAllNotesFromList(listId = listId)
     }
 
-
+    suspend fun deleteEmptyNotes(listId: Int) {
+        appDatabase.noteDao().deleteEmptyNotes(listId = listId)
+    }
 
 
 }
