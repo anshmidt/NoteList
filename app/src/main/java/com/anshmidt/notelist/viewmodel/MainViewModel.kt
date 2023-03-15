@@ -43,8 +43,9 @@ class MainViewModel(
         }.onEach { notes ->
             // Do nothing in case of Trash mode
             if (_screenModeState.value !is ScreenMode.Trash) {
+                val sortedNotes = notes.sortedByDescending { it.timestamp }
                 _notesUiState.value = NotesUiState(
-                    notes = notes
+                    notes = sortedNotes
                 )
             }
         }.launchIn(viewModelScope + Dispatchers.IO)
@@ -208,7 +209,10 @@ class MainViewModel(
 
     fun onNoteEdited(note: NoteEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            noteRepository.updateNote(note)
+            // If the text of the note is edited, we update the timestamp
+            val currentTime = System.currentTimeMillis()
+            val noteWithUpdatedTime = note.copy(timestamp = currentTime)
+            noteRepository.updateNote(noteWithUpdatedTime)
         }
     }
 
