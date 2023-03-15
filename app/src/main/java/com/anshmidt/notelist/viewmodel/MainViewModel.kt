@@ -138,7 +138,8 @@ class MainViewModel(
             val newNoteId = noteRepository.addNote(newNoteWithoutId).toInt()
             val newNote = newNoteWithoutId.copy(id = newNoteId)
 
-            if (_screenModeState.value == ScreenMode.View) {
+            if (_screenModeState.value is ScreenMode.View ||
+                _screenModeState.value is ScreenMode.Edit) {
                 _screenModeState.value = ScreenMode.Edit(focusedNote = newNote)
             }
         }
