@@ -197,6 +197,7 @@ fun NoteText(
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .padding(0.dp)
+                    .fillMaxWidth()
             )
         }
         is ScreenMode.View, ScreenMode.Trash -> {
