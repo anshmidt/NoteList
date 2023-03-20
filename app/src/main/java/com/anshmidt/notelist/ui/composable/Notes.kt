@@ -23,7 +23,6 @@ import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.database.Priority
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -35,6 +34,7 @@ fun Notes(
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteDismissed: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
+    onNoteFocused: (NoteEntity) -> Unit,
     selectedItem: NoteEntity?,
     modifier: Modifier
 ) {
@@ -112,7 +112,7 @@ fun Notes(
                                 listState = listState,
                                 isSelected = isItemSelected,
                                 coroutineScope = coroutineScope,
-                                onTextFieldFocused = {}
+                                onTextFieldFocused = onNoteFocused
                             )
                         }
                     )
@@ -242,8 +242,9 @@ fun NoteText(
                 if (isNoteSelected) {
                     //focusRequester.requestFocus()
                     coroutineScope.launch {
+                        //delay(2420)
                         bringIntoViewRequester.bringIntoView()
-                        delay(420)
+                        //delay(420)
                         //bringIntoViewRequester.bringIntoView()
                         focusRequester.requestFocus()
                         //listState.animateScrollToItem(0, 0)
@@ -306,5 +307,9 @@ fun Priority.getFontWeight() = when(this) {
     Priority.MINOR -> FontWeight.Light
     Priority.NORMAL -> FontWeight.Normal
     Priority.MAJOR -> FontWeight.Bold
+}
+
+object Notes {
+    const val TAG = "NotesTag"
 }
 

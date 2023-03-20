@@ -116,6 +116,9 @@ fun MainScreen(
                     onNoteEdited = { editedNote ->
                         viewModel.onNoteEdited(editedNote)
                     },
+                    onNoteFocused = { focusedNote ->
+                        viewModel.onNoteSelected(focusedNote)
+                    },
                     selectedItem = selectedNoteState,
                     modifier = Modifier.padding(padding)
                 )
