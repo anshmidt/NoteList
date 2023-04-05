@@ -40,88 +40,72 @@ fun Notes(
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    //val bringIntoViewRequester = remember { BringIntoViewRequester() }
-
-//    LaunchedEffect(screenMode) {
-//        coroutineScope.launch {
-//            listState.scrollToItem(0)
-//        }
-//    }
 
     LazyColumn(modifier = modifier) {
-//        itemsIndexed(notes) { index, noteEntity ->
-//            key(index) {
+        // this first item fixes the issue with not scrolling automatically when new item added
+        item {
+            Spacer(Modifier.height(5.dp))
+        }
+
         itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
+            val isItemSelected = selectedItem?.let {
+                it.id == noteEntity.id
+            } ?: false
 
-
-
-
-//        items(
-//            items = notes,
-//            key = { it.id }
-//        ) { noteEntity ->
-                val isItemSelected = selectedItem?.let {
-                    it.id == noteEntity.id
-                } ?: false
-
-                if (selectedItem != null) {
-                    LaunchedEffect(Unit) {
-                        coroutineScope.launch {
-                            listState.scrollToItem(index)
-                        }
+            if (selectedItem != null) {
+                LaunchedEffect(Unit) {
+                    coroutineScope.launch {
+                        listState.scrollToItem(index)
                     }
                 }
-
-                // Swipe to dismiss disabled in Trash mode
-                if (screenMode is ScreenMode.Trash) {
-                    Note(
-                        noteEntity = noteEntity,
-                        screenMode = screenMode,
-                        onNoteClicked = onNoteClicked,
-                        onNoteLongClicked = onNoteLongClicked,
-                        onNoteEdited = onNoteEdited,
-                        listState = listState,
-                        isSelected = isItemSelected,
-                        coroutineScope = coroutineScope,
-                        onTextFieldFocused = {}
-                    )
-                } else {
-                    val dismissState = rememberDismissState(
-                        confirmStateChange = {
-                            onNoteDismissed(noteEntity)
-                            true
-                        }
-                    )
-
-                    SwipeToDismiss(
-                        state = dismissState,
-                        directions = setOf(
-                            DismissDirection.StartToEnd,
-                            DismissDirection.EndToStart
-                        ),
-                        background = {},
-                        modifier = Modifier
-                            .animateItemPlacement(),
-                        dismissContent = {
-                            Note(
-                                noteEntity = noteEntity,
-                                screenMode = screenMode,
-                                onNoteClicked = onNoteClicked,
-                                onNoteLongClicked = onNoteLongClicked,
-                                onNoteEdited = onNoteEdited,
-                                listState = listState,
-                                isSelected = isItemSelected,
-                                coroutineScope = coroutineScope,
-                                onTextFieldFocused = onNoteFocused
-                            )
-                        }
-                    )
-                }
             }
-//        }
-//        item {
-//            Spacer(Modifier.height(400.dp))
-//        }
+
+            // Swipe to dismiss disabled in Trash mode
+            if (screenMode is ScreenMode.Trash) {
+                Note(
+                    noteEntity = noteEntity,
+                    screenMode = screenMode,
+                    onNoteClicked = onNoteClicked,
+                    onNoteLongClicked = onNoteLongClicked,
+                    onNoteEdited = onNoteEdited,
+                    listState = listState,
+                    isSelected = isItemSelected,
+                    coroutineScope = coroutineScope,
+                    onTextFieldFocused = {}
+                )
+            } else {
+                val dismissState = rememberDismissState(
+                    confirmStateChange = {
+                        onNoteDismissed(noteEntity)
+                        true
+                    }
+                )
+
+                SwipeToDismiss(
+                    state = dismissState,
+                    directions = setOf(
+                        DismissDirection.StartToEnd,
+                        DismissDirection.EndToStart
+                    ),
+                    background = {},
+                    modifier = Modifier
+                        .animateItemPlacement(),
+                    dismissContent = {
+                        Note(
+                            noteEntity = noteEntity,
+                            screenMode = screenMode,
+                            onNoteClicked = onNoteClicked,
+                            onNoteLongClicked = onNoteLongClicked,
+                            onNoteEdited = onNoteEdited,
+                            listState = listState,
+                            isSelected = isItemSelected,
+                            coroutineScope = coroutineScope,
+                            onTextFieldFocused = onNoteFocused
+                        )
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -240,14 +224,9 @@ fun NoteText(
             val bringIntoViewRequester = remember { BringIntoViewRequester() }
             SideEffect {
                 if (isNoteSelected) {
-                    //focusRequester.requestFocus()
                     coroutineScope.launch {
-                        //delay(2420)
                         bringIntoViewRequester.bringIntoView()
-                        //delay(420)
-                        //bringIntoViewRequester.bringIntoView()
                         focusRequester.requestFocus()
-                        //listState.animateScrollToItem(0, 0)
                     }
                 }
             }
