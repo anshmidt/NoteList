@@ -241,8 +241,9 @@ private fun NoteCardContent(
     coroutineScope: CoroutineScope,
     onTextFieldFocused: (NoteEntity) -> Unit
 ) {
+    PriorityTag(priority = note.priority)
     Column {
-        PriorityTag(priority = note.priority)
+
         ListName(
             listName = note.listName,
             screenMode = screenMode
@@ -262,11 +263,23 @@ private fun NoteCardContent(
 @Composable
 fun PriorityTag(priority: Priority) {
     val text = when (priority) {
-        Priority.MAJOR -> "\uD83D\uDD34"
-        Priority.NORMAL -> "\uD83D\uDFE1"
-        Priority.MINOR -> "\uD83D\uDFE2"
+//        Priority.MAJOR -> "\uD83D\uDD34"
+        Priority.MAJOR -> "◘◘◘"
+//        Priority.MAJOR -> "⚑⚑⚑"
+//        Priority.NORMAL -> "\uD83D\uDFE1"
+        Priority.NORMAL -> "◘◘"
+//        Priority.NORMAL -> "⚑⚑"
+//        Priority.MINOR -> "\uD83D\uDFE2"
+        Priority.MINOR -> "◘"
+//        Priority.MINOR -> "⚑"
     }
-    Text(text = text, fontSize = 8.sp, modifier = Modifier.padding(4.dp))
+    Text(
+        text = text,
+        fontSize = 10.sp,
+        color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+        fontWeight = FontWeight.W900,
+        modifier = Modifier.padding(start = 4.dp, top = 2.dp)
+    )
 }
 
 @Composable
@@ -371,6 +384,7 @@ fun PriorityHeader(priority: Priority) {
     }
     Text(
         text = text.uppercase(),
+        fontSize = 12.sp,
         modifier = Modifier
             .padding(
                 start = 16.dp,
@@ -378,7 +392,7 @@ fun PriorityHeader(priority: Priority) {
                 top = 24.dp,
                 bottom = 0.dp
             ),
-        color = MaterialTheme.colors.onBackground.copy(alpha = 0.1f)
+        color = MaterialTheme.colors.onBackground.copy(alpha = 0.08f)
     )
 }
 
