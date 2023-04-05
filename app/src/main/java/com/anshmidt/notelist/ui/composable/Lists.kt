@@ -29,11 +29,13 @@ fun ListMenu(
     ) {
         SelectedListTitle(listTitle = defaultSelectedItem.name)
 
+        val sortedItems = items.sortedByDescending { it.timestamp }
+
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            items.forEach { item ->
+            sortedItems.forEach { item ->
                 // menu item
                 DropdownMenuItem(onClick = {
                     expanded = false

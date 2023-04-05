@@ -224,6 +224,10 @@ class MainViewModel(
             val currentTime = System.currentTimeMillis()
             val noteWithUpdatedTime = note.copy(timestamp = currentTime)
             noteRepository.updateNote(noteWithUpdatedTime)
+
+            // If the note is edited, we also update timestamp on the list
+            val listWithUpdatedTime = _listsUiState.value.selectedList.copy(timestamp = currentTime)
+            listRepository.updateList(listWithUpdatedTime)
         }
     }
 
