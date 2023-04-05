@@ -25,7 +25,8 @@ import com.anshmidt.notelist.ui.uistate.ScreenMode
 fun BottomSheet(
     screenMode: ScreenMode,
     onPutBackClicked: () -> Unit,
-    onMoveClicked: () -> Unit
+    onMoveClicked: () -> Unit,
+    onPriorityChanged: (Priority) -> Unit
 ) {
     if (screenMode is ScreenMode.Trash) {
         BottomSheetInTrashMode(
@@ -33,14 +34,16 @@ fun BottomSheet(
         )
     } else {
         BottomSheetInViewMode(
-            onMoveClicked = onMoveClicked
+            onMoveClicked = onMoveClicked,
+            onPriorityChanged = onPriorityChanged
         )
     }
 }
 
 @Composable
 private fun BottomSheetInViewMode(
-    onMoveClicked: () -> Unit
+    onMoveClicked: () -> Unit,
+    onPriorityChanged: (Priority) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 24.dp)
@@ -50,7 +53,7 @@ private fun BottomSheetInViewMode(
             title = stringResource(R.string.priority_title_bottom_sheet),
             content = {
                 Spacer(Modifier.weight(1f))
-                PrioritySelector()
+                PrioritySelector(onPriorityChanged = onPriorityChanged)
             }
         )
 
@@ -110,7 +113,7 @@ private fun BottomSheetItem(
 }
 
 @Composable
-private fun PrioritySelector() {
+private fun PrioritySelector(onPriorityChanged: (Priority) -> Unit) {
     var priority by remember {
         mutableStateOf(Priority.NORMAL)
     }
@@ -124,6 +127,7 @@ private fun PrioritySelector() {
             imageVector = Icons.Filled.KeyboardArrowDown,
             onClick = {
                 priority = priority.decrease()
+                onPriorityChanged(priority)
             }
         )
         Text(
@@ -135,6 +139,7 @@ private fun PrioritySelector() {
             imageVector = Icons.Filled.KeyboardArrowUp,
             onClick = {
                 priority = priority.increase()
+                onPriorityChanged(priority)
             }
         )
     }

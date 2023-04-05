@@ -2,10 +2,7 @@ package com.anshmidt.notelist.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshmidt.notelist.database.DefaultData
-import com.anshmidt.notelist.database.ListEntity
-import com.anshmidt.notelist.database.NoteEntity
-import com.anshmidt.notelist.database.toNoteEntity
+import com.anshmidt.notelist.database.*
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.ui.uistate.ListsUiState
@@ -238,9 +235,16 @@ class MainViewModel(
 
     fun onNoteMovedToAnotherList(selectedList: ListEntity, selectedNote: NoteEntity?) {
         if (selectedNote == null) return
-
         viewModelScope.launch(Dispatchers.IO) {
             val updatedNote = selectedNote.copy(listId = selectedList.id)
+            noteRepository.updateNote(updatedNote)
+        }
+    }
+
+    fun onPriorityChanged(selectedNote: NoteEntity?, priority: Priority) {
+        if (selectedNote == null) return
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedNote = selectedNote.copy(priority = priority)
             noteRepository.updateNote(updatedNote)
         }
     }

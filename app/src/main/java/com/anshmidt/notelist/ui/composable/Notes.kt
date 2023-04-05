@@ -16,9 +16,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.anshmidt.notelist.R
 import com.anshmidt.notelist.database.NoteEntity
 import com.anshmidt.notelist.database.Priority
 import com.anshmidt.notelist.ui.uistate.ScreenMode
@@ -47,64 +49,131 @@ fun Notes(
             Spacer(Modifier.height(5.dp))
         }
 
-        itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
-            val isItemSelected = selectedItem?.let {
-                it.id == noteEntity.id
-            } ?: false
+        lazyColumnItemsWithPriorityHeader(
+            lazyListScope = this,
+            priority = Priority.MAJOR,
+            notes = notes.filter { it.priority == Priority.MAJOR },
+            selectedItem = selectedItem,
+            coroutineScope = coroutineScope,
+            listState = listState,
+            screenMode = screenMode,
+            onNoteClicked = onNoteClicked,
+            onNoteLongClicked = onNoteLongClicked,
+            onNoteEdited = onNoteEdited,
+            onNoteDismissed = onNoteDismissed,
+            onNoteFocused = onNoteFocused
+        )
 
-            if (selectedItem != null) {
-                LaunchedEffect(Unit) {
-                    coroutineScope.launch {
-                        listState.scrollToItem(index)
-                    }
+        lazyColumnItemsWithPriorityHeader(
+            lazyListScope = this,
+            priority = Priority.NORMAL,
+            notes = notes.filter { it.priority == Priority.NORMAL },
+            selectedItem = selectedItem,
+            coroutineScope = coroutineScope,
+            listState = listState,
+            screenMode = screenMode,
+            onNoteClicked = onNoteClicked,
+            onNoteLongClicked = onNoteLongClicked,
+            onNoteEdited = onNoteEdited,
+            onNoteDismissed = onNoteDismissed,
+            onNoteFocused = onNoteFocused
+        )
+
+        lazyColumnItemsWithPriorityHeader(
+            lazyListScope = this,
+            priority = Priority.MINOR,
+            notes = notes.filter { it.priority == Priority.MINOR },
+            selectedItem = selectedItem,
+            coroutineScope = coroutineScope,
+            listState = listState,
+            screenMode = screenMode,
+            onNoteClicked = onNoteClicked,
+            onNoteLongClicked = onNoteLongClicked,
+            onNoteEdited = onNoteEdited,
+            onNoteDismissed = onNoteDismissed,
+            onNoteFocused = onNoteFocused
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+private fun lazyColumnItemsWithPriorityHeader(
+    lazyListScope: LazyListScope,
+    priority: Priority,
+    notes: List<NoteEntity>,
+    selectedItem: NoteEntity?,
+    coroutineScope: CoroutineScope,
+    listState: LazyListState,
+    screenMode: ScreenMode,
+    onNoteClicked: (NoteEntity) -> Unit,
+    onNoteLongClicked: (NoteEntity) -> Unit,
+    onNoteEdited: (NoteEntity) -> Unit,
+    onNoteDismissed: (NoteEntity) -> Unit,
+    onNoteFocused: (NoteEntity) -> Unit
+) {
+    if (notes.isNotEmpty()) {
+        lazyListScope.item {
+            PriorityHeader(priority)
+        }
+    }
+
+    lazyListScope.itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
+        val isItemSelected = selectedItem?.let {
+            it.id == noteEntity.id
+        } ?: false
+
+        if (selectedItem != null) {
+            LaunchedEffect(Unit) {
+                coroutineScope.launch {
+                    listState.scrollToItem(index)
                 }
             }
+        }
 
-            // Swipe to dismiss disabled in Trash mode
-            if (screenMode is ScreenMode.Trash) {
-                Note(
-                    noteEntity = noteEntity,
-                    screenMode = screenMode,
-                    onNoteClicked = onNoteClicked,
-                    onNoteLongClicked = onNoteLongClicked,
-                    onNoteEdited = onNoteEdited,
-                    listState = listState,
-                    isSelected = isItemSelected,
-                    coroutineScope = coroutineScope,
-                    onTextFieldFocused = {}
-                )
-            } else {
-                val dismissState = rememberDismissState(
-                    confirmStateChange = {
-                        onNoteDismissed(noteEntity)
-                        true
-                    }
-                )
+        // Swipe to dismiss disabled in Trash mode
+        if (screenMode is ScreenMode.Trash) {
+            Note(
+                noteEntity = noteEntity,
+                screenMode = screenMode,
+                onNoteClicked = onNoteClicked,
+                onNoteLongClicked = onNoteLongClicked,
+                onNoteEdited = onNoteEdited,
+                listState = listState,
+                isSelected = isItemSelected,
+                coroutineScope = coroutineScope,
+                onTextFieldFocused = {}
+            )
+        } else {
+            val dismissState = rememberDismissState(
+                confirmStateChange = {
+                    onNoteDismissed(noteEntity)
+                    true
+                }
+            )
 
-                SwipeToDismiss(
-                    state = dismissState,
-                    directions = setOf(
-                        DismissDirection.StartToEnd,
-                        DismissDirection.EndToStart
-                    ),
-                    background = {},
-                    modifier = Modifier
-                        .animateItemPlacement(),
-                    dismissContent = {
-                        Note(
-                            noteEntity = noteEntity,
-                            screenMode = screenMode,
-                            onNoteClicked = onNoteClicked,
-                            onNoteLongClicked = onNoteLongClicked,
-                            onNoteEdited = onNoteEdited,
-                            listState = listState,
-                            isSelected = isItemSelected,
-                            coroutineScope = coroutineScope,
-                            onTextFieldFocused = onNoteFocused
-                        )
-                    }
-                )
-            }
+            SwipeToDismiss(
+                state = dismissState,
+                directions = setOf(
+                    DismissDirection.StartToEnd,
+                    DismissDirection.EndToStart
+                ),
+                background = {},
+                modifier = Modifier
+                    .animateItemPlacement(),
+                dismissContent = {
+                    Note(
+                        noteEntity = noteEntity,
+                        screenMode = screenMode,
+                        onNoteClicked = onNoteClicked,
+                        onNoteLongClicked = onNoteLongClicked,
+                        onNoteEdited = onNoteEdited,
+                        listState = listState,
+                        isSelected = isItemSelected,
+                        coroutineScope = coroutineScope,
+                        onTextFieldFocused = onNoteFocused
+                    )
+                }
+            )
         }
     }
 }
@@ -173,6 +242,7 @@ private fun NoteCardContent(
     onTextFieldFocused: (NoteEntity) -> Unit
 ) {
     Column {
+        PriorityTag(priority = note.priority)
         ListName(
             listName = note.listName,
             screenMode = screenMode
@@ -187,6 +257,16 @@ private fun NoteCardContent(
             onTextFieldFocused = onTextFieldFocused
         )
     }
+}
+
+@Composable
+fun PriorityTag(priority: Priority) {
+    val text = when (priority) {
+        Priority.MAJOR -> "\uD83D\uDD34"
+        Priority.NORMAL -> "\uD83D\uDFE1"
+        Priority.MINOR -> "\uD83D\uDFE2"
+    }
+    Text(text = text, fontSize = 8.sp, modifier = Modifier.padding(4.dp))
 }
 
 @Composable
@@ -282,10 +362,30 @@ fun AddNoteButton(onAddNoteButtonClicked: () -> Unit) {
     }
 }
 
+@Composable
+fun PriorityHeader(priority: Priority) {
+    val text = when (priority) {
+        Priority.MINOR -> stringResource(R.string.priority_minor)
+        Priority.NORMAL -> stringResource(R.string.priority_normal)
+        Priority.MAJOR -> stringResource(R.string.priority_major)
+    }
+    Text(
+        text = text.uppercase(),
+        modifier = Modifier
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 24.dp,
+                bottom = 0.dp
+            ),
+        color = MaterialTheme.colors.onBackground.copy(alpha = 0.1f)
+    )
+}
+
 fun Priority.getFontWeight() = when(this) {
-    Priority.MINOR -> FontWeight.Light
+    Priority.MINOR -> FontWeight.ExtraLight
     Priority.NORMAL -> FontWeight.Normal
-    Priority.MAJOR -> FontWeight.Bold
+    Priority.MAJOR -> FontWeight.ExtraBold
 }
 
 object Notes {

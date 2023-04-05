@@ -64,6 +64,9 @@ fun MainScreen(
             onMoveClicked = {
                 moveNoteDialogState = MoveNoteDialogState(true, selectedNoteState)
                 coroutineScope.launch { bottomSheetState.hide() }
+            },
+            onPriorityChanged = { priority ->
+                viewModel.onPriorityChanged(selectedNoteState, priority)
             }
         ) },
         modifier = Modifier.fillMaxSize()
