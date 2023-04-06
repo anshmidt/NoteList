@@ -276,7 +276,7 @@ fun PriorityTag(priority: Priority) {
     Text(
         text = text,
         fontSize = 10.sp,
-        color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
         fontWeight = FontWeight.W900,
         modifier = Modifier.padding(start = 4.dp, top = 2.dp)
     )
@@ -291,10 +291,10 @@ fun ListName(
         if (!listName.isNullOrEmpty()) {
             Text(
                 text = listName,
-                fontSize = 14.sp,
+                fontSize = 12.sp,
                 color = MaterialTheme.colors.primary.copy(alpha = 0.4f),
                 modifier = Modifier
-                    .padding(top = 17.dp, bottom = 0.dp, start = 17.dp, end = 17.dp)
+                    .padding(top = 16.dp, bottom = 0.dp, start = 16.dp, end = 16.dp)
             )
         }
     }
@@ -333,7 +333,7 @@ fun NoteText(
                     onNoteEdited(editedNote)
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = MaterialTheme.colors.background,
+                    backgroundColor = Color.Transparent,
                     focusedBorderColor = MaterialTheme.colors.primary,
                     unfocusedBorderColor = Color.Transparent
                 ),
