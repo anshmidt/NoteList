@@ -292,7 +292,7 @@ fun ListName(
             Text(
                 text = listName,
                 fontSize = 12.sp,
-                color = MaterialTheme.colors.primary.copy(alpha = 0.4f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.7f),
                 modifier = Modifier
                     .padding(top = 16.dp, bottom = 0.dp, start = 16.dp, end = 16.dp)
             )
@@ -360,7 +360,11 @@ fun NoteText(
 }
 
 @Composable
-fun AddNoteButton(onAddNoteButtonClicked: () -> Unit) {
+fun AddNoteButton(
+    onAddNoteButtonClicked: () -> Unit,
+    screenMode: ScreenMode
+) {
+    if (screenMode == ScreenMode.Trash) return
     FloatingActionButton(
         onClick = {
             onAddNoteButtonClicked()

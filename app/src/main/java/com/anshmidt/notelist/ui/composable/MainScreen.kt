@@ -96,7 +96,8 @@ fun MainScreen(
             },
             floatingActionButton = {
                 AddNoteButton(
-                    onAddNoteButtonClicked = viewModel::onAddNoteButtonClicked
+                    onAddNoteButtonClicked = viewModel::onAddNoteButtonClicked,
+                    screenMode = screenModeState
                 )
             },
             content = { padding ->
