@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshmidt.notelist.datasources.database.*
 import com.anshmidt.notelist.repository.ListRepository
+import com.anshmidt.notelist.repository.ListWithNotesRepository
 import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.ui.uistate.ListsUiState
 import com.anshmidt.notelist.ui.uistate.NotesUiState
@@ -16,7 +17,8 @@ import kotlinx.coroutines.plus
 
 class MainViewModel(
     private val noteRepository: NoteRepository,
-    private val listRepository: ListRepository
+    private val listRepository: ListRepository,
+    private val listWithNotesRepository: ListWithNotesRepository
 ) : ViewModel() {
 
     private val _notesUiState = MutableStateFlow(getEmptyNotesUiState())
@@ -247,6 +249,15 @@ class MainViewModel(
             val updatedNote = selectedNote.copy(priority = priority)
             noteRepository.updateNote(updatedNote)
         }
+    }
+
+    fun onCopyListToClipboardClicked() {
+        val selectedList = _listsUiState.value.selectedList
+        val notesInSelectedList = _notesUiState.value.notes
+        listWithNotesRepository.copyListWithNotesToClipboard(
+            list = selectedList,
+            notes = notesInSelectedList
+        )
     }
 
     companion object {

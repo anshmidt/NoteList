@@ -91,7 +91,8 @@ fun MainScreen(
                     onRenameListIconClicked = {
                         renameListDialogOpened = !renameListDialogOpened
                     },
-                    onOpenTrashClicked = viewModel::onOpenTrashClicked
+                    onOpenTrashClicked = viewModel::onOpenTrashClicked,
+                    onCopyListToClipboardClicked = viewModel::onCopyListToClipboardClicked
                 )
             },
             floatingActionButton = {
