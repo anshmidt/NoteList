@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.anshmidt.notelist.R
-import com.anshmidt.notelist.database.ListEntity
+import com.anshmidt.notelist.datasources.database.ListEntity
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

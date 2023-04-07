@@ -14,7 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.R
-import com.anshmidt.notelist.database.ListEntity
+import com.anshmidt.notelist.datasources.database.ListEntity
 import com.anshmidt.notelist.ui.ListPreviewProvider
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 

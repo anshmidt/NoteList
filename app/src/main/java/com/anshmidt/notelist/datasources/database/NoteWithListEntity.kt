@@ -1,4 +1,4 @@
-package com.anshmidt.notelist.database
+package com.anshmidt.notelist.datasources.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded

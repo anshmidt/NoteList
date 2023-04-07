@@ -21,8 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
-import com.anshmidt.notelist.database.NoteEntity
-import com.anshmidt.notelist.database.Priority
+import com.anshmidt.notelist.datasources.database.NoteEntity
+import com.anshmidt.notelist.datasources.database.Priority
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

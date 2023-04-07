@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.anshmidt.notelist.database.AppDatabase
-import com.anshmidt.notelist.database.DefaultData
+import com.anshmidt.notelist.datasources.database.AppDatabase
+import com.anshmidt.notelist.datasources.database.DefaultData
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
-import com.anshmidt.notelist.sharedpreferences.DataStoreStorage
+import com.anshmidt.notelist.datasources.sharedpreferences.DataStoreStorage
 import com.anshmidt.notelist.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

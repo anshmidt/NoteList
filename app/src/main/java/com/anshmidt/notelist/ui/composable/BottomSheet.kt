@@ -14,10 +14,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
-import com.anshmidt.notelist.database.Priority
-import com.anshmidt.notelist.database.convertToString
-import com.anshmidt.notelist.database.decrease
-import com.anshmidt.notelist.database.increase
+import com.anshmidt.notelist.datasources.database.Priority
+import com.anshmidt.notelist.datasources.database.convertToString
+import com.anshmidt.notelist.datasources.database.decrease
+import com.anshmidt.notelist.datasources.database.increase
 import com.anshmidt.notelist.ui.composable.getFontWeight
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 

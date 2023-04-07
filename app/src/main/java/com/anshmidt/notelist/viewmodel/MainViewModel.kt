@@ -2,7 +2,7 @@ package com.anshmidt.notelist.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anshmidt.notelist.database.*
+import com.anshmidt.notelist.datasources.database.*
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.ui.uistate.ListsUiState

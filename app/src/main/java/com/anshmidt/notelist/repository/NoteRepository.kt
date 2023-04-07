@@ -1,10 +1,10 @@
 package com.anshmidt.notelist.repository
 
 import android.util.Log
-import com.anshmidt.notelist.database.AppDatabase
-import com.anshmidt.notelist.database.NoteEntity
-import com.anshmidt.notelist.database.NoteWithListEntity
-import com.anshmidt.notelist.sharedpreferences.DataStoreStorage
+import com.anshmidt.notelist.datasources.database.AppDatabase
+import com.anshmidt.notelist.datasources.database.NoteEntity
+import com.anshmidt.notelist.datasources.database.NoteWithListEntity
+import com.anshmidt.notelist.datasources.sharedpreferences.DataStoreStorage
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat

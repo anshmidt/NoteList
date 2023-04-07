@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.anshmidt.notelist.R
-import com.anshmidt.notelist.database.ListEntity
+import com.anshmidt.notelist.datasources.database.ListEntity
 
 @Composable
 fun MoveNoteDialog(
