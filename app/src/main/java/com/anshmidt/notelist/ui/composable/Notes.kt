@@ -205,7 +205,7 @@ private fun Note(
                     onNoteLongClicked(noteEntity)
                 }
             ),
-        elevation = 4.dp,
+        elevation = if (isSelected) 0.dp else 4.dp,
         backgroundColor = getNoteBackground(
             isNoteSelected = isSelected,
             screenMode = screenMode
