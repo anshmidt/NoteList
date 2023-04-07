@@ -18,10 +18,6 @@ class ListRepository(
 
     suspend fun addList(listEntity: ListEntity): Long = appDatabase.listDao().addList(listEntity)
 
-//    suspend fun deleteList(listEntity: ListEntity) {
-//        appDatabase.listDao().deleteList(listEntity)
-//    }
-
     suspend fun moveListToTrash(listId: Int) {
         appDatabase.listDao().moveListToTrash(listId = listId)
     }
@@ -34,34 +30,9 @@ class ListRepository(
         appDatabase.listDao().updateList(listEntity)
     }
 
-//    /**
-//     * If list not found by id, it returns null
-//     */
-//    @OptIn(FlowPreview::class)
-//    fun getLastOpenedList(): Flow<ListEntity?> {
-//        return dataStoreStorage.getLastOpenedListId().flatMapConcat { lastOpenedListId ->
-//            appDatabase.listDao().getListById(lastOpenedListId)
-//        }
-//    }
-
     fun getLastOpenedListId(): Flow<Int> {
         return dataStoreStorage.getLastOpenedListId().onEach { Log.d(TAG, "getLastOpenedListId: $it") }
     }
-
-//    @OptIn(FlowPreview::class)
-//    private fun getFirstFoundListIfLastOpenedNotFound(
-//        lastOpenedListFlow: Flow<ListEntity?>
-//    ): Flow<ListEntity> {
-//        return lastOpenedListFlow.flatMapConcat { lastOpenedList ->
-//            if (lastOpenedList == null) {
-//                appDatabase.listDao().getFirstFoundList()
-//            } else {
-//                flow {
-//                    emit(lastOpenedList)
-//                }
-//            }
-//        }
-//    }
 
     /**
      * Returns id of any existing list except of the provided one.
@@ -69,7 +40,6 @@ class ListRepository(
     fun getAnyOtherListId(listId: Int): Flow<Int> {
         return appDatabase.listDao().getAnyOtherListId(listId)
     }
-
 
     suspend fun saveLastOpenedList(listEntity: ListEntity) {
         Log.d(TAG, "saveLastOpenedList: $listEntity")

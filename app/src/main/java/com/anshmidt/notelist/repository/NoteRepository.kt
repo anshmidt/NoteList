@@ -5,9 +5,7 @@ import com.anshmidt.notelist.datasources.database.AppDatabase
 import com.anshmidt.notelist.datasources.database.NoteEntity
 import com.anshmidt.notelist.datasources.database.NoteWithListEntity
 import com.anshmidt.notelist.datasources.sharedpreferences.DataStoreStorage
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.onEach
 
 class NoteRepository(
@@ -18,23 +16,11 @@ class NoteRepository(
     fun getNotesInList(listId: Int): Flow<List<NoteEntity>> {
         return appDatabase.noteDao().getNotesFromList(listId)
             .onEach { Log.d(ListRepository.TAG, "getNotesInList: $it") }
-//            .onStart { delay(2000) }
     }
 
     fun getAllNotesInTrash(): Flow<List<NoteWithListEntity>> {
         return appDatabase.noteDao().getAllNotesInTrash()
     }
-
-    @OptIn(FlowPreview::class)
-    fun getNotesInLastOpenedList(): Flow<List<NoteEntity>> {
-        return dataStoreStorage.getLastOpenedListId().flatMapConcat { lastOpenedListId ->
-            appDatabase.noteDao().getNotesFromList(lastOpenedListId)
-        }
-    }
-
-//    suspend fun deleteNote(noteEntity: NoteEntity) {
-//        appDatabase.noteDao().deleteNote(noteEntity)
-//    }
 
     suspend fun moveNoteToTrash(noteId: Int) {
         appDatabase.noteDao().moveNoteToTrash(noteId = noteId)
@@ -49,10 +35,6 @@ class NoteRepository(
     suspend fun updateNote(note: NoteEntity) {
         appDatabase.noteDao().updateNote(note)
     }
-
-//    suspend fun deleteAllNotesFromList(listId: Int) {
-//        appDatabase.noteDao().deleteAllNotesFromList(listId)
-//    }
 
     suspend fun moveToTrashAllNotesFromList(listId: Int) {
         appDatabase.noteDao().moveToTrashAllNotesFromList(listId = listId)

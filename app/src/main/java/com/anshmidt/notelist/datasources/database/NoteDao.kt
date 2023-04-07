@@ -18,12 +18,6 @@ interface NoteDao {
             "WHERE ${NoteEntity.TABLE}.${NoteEntity.IN_TRASH_COLUMN}=1")
     fun getAllNotesInTrash(): Flow<List<NoteWithListEntity>>
 
-//    @Query("DELETE FROM ${NoteEntity.TABLE_NAME} WHERE ${NoteEntity.LIST_ID_COLUMN_NAME}=:listId")
-//    suspend fun deleteAllNotesFromList(listId: Int)
-//
-//    @Delete
-//    suspend fun deleteNote(noteEntity: NoteEntity)
-
     @Query("UPDATE ${NoteEntity.TABLE} SET ${NoteEntity.IN_TRASH_COLUMN}=1 "+
             "WHERE ${NoteEntity.LIST_ID_COLUMN}=:listId")
     suspend fun moveToTrashAllNotesFromList(listId: Int)
