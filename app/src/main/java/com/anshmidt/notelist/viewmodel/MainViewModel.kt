@@ -284,6 +284,10 @@ class MainViewModel(
                  */
                 delay(200)
             }
+
+            // After the notes are imported, we update timestamp on the list
+            val listWithUpdatedTime = _listsUiState.value.selectedList.copy(timestamp = System.currentTimeMillis())
+            listRepository.updateList(listWithUpdatedTime)
         }
     }
 
