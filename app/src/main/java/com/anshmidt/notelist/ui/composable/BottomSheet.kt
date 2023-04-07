@@ -18,7 +18,6 @@ import com.anshmidt.notelist.datasources.database.Priority
 import com.anshmidt.notelist.datasources.database.convertToString
 import com.anshmidt.notelist.datasources.database.decrease
 import com.anshmidt.notelist.datasources.database.increase
-import com.anshmidt.notelist.ui.composable.getFontWeight
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 
 @Composable
@@ -132,8 +131,7 @@ private fun PrioritySelector(onPriorityChanged: (Priority) -> Unit) {
         )
         Text(
             text = priority.convertToString(LocalContext.current),
-            fontSize = 20.sp,
-            fontWeight = priority.getFontWeight()
+            fontSize = 20.sp
         )
         PrioritySelectorIcon(
             imageVector = Icons.Filled.KeyboardArrowUp,

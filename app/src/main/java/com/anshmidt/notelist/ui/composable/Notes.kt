@@ -225,7 +225,7 @@ private fun Note(
 
 @Composable
 private fun getNoteBackground(isNoteSelected: Boolean, screenMode: ScreenMode): Color {
-    return if (isNoteSelected && screenMode is ScreenMode.View)
+    return if (isNoteSelected && (screenMode is ScreenMode.View || screenMode is ScreenMode.Trash))
         MaterialTheme.colors.onBackground.copy(alpha = 0.4f)
     else
         MaterialTheme.colors.background
