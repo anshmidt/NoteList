@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -18,6 +19,7 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
@@ -42,6 +44,11 @@ fun Notes(
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+
+    if (notes.isEmpty()) {
+        NoNotesScreen()
+        return
+    }
 
     LazyColumn(modifier = modifier) {
         // this first item fixes the issue with not scrolling automatically when new item added
@@ -398,6 +405,21 @@ fun PriorityHeader(priority: Priority) {
             ),
         color = MaterialTheme.colors.onBackground.copy(alpha = 0.08f)
     )
+}
+
+@Composable
+fun NoNotesScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.no_notes_title),
+            color = MaterialTheme.colors.onBackground.copy(alpha = 0.4f),
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 fun Priority.getFontWeight() = when(this) {
