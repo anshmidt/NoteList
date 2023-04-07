@@ -13,6 +13,13 @@ class ClipboardUtil(val context: Context) {
         clipboardManager.setPrimaryClip(clipData)
     }
 
+    fun getTextFromClipboard(): String {
+        val clipData = clipboardManager.primaryClip ?: return ""
+        val item = clipData.getItemAt(0) ?: return ""
+        val text = item.text ?: return ""
+        return text.toString()
+    }
+
     companion object {
         const val LABEL = "Notes"
     }

@@ -31,7 +31,8 @@ fun TopBar(
     onUpIconClicked: () -> Unit,
     onRenameListIconClicked: () -> Unit,
     onOpenTrashClicked: () -> Unit,
-    onCopyListToClipboardClicked: () -> Unit
+    onCopyListToClipboardClicked: () -> Unit,
+    onAddNotesFromClipboardClicked: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -106,7 +107,10 @@ fun TopBar(
                     MenuItem(
                         icon = Icons.Outlined.AddToPhotos,
                         text = stringResource(R.string.menu_title_add_notes_from_clipboard),
-                        onClick = {}
+                        onClick = {
+                            isMenuExpanded = false
+                            onAddNotesFromClipboardClicked()
+                        }
                     )
                 }
             }

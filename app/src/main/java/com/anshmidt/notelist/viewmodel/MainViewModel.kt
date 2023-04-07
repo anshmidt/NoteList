@@ -9,11 +9,8 @@ import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.ui.uistate.ListsUiState
 import com.anshmidt.notelist.ui.uistate.NotesUiState
 import com.anshmidt.notelist.ui.uistate.ScreenMode
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 
 class MainViewModel(
     private val noteRepository: NoteRepository,
@@ -258,6 +255,36 @@ class MainViewModel(
             list = selectedList,
             notes = notesInSelectedList
         )
+    }
+
+    fun onAddNotesFromClipboardClicked() {
+        val newNoteTexts = listWithNotesRepository.getNoteTextsFromClipboard()
+        if (newNoteTexts.isEmpty()) return
+
+        val selectedListId = _listsUiState.value.selectedList.id
+
+        viewModelScope.launch(Dispatchers.IO) {
+            /**
+             * We want to show notes from clipboard in the same order they were in string.
+             * Since the app displays recent notes first, we add the notes to repository
+             * starting with the notes from the end.
+             */
+            newNoteTexts.reversed().map { noteText ->
+                val newNoteWithoutId = NoteEntity(
+                    timestamp = System.currentTimeMillis(),
+                    text = noteText,
+                    listId = selectedListId,
+                    inTrash = false
+                )
+                noteRepository.addNote(newNoteWithoutId)
+
+                /**
+                 *  Way to implement animation of adding notes one by one,
+                 *  and at the same time make sure that they have different timestamps.
+                 */
+                delay(200)
+            }
+        }
     }
 
     companion object {

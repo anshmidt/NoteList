@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.anshmidt.notelist.datasources.clipboard.ClipboardUtil
 import com.anshmidt.notelist.datasources.database.AppDatabase
 import com.anshmidt.notelist.datasources.database.DefaultData
+import com.anshmidt.notelist.datasources.database.ListWithNotesConverter
 import com.anshmidt.notelist.datasources.sharedpreferences.DataStoreStorage
 import com.anshmidt.notelist.repository.ListRepository
 import com.anshmidt.notelist.repository.ListWithNotesRepository
@@ -49,6 +50,7 @@ val appModule = module {
     single { NoteRepository(get(), get()) }
     single { ListRepository(get(), get()) }
     single { ListWithNotesRepository(get(), get()) }
-    single { ClipboardUtil(get()) }
+    single { ListWithNotesConverter() }
+    single { ClipboardUtil(androidContext()) }
     viewModel { MainViewModel(get(), get(), get()) }
 }

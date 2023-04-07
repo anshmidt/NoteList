@@ -18,4 +18,10 @@ class ListWithNotesRepository(
         clipboardUtil.copyToClipboard(listAsString)
     }
 
+    fun getNoteTextsFromClipboard(): List<String> {
+        val textFromClipboard = clipboardUtil.getTextFromClipboard()
+        val noteTexts = listWithNotesConverter.convertStringToNotes(text = textFromClipboard)
+        return noteTexts
+    }
+
 }
