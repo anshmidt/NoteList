@@ -31,6 +31,9 @@ data class NoteEntity(
     @ColumnInfo(name = IN_TRASH_COLUMN)
     val inTrash: Boolean = false
 ) {
+    // secondary constructor for debug and testing purposes
+    constructor(text: String) : this(0, 0L, text, Priority.NORMAL, 0, false)
+
     @Ignore
     var listName: String? = null
 

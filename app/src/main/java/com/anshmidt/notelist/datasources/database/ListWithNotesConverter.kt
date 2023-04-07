@@ -20,4 +20,48 @@ class ListWithNotesConverter {
         return stringBuilder.toString()
     }
 
+    fun convertStringToNotes(text: String): List<String> {
+        if (text.isEmpty()) return emptyList()
+
+        val delimiterType = guessTypeOfDelimiter(text)
+        return when (delimiterType) {
+            DelimiterType.NewLine -> {
+                text.split("\n")
+            }
+            DelimiterType.NumberWithDot -> {
+                text.split("""(\n)?\d+\."""
+                    .toRegex())
+                    .map { it.trim() }
+                    .drop(1)
+            }
+            DelimiterType.NumberWithRoundBracket -> {
+                text.split("""(\n)?\d+\)"""
+                    .toRegex())
+                    .map { it.trim() }
+                    .drop(1)
+            }
+            DelimiterType.NotFound -> {
+                listOf(text)
+            }
+        }
+
+    }
+
+    private fun guessTypeOfDelimiter(text: String): DelimiterType {
+        if (text.contains("1.") || text.contains("2."))
+            return DelimiterType.NumberWithDot
+        if (text.contains("1)") || text.contains("2)"))
+            return DelimiterType.NumberWithRoundBracket
+        if (text.contains("\n"))
+            return DelimiterType.NewLine
+        return DelimiterType.NotFound
+    }
+
+    private sealed class DelimiterType {
+        object NumberWithDot : DelimiterType()
+        object NumberWithRoundBracket : DelimiterType()
+        object NewLine : DelimiterType()
+        object NotFound : DelimiterType()
+    }
+
 }

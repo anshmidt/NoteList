@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.anshmidt.notelist.datasources.clipboard.ClipboardUtil
 import com.anshmidt.notelist.datasources.database.AppDatabase
 import com.anshmidt.notelist.datasources.database.DefaultData
-import com.anshmidt.notelist.repository.ListRepository
-import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.datasources.sharedpreferences.DataStoreStorage
+import com.anshmidt.notelist.repository.ListRepository
+import com.anshmidt.notelist.repository.ListWithNotesRepository
+import com.anshmidt.notelist.repository.NoteRepository
 import com.anshmidt.notelist.viewmodel.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,5 +48,7 @@ val appModule = module {
     single { DataStoreStorage(androidContext()) }
     single { NoteRepository(get(), get()) }
     single { ListRepository(get(), get()) }
-    viewModel { MainViewModel(get(), get()) }
+    single { ListWithNotesRepository(get(), get()) }
+    single { ClipboardUtil(get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
 }
