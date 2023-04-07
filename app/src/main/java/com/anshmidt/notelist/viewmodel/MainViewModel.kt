@@ -53,10 +53,12 @@ class MainViewModel(
 
     private fun displayNotesInTrash() {
         noteRepository.getAllNotesInTrash().onEach { notesWithListEntity ->
-            val notes = notesWithListEntity.map { noteWithListEntity ->
-                noteWithListEntity.toNoteEntity()
+            if (_screenModeState.value == ScreenMode.Trash) {
+                val notes = notesWithListEntity.map { noteWithListEntity ->
+                    noteWithListEntity.toNoteEntity()
+                }
+                _notesUiState.value = NotesUiState(notes = notes)
             }
-            _notesUiState.value = NotesUiState(notes = notes)
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
 
