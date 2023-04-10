@@ -152,9 +152,16 @@ private fun lazyColumnItemsWithPriorityHeader(
             )
         } else {
             val dismissState = rememberDismissState(
-                confirmStateChange = {
-                    onNoteDismissed(noteEntity)
-                    true
+                confirmStateChange = { dismissValue ->
+                    when (dismissValue) {
+                        DismissValue.DismissedToStart, DismissValue.DismissedToEnd -> {
+                            onNoteDismissed(noteEntity)
+                            true
+                        }
+                        else -> {
+                            false
+                        }
+                    }
                 }
             )
 
@@ -179,6 +186,9 @@ private fun lazyColumnItemsWithPriorityHeader(
                         coroutineScope = coroutineScope,
                         onTextFieldFocused = onNoteFocused
                     )
+                },
+                dismissThresholds = { direction ->
+                    FractionalThreshold(0.9f)
                 }
             )
         }

@@ -32,7 +32,7 @@ data class NoteEntity(
     val inTrash: Boolean = false
 ) {
     // secondary constructor for debug and testing purposes
-    constructor(text: String) : this(0, 0L, text, Priority.NORMAL, 0, false)
+    constructor(text: String) : this(text.hashCode(), 0L, text, Priority.NORMAL, 0, false)
 
     @Ignore
     var listName: String? = null
