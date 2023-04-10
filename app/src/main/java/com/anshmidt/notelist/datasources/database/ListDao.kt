@@ -22,6 +22,10 @@ interface ListDao {
             "WHERE ${ListEntity.ID_COLUMN}=:listId")
     suspend fun removeListFromTrash(listId: Int)
 
+    @Query("UPDATE ${ListEntity.TABLE} SET ${ListEntity.TIMESTAMP_COLUMN}=:timestamp "+
+            "WHERE ${ListEntity.ID_COLUMN}=:listId")
+    suspend fun updateTimestamp(listId: Int, timestamp: Long)
+
     @Update
     suspend fun updateList(listEntity: ListEntity)
 

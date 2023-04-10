@@ -26,6 +26,10 @@ class ListRepository(
         appDatabase.listDao().removeListFromTrash(listId = listId)
     }
 
+    suspend fun updateTimestamp(listId: Int, timestamp: Long) {
+        appDatabase.listDao().updateTimestamp(listId = listId, timestamp = timestamp)
+    }
+
     suspend fun updateList(listEntity: ListEntity) {
         appDatabase.listDao().updateList(listEntity)
     }

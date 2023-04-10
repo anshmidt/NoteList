@@ -30,6 +30,10 @@ interface NoteDao {
             "WHERE ${NoteEntity.ID_COLUMN}=:noteId")
     suspend fun removeNoteFromTrash(noteId: Int)
 
+    @Query("UPDATE ${NoteEntity.TABLE} SET ${NoteEntity.TIMESTAMP_COLUMN}=:timestamp "+
+            "WHERE ${NoteEntity.ID_COLUMN}=:noteId")
+    suspend fun updateTimestamp(noteId: Int, timestamp: Long)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addNote(noteEntity: NoteEntity): Long
 

@@ -102,28 +102,48 @@ class MainViewModel(
         }
     }
 
-    private fun deleteNote(note: NoteEntity) {
+    fun onNoteDismissed(note: NoteEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            //noteRepository.deleteNote(note)
-            noteRepository.moveNoteToTrash(noteId = note.id)
+            noteRepository.moveNoteToTrash(note.id)
+            // If note moved to trash, we update the timestamp
+            noteRepository.updateTimestamp(
+                noteId = note.id,
+                timestamp = System.currentTimeMillis()
+            )
+            // If note moved to trash, we also update timestamp on the list
+            listRepository.updateTimestamp(
+                listId = _listsUiState.value.selectedList.id,
+                timestamp = System.currentTimeMillis()
+            )
         }
     }
 
-    fun onNoteDismissed(note: NoteEntity) {
-        deleteNote(note = note)
-    }
-
     fun onPutBackClicked(selectedNote: NoteEntity?) {
-        /**
-         * It's possible that list of the note is in trash.
-         * In order to avoid that, we mark the note as "not in trash",
-         * and we mark the list as "not in trash".
-         */
         selectedNote?.let { note ->
             viewModelScope.launch(Dispatchers.IO) {
+                /**
+                 * It's possible that list of the note is in trash.
+                 * In order to avoid that, we mark not only the note as "not in trash",
+                 * but also the list as "not in trash".
+                 */
                 noteRepository.removeNoteFromTrash(noteId = note.id)
                 listRepository.removeListFromTrash(listId = note.listId)
+
+                // If note removed from trash, we update the timestamp
+                noteRepository.updateTimestamp(
+                    noteId = note.id,
+                    timestamp = System.currentTimeMillis()
+                )
+                // If note removed from trash, we also update timestamp on the list
+                listRepository.updateTimestamp(
+                    listId = _listsUiState.value.selectedList.id,
+                    timestamp = System.currentTimeMillis()
+                )
             }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+
         }
     }
 

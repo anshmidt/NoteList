@@ -26,6 +26,10 @@ class NoteRepository(
         appDatabase.noteDao().moveNoteToTrash(noteId = noteId)
     }
 
+    suspend fun updateTimestamp(noteId: Int, timestamp: Long) {
+        appDatabase.noteDao().updateTimestamp(noteId = noteId, timestamp = timestamp)
+    }
+
     suspend fun removeNoteFromTrash(noteId: Int) {
         appDatabase.noteDao().removeNoteFromTrash(noteId = noteId)
     }

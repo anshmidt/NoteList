@@ -29,7 +29,6 @@ import com.anshmidt.notelist.ui.uistate.ScreenMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun Notes(
     notes: List<NoteEntity>,
@@ -46,7 +45,7 @@ fun Notes(
     val coroutineScope = rememberCoroutineScope()
 
     if (notes.isEmpty()) {
-        NoNotesScreen()
+        NoNotesScreen(screenMode)
         return
     }
 
@@ -418,14 +417,18 @@ fun PriorityHeader(priority: Priority) {
 }
 
 @Composable
-fun NoNotesScreen() {
+fun NoNotesScreen(screenMode: ScreenMode) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.no_notes_title),
+            text = if (screenMode == ScreenMode.Trash) {
+                stringResource(id = R.string.no_notes_in_trash_title)
+            } else {
+                stringResource(id = R.string.no_notes_title)
+            },
             color = MaterialTheme.colors.onBackground.copy(alpha = 0.4f),
             textAlign = TextAlign.Center
         )
