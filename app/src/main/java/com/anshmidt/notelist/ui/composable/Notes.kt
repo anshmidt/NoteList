@@ -358,6 +358,7 @@ fun NoteText(
     coroutineScope: CoroutineScope,
     onTextFieldFocused: (NoteEntity) -> Unit
 ) {
+    val fontSize = 20.sp
     when (screenMode) {
         is ScreenMode.Edit -> {
             val focusRequester = remember { FocusRequester() }
@@ -384,6 +385,9 @@ fun NoteText(
                     focusedBorderColor = MaterialTheme.colors.primary,
                     unfocusedBorderColor = Color.Transparent
                 ),
+                textStyle = LocalTextStyle.current.copy(
+                    fontSize = fontSize
+                ),
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .bringIntoViewRequester(bringIntoViewRequester)
@@ -399,6 +403,7 @@ fun NoteText(
         is ScreenMode.View, ScreenMode.Trash -> {
             Text(
                 text = note.text,
+                fontSize = fontSize,
                 modifier = Modifier
                     .padding(17.dp)
             )
