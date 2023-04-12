@@ -23,7 +23,7 @@
     <string name="default_data_note_text">My first note</string>
 
     <string name="no_notes_title">This list is empty.\nTap \'+\' icon to add a first note.</string>
-    <string name="no_notes_in_trash_title">Trash is empty.\nAll notes that you\'ve moved to Trash will appear here.</string>
+    <string name="no_notes_in_trash_title">Trash is empty.\nIf you move any note to Trash, it will appear here.</string>
 
     <string name="priority_minor">Minor</string>
     <string name="priority_normal">Normal</string>

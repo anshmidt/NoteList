@@ -419,7 +419,7 @@ fun PriorityHeader(priority: Priority) {
 @Composable
 fun NoNotesScreen(screenMode: ScreenMode) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(40.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
