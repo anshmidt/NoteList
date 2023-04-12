@@ -91,4 +91,30 @@ class ListWithNotesConverterTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun `convertStringToNotes items containing digits`() {
+        val text = "1) First\n7 2)Second 7\n8) Third\n7\n589)Fourth"
+        val actual = converter.convertStringToNotes(text)
+        val expected = listOf(
+            "First\n7",
+            "Second 7",
+            "Third\n7",
+            "Fourth"
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `convertStringToNotes items with digits and dots`() {
+        val text = "1) 10 cm * 2.5 cm\n2) 7 cm\n3) 9 cm"
+        val actual = converter.convertStringToNotes(text)
+        val expected = listOf(
+            "10 cm * 2.5 cm",
+            "7 cm",
+            "9 cm"
+        )
+        assertEquals(expected, actual)
+    }
+
+
 }

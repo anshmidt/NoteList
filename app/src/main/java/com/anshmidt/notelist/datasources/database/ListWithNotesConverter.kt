@@ -48,10 +48,10 @@ class ListWithNotesConverter {
     }
 
     private fun guessTypeOfDelimiter(text: String): DelimiterType {
-        if (text.contains("1.") || text.contains("2."))
-            return DelimiterType.NumberWithDot
-        if (text.contains("1)") || text.contains("2)"))
+        if (text.contains("1)") && text.contains("2)"))
             return DelimiterType.NumberWithRoundBracket
+        if (text.contains("1.") && text.contains("2."))
+            return DelimiterType.NumberWithDot
         if (text.contains("\n"))
             return DelimiterType.NewLine
         return DelimiterType.NotFound
