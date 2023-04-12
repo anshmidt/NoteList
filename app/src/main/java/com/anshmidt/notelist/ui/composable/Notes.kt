@@ -151,12 +151,24 @@ private fun lazyColumnItemsWithPriorityHeader(
                 onTextFieldFocused = {}
             )
         } else {
+            val dismissThreshold = 0.6f
+            /**
+             * SwipeToDismiss from the box causes deletions when threshold not reached but
+             * swipe is fast. Here's a solution for it using progress fraction.
+             */
+            val currentDismissFraction = remember { mutableStateOf(0f) }
+
             val dismissState = rememberDismissState(
                 confirmStateChange = { dismissValue ->
                     when (dismissValue) {
                         DismissValue.DismissedToStart, DismissValue.DismissedToEnd -> {
-                            onNoteDismissed(noteEntity)
-                            true
+                            if (currentDismissFraction.value >= dismissThreshold &&
+                                currentDismissFraction.value < 1.0f) {
+                                onNoteDismissed(noteEntity)
+                                true
+                            } else {
+                                false
+                            }
                         }
                         else -> {
                             false
@@ -171,9 +183,12 @@ private fun lazyColumnItemsWithPriorityHeader(
                     DismissDirection.StartToEnd,
                     DismissDirection.EndToStart
                 ),
-                background = {},
-                modifier = Modifier
-                    .animateItemPlacement(),
+                background = {
+                    Box {
+                        currentDismissFraction.value = dismissState.progress.fraction
+                    }
+                },
+                modifier = Modifier.animateItemPlacement(),
                 dismissContent = {
                     Note(
                         noteEntity = noteEntity,
@@ -188,7 +203,7 @@ private fun lazyColumnItemsWithPriorityHeader(
                     )
                 },
                 dismissThresholds = { direction ->
-                    FractionalThreshold(0.9f)
+                    FractionalThreshold(dismissThreshold)
                 }
             )
         }
