@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
 import com.anshmidt.notelist.datasources.database.NoteEntity
 import com.anshmidt.notelist.datasources.database.Priority
+import com.anshmidt.notelist.datasources.database.TimestampConverter.toHumanReadableDate
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -257,13 +258,17 @@ private fun NoteCardContent(
     coroutineScope: CoroutineScope,
     onTextFieldFocused: (NoteEntity) -> Unit
 ) {
+    val shouldDisplayTimestamp = true // TODO move this flag to Settings
+
     PriorityTag(priority = note.priority)
     Column {
-
         ListName(
             listName = note.listName,
             screenMode = screenMode
         )
+        if (shouldDisplayTimestamp) {
+            Timestamp(timestamp = note.timestamp)
+        }
         NoteText(
             note = note,
             screenMode = screenMode,
@@ -314,6 +319,17 @@ fun ListName(
             )
         }
     }
+}
+
+@Composable
+fun Timestamp(timestamp: Long) {
+    Text(
+        text = timestamp.toHumanReadableDate(),
+        color = MaterialTheme.colors.onBackground.copy(alpha = 0.4f),
+        fontSize = 14.sp,
+        modifier = Modifier
+            .padding(top = 16.dp, bottom = 0.dp, start = 16.dp, end = 16.dp)
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -419,7 +435,9 @@ fun PriorityHeader(priority: Priority) {
 @Composable
 fun NoNotesScreen(screenMode: ScreenMode) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(40.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(40.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
