@@ -1,8 +1,0 @@
-- Bug: recently trashed item is not on top
-Create item "old", move it to trash
-Create item "new", move it to trash
-Result: in trash, order is:
-old
-new
-
-- Add option to display timestamps

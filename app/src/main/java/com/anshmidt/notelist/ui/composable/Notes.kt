@@ -258,7 +258,7 @@ private fun NoteCardContent(
     coroutineScope: CoroutineScope,
     onTextFieldFocused: (NoteEntity) -> Unit
 ) {
-    val shouldDisplayTimestamp = true // TODO move this flag to Settings
+    val shouldDisplayTimestamp = false // TODO move this flag to Settings
 
     PriorityTag(priority = note.priority)
     Column {

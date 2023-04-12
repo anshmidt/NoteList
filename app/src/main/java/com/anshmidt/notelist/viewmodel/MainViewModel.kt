@@ -44,9 +44,7 @@ class MainViewModel(
             // Do nothing in case of Trash mode
             if (_screenModeState.value !is ScreenMode.Trash) {
                 val sortedNotes = notes.sortedByDescending { it.timestamp }
-                _notesUiState.value = NotesUiState(
-                    notes = sortedNotes
-                )
+                _notesUiState.value = NotesUiState(notes = sortedNotes)
             }
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
@@ -57,7 +55,8 @@ class MainViewModel(
                 val notes = notesWithListEntity.map { noteWithListEntity ->
                     noteWithListEntity.toNoteEntity()
                 }
-                _notesUiState.value = NotesUiState(notes = notes)
+                val sortedNotes = notes.sortedByDescending { it.timestamp }
+                _notesUiState.value = NotesUiState(notes = sortedNotes)
             }
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
