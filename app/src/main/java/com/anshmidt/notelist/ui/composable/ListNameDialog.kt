@@ -1,9 +1,6 @@
 package com.anshmidt.notelist.ui.composable
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -13,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
 
 @Preview
@@ -40,7 +38,7 @@ fun ListNameDialog(
             },
             isPositiveButtonEnabled = isPositiveButtonEnabled
         ) },
-        title = { ListNameDialogTitle() },
+        title = null,
         text = { ListNameDialogContent(
             listName = listName,
             onTextFieldValueChanged = { newValue ->
@@ -80,24 +78,31 @@ private fun ListNameDialogContent(
     listName: String,
     onTextFieldValueChanged: (String) -> Unit
 ) {
-    val focusRequester = remember { FocusRequester() }
-    SideEffect {
-        focusRequester.requestFocus()
+    Column {
+        ListNameDialogTitle()
+
+        val focusRequester = remember { FocusRequester() }
+        SideEffect {
+            focusRequester.requestFocus()
+        }
+        TextField(
+            value = listName,
+            onValueChange = onTextFieldValueChanged,
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = MaterialTheme.colors.background,
+            ),
+            textStyle = LocalTextStyle.current.copy(
+                textAlign = TextAlign.Center,
+                fontSize = 24.sp
+            ),
+            modifier = Modifier.focusRequester(focusRequester)
+        )
     }
-    TextField(
-        value = listName,
-        onValueChange = onTextFieldValueChanged,
-        colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = MaterialTheme.colors.background,
-        ),
-        textStyle = LocalTextStyle.current.copy(
-            textAlign = TextAlign.Center
-        ),
-        modifier = Modifier.focusRequester(focusRequester)
-    )
 }
 
 @Composable
 private fun ListNameDialogTitle() {
-    Text(text = stringResource(id = R.string.list_name_dialog_title))
+    Text(
+        text = stringResource(id = R.string.list_name_dialog_title)
+    )
 }
