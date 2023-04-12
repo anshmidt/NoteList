@@ -32,7 +32,8 @@ fun TopBar(
     onRenameListIconClicked: () -> Unit,
     onOpenTrashClicked: () -> Unit,
     onCopyListToClipboardClicked: () -> Unit,
-    onAddNotesFromClipboardClicked: () -> Unit
+    onAddNotesFromClipboardClicked: () -> Unit,
+    onEmptyTrashClicked: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -68,7 +69,7 @@ fun TopBar(
                         text = stringResource(id = R.string.menu_title_empty_trash),
                         onClick = {
                             isMenuExpanded = false
-                            // TODO
+                            onEmptyTrashClicked()
                         }
                     )
                 } else {

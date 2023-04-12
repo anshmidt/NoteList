@@ -93,7 +93,8 @@ fun MainScreen(
                     },
                     onOpenTrashClicked = viewModel::onOpenTrashClicked,
                     onCopyListToClipboardClicked = viewModel::onCopyListToClipboardClicked,
-                    onAddNotesFromClipboardClicked = viewModel::onAddNotesFromClipboardClicked
+                    onAddNotesFromClipboardClicked = viewModel::onAddNotesFromClipboardClicked,
+                    onEmptyTrashClicked = viewModel::onEmptyTrashClicked
                 )
             },
             floatingActionButton = {

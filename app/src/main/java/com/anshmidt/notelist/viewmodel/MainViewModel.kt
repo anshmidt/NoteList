@@ -313,6 +313,13 @@ class MainViewModel(
         }
     }
 
+    fun onEmptyTrashClicked() {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.deleteAllNotesThatAreInTrash()
+            listRepository.deleteAllListsThatAreInTrash()
+        }
+    }
+
     companion object {
         val TAG = MainViewModel::class.java.simpleName
     }

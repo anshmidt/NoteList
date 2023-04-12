@@ -43,4 +43,7 @@ interface ListDao {
             "WHERE ${ListEntity.ID_COLUMN}<>:listId "+
             "AND ${ListEntity.IN_TRASH_COLUMN}=0 LIMIT 1")
     fun getAnyOtherListId(listId: Int): Flow<Int>
+
+    @Query("DELETE FROM ${ListEntity.TABLE} WHERE ${ListEntity.IN_TRASH_COLUMN}=1")
+    fun deleteAllListsThatAreInTrash()
 }

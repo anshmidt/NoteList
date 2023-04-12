@@ -54,6 +54,10 @@ class ListRepository(
         dataStoreStorage.saveLastOpenedListId(listId = listId)
     }
 
+    suspend fun deleteAllListsThatAreInTrash() {
+        appDatabase.listDao().deleteAllListsThatAreInTrash()
+    }
+
     companion object {
         val TAG = ListRepository::class.java.simpleName
     }

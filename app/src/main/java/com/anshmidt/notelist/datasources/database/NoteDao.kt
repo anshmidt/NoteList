@@ -42,4 +42,7 @@ interface NoteDao {
 
     @Query("DELETE FROM ${NoteEntity.TABLE} WHERE ${NoteEntity.LIST_ID_COLUMN}=:listId AND ${NoteEntity.TEXT_COLUMN}=''")
     suspend fun deleteEmptyNotes(listId: Int)
+
+    @Query("DELETE FROM ${NoteEntity.TABLE} WHERE ${NoteEntity.IN_TRASH_COLUMN}=1")
+    suspend fun deleteAllNotesThatAreInTrash()
 }
