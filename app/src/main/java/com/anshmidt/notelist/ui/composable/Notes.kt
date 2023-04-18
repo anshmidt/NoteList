@@ -18,6 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -358,7 +359,6 @@ fun NoteText(
     coroutineScope: CoroutineScope,
     onTextFieldFocused: (NoteEntity) -> Unit
 ) {
-    val fontSize = 20.sp
     when (screenMode) {
         is ScreenMode.Edit -> {
             val focusRequester = remember { FocusRequester() }
@@ -385,9 +385,7 @@ fun NoteText(
                     focusedBorderColor = MaterialTheme.colors.primary,
                     unfocusedBorderColor = Color.Transparent
                 ),
-                textStyle = LocalTextStyle.current.copy(
-                    fontSize = fontSize
-                ),
+                textStyle = getNoteTextStyle(priority = note.priority),
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .bringIntoViewRequester(bringIntoViewRequester)
@@ -403,11 +401,32 @@ fun NoteText(
         is ScreenMode.View, ScreenMode.Trash -> {
             Text(
                 text = note.text,
-                fontSize = fontSize,
+                style = getNoteTextStyle(priority = note.priority),
                 modifier = Modifier
                     .padding(17.dp)
             )
         }
+    }
+}
+
+@Composable
+internal fun getNoteTextStyle(priority: Priority): TextStyle {
+    return when (priority) {
+        Priority.MAJOR -> LocalTextStyle.current.copy(
+            fontSize = Notes.NOTE_FONT_SIZE,
+            color = MaterialTheme.colors.onBackground,
+            fontWeight = FontWeight.Bold
+        )
+        Priority.NORMAL -> LocalTextStyle.current.copy(
+            fontSize = Notes.NOTE_FONT_SIZE,
+            color = MaterialTheme.colors.onBackground,
+            fontWeight = FontWeight.Normal
+        )
+        Priority.MINOR -> LocalTextStyle.current.copy(
+            fontSize = Notes.NOTE_FONT_SIZE,
+            color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+            fontWeight = FontWeight.Normal
+        )
     }
 }
 
@@ -481,5 +500,6 @@ fun Priority.getFontWeight() = when(this) {
 
 object Notes {
     const val TAG = "NotesTag"
+    val NOTE_FONT_SIZE = 20.sp
 }
 
