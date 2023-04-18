@@ -14,25 +14,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
-import com.anshmidt.notelist.datasources.database.Priority
-import com.anshmidt.notelist.datasources.database.convertToString
-import com.anshmidt.notelist.datasources.database.decrease
-import com.anshmidt.notelist.datasources.database.increase
+import com.anshmidt.notelist.datasources.database.*
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 
 @Composable
 fun BottomSheet(
     screenMode: ScreenMode,
+    selectedNote: NoteEntity?,
     onPutBackClicked: () -> Unit,
     onMoveClicked: () -> Unit,
     onPriorityChanged: (Priority) -> Unit
 ) {
+    // BottomSheet is only displayed if a note is selected
+    if (selectedNote == null) return
+
     if (screenMode is ScreenMode.Trash) {
         BottomSheetInTrashMode(
             onPutBackClicked = onPutBackClicked
         )
     } else {
         BottomSheetInViewMode(
+            selectedNote = selectedNote,
             onMoveClicked = onMoveClicked,
             onPriorityChanged = onPriorityChanged
         )
@@ -41,6 +43,7 @@ fun BottomSheet(
 
 @Composable
 private fun BottomSheetInViewMode(
+    selectedNote: NoteEntity,
     onMoveClicked: () -> Unit,
     onPriorityChanged: (Priority) -> Unit
 ) {
@@ -52,7 +55,10 @@ private fun BottomSheetInViewMode(
             title = stringResource(R.string.priority_title_bottom_sheet),
             content = {
                 Spacer(Modifier.weight(1f))
-                PrioritySelector(onPriorityChanged = onPriorityChanged)
+                PrioritySelector(
+                    currentPriority = selectedNote.priority,
+                    onPriorityChanged = onPriorityChanged
+                )
             }
         )
 
@@ -112,9 +118,12 @@ private fun BottomSheetItem(
 }
 
 @Composable
-private fun PrioritySelector(onPriorityChanged: (Priority) -> Unit) {
+private fun PrioritySelector(
+    currentPriority: Priority,
+    onPriorityChanged: (Priority) -> Unit
+) {
     var priority by remember {
-        mutableStateOf(Priority.NORMAL)
+        mutableStateOf(currentPriority)
     }
 
     Row(

@@ -116,5 +116,15 @@ class ListWithNotesConverterTest {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun `convertStringToNotes one item`() {
+        val text = "Sizes: 1) 50 cm"
+        val actual = converter.convertStringToNotes(text)
+        val expected = listOf(
+            "50 cm"
+        )
+        assertEquals(expected, actual)
+    }
+
 
 }

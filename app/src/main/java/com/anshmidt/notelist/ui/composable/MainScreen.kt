@@ -57,6 +57,7 @@ fun MainScreen(
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetContent = { BottomSheet(
             screenMode = screenModeState,
+            selectedNote = selectedNoteState,
             onPutBackClicked = {
                 viewModel.onPutBackClicked(selectedNoteState)
                 coroutineScope.launch { bottomSheetState.hide() }
