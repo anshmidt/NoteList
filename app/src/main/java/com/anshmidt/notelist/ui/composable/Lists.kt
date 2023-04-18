@@ -41,7 +41,10 @@ fun ListMenu(
                     expanded = false
                     onListSelected(item)
                 }) {
-                    Text(text = item.name)
+                    DropdownMenuItemContent(
+                        item = item,
+                        isSelected = item.id == defaultSelectedItem.id
+                    )
                 }
             }
 
@@ -67,4 +70,16 @@ fun SelectedListTitle(listTitle: String) {
         color = MaterialTheme.colors.primary,
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+@Composable
+fun DropdownMenuItemContent(item: ListEntity, isSelected: Boolean) {
+    if (isSelected) {
+        Text(
+            text = item.name,
+            color = MaterialTheme.colors.primary
+        )
+    } else {
+        Text(text = item.name)
+    }
 }
