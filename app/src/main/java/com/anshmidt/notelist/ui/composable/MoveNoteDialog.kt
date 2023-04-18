@@ -65,16 +65,17 @@ private fun MoveNoteDialogContent(
     onListSelected: (ListEntity) -> Unit,
     modifier: Modifier
 ) {
+    val sortedLists = lists.sortedByDescending { it.timestamp }
     LazyColumn(modifier) {
         items(
-            count = lists.size
+            count = sortedLists.size
         ) { key ->
             Text(
-                text = lists[key].name,
+                text = sortedLists[key].name,
                 modifier = Modifier
                     .padding(horizontal = 24.dp, vertical = 10.dp)
                     .clickable {
-                        onListSelected(lists[key])
+                        onListSelected(sortedLists[key])
                     }
             )
         }
