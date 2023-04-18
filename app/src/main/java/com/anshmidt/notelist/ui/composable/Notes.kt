@@ -385,7 +385,8 @@ fun NoteText(
                     focusedBorderColor = MaterialTheme.colors.primary,
                     unfocusedBorderColor = Color.Transparent
                 ),
-                textStyle = getNoteTextStyle(priority = note.priority),
+                textStyle = getNoteTextStyle(priority = note.priority)
+                    .copy(fontSize = Notes.NOTE_FONT_SIZE),
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .bringIntoViewRequester(bringIntoViewRequester)
@@ -401,7 +402,8 @@ fun NoteText(
         is ScreenMode.View, ScreenMode.Trash -> {
             Text(
                 text = note.text,
-                style = getNoteTextStyle(priority = note.priority),
+                style = getNoteTextStyle(priority = note.priority)
+                    .copy(fontSize = Notes.NOTE_FONT_SIZE),
                 modifier = Modifier
                     .padding(17.dp)
             )
@@ -413,17 +415,14 @@ fun NoteText(
 internal fun getNoteTextStyle(priority: Priority): TextStyle {
     return when (priority) {
         Priority.MAJOR -> LocalTextStyle.current.copy(
-            fontSize = Notes.NOTE_FONT_SIZE,
             color = MaterialTheme.colors.onBackground,
             fontWeight = FontWeight.Bold
         )
         Priority.NORMAL -> LocalTextStyle.current.copy(
-            fontSize = Notes.NOTE_FONT_SIZE,
             color = MaterialTheme.colors.onBackground,
             fontWeight = FontWeight.Normal
         )
         Priority.MINOR -> LocalTextStyle.current.copy(
-            fontSize = Notes.NOTE_FONT_SIZE,
             color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
             fontWeight = FontWeight.Normal
         )

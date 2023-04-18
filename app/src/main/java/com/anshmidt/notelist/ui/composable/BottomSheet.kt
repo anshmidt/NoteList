@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
 import com.anshmidt.notelist.datasources.database.*
+import com.anshmidt.notelist.ui.composable.getNoteTextStyle
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 
 @Composable
@@ -140,6 +141,7 @@ private fun PrioritySelector(
         )
         Text(
             text = priority.convertToString(LocalContext.current),
+            style = getNoteTextStyle(priority = priority),
             fontSize = 20.sp
         )
         PrioritySelectorIcon(
