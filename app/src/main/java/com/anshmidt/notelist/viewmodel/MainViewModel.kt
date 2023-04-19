@@ -65,8 +65,14 @@ class MainViewModel(
         }.launchIn(viewModelScope + Dispatchers.IO)
     }
 
-    private fun displayNotesMatchingSearchQuery(searchQuery: String) {
-        noteRepository.getNotesMatchingSearchQuery(searchQuery = searchQuery).onEach { notesWithListEntity ->
+    private fun displayNotesMatchingSearchQuery(searchQuery: String, screenMode: ScreenMode) {
+        val matchingNotesFlow = if (screenMode == ScreenMode.Trash) {
+            noteRepository.getNotesInTrashMatchingSearchQuery(searchQuery = searchQuery)
+        } else {
+            noteRepository.getNotesMatchingSearchQuery(searchQuery = searchQuery)
+        }
+
+        matchingNotesFlow.onEach { notesWithListEntity ->
             if (!_searchQueryState.value.isNullOrEmpty()) {
                 val notes = notesWithListEntity.map { noteWithListEntity ->
                     noteWithListEntity.toNoteEntity()
@@ -360,7 +366,8 @@ class MainViewModel(
         // It doesn't make sense to show search results if query too short
         if (newSearchQuery.length > 1) {
             displayNotesMatchingSearchQuery(
-                searchQuery = newSearchQuery
+                searchQuery = newSearchQuery,
+                screenMode = _screenModeState.value
             )
         } else {
             _notesUiState.value = _notesUiState.value.copy(notes = emptyList())

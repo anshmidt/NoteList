@@ -23,6 +23,14 @@ interface NoteDao {
             "${ListEntity.TABLE}.${ListEntity.NAME_COLUMN} AS ${NoteWithListEntity.LIST_NAME_COLUMN} "+
             "FROM ${NoteEntity.TABLE} INNER JOIN ${ListEntity.TABLE} "+
             "ON ${NoteEntity.TABLE}.${NoteEntity.LIST_ID_COLUMN} = ${ListEntity.TABLE}.${ListEntity.ID_COLUMN} "+
+            "WHERE ${NoteEntity.TABLE}.${NoteEntity.IN_TRASH_COLUMN}=1 "+
+            "AND ${NoteEntity.TABLE}.${NoteEntity.TEXT_COLUMN} LIKE '%' || :searchQuery || '%'")
+    fun getNotesInTrashMatchingSearchQuery(searchQuery: String): Flow<List<NoteWithListEntity>>
+
+    @Query("SELECT ${NoteEntity.TABLE}.*, "+
+            "${ListEntity.TABLE}.${ListEntity.NAME_COLUMN} AS ${NoteWithListEntity.LIST_NAME_COLUMN} "+
+            "FROM ${NoteEntity.TABLE} INNER JOIN ${ListEntity.TABLE} "+
+            "ON ${NoteEntity.TABLE}.${NoteEntity.LIST_ID_COLUMN} = ${ListEntity.TABLE}.${ListEntity.ID_COLUMN} "+
             "WHERE ${NoteEntity.TABLE}.${NoteEntity.IN_TRASH_COLUMN}=1")
     fun getAllNotesInTrash(): Flow<List<NoteWithListEntity>>
 
