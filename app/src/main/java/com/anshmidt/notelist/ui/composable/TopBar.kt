@@ -288,7 +288,7 @@ private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> U
         maxLines = 1,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Ascii,
+            keyboardType = KeyboardType.Text,
             autoCorrect = false,
             imeAction = ImeAction.Done
         ),
