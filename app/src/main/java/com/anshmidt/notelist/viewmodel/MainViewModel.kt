@@ -173,9 +173,7 @@ class MainViewModel(
             // Currently selected list is getting removed, so we should open another list
             listRepository.getAnyOtherListId(listId = selectedList.id).first { newSelectedListId ->
                 listRepository.saveLastOpenedList(newSelectedListId)
-                //noteRepository.deleteAllNotesFromList(selectedList.id)
                 noteRepository.moveToTrashAllNotesFromList(listId = selectedList.id)
-                //listRepository.deleteList(selectedList)
                 listRepository.moveListToTrash(listId = selectedList.id)
                 return@first true
             }
@@ -243,8 +241,10 @@ class MainViewModel(
             noteRepository.updateNote(noteWithUpdatedTime)
 
             // If the note is edited, we also update timestamp on the list
-            val listWithUpdatedTime = _listsUiState.value.selectedList.copy(timestamp = currentTime)
-            listRepository.updateList(listWithUpdatedTime)
+            listRepository.updateTimestamp(
+                listId = _listsUiState.value.selectedList.id,
+                timestamp = currentTime
+            )
         }
     }
 
@@ -253,11 +253,34 @@ class MainViewModel(
         displayNotesInTrash()
     }
 
-    fun onNoteMovedToAnotherList(selectedList: ListEntity, selectedNote: NoteEntity?) {
+    fun onNoteMovedToAnotherList(destinationList: ListEntity, selectedNote: NoteEntity?) {
         if (selectedNote == null) return
         viewModelScope.launch(Dispatchers.IO) {
-            val updatedNote = selectedNote.copy(listId = selectedList.id)
+            val updatedNote = selectedNote.copy(listId = destinationList.id)
             noteRepository.updateNote(updatedNote)
+
+            // We update timestamp of the note if it's moved to another list
+            noteRepository.updateTimestamp(
+                noteId = updatedNote.id,
+                timestamp = System.currentTimeMillis()
+            )
+
+            // If the note is moved from first list to second list, we also update timestamp on both lists
+            val fromList = _listsUiState.value.selectedList
+            val toList = destinationList
+
+            val fromListTimestamp = System.currentTimeMillis()
+            val toListTimestamp = fromListTimestamp + 1  // destination list has more recent timestamp
+
+            listRepository.updateTimestamp(
+                listId = fromList.id,
+                timestamp = fromListTimestamp
+            )
+
+            listRepository.updateTimestamp(
+                listId = toList.id,
+                timestamp = toListTimestamp
+            )
         }
     }
 
@@ -307,8 +330,10 @@ class MainViewModel(
             }
 
             // After the notes are imported, we update timestamp on the list
-            val listWithUpdatedTime = _listsUiState.value.selectedList.copy(timestamp = System.currentTimeMillis())
-            listRepository.updateList(listWithUpdatedTime)
+            listRepository.updateTimestamp(
+                listId = _listsUiState.value.selectedList.id,
+                timestamp = System.currentTimeMillis()
+            )
         }
     }
 
