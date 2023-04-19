@@ -19,8 +19,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anshmidt.notelist.R
 import com.anshmidt.notelist.datasources.database.ListEntity
 import com.anshmidt.notelist.ui.ListPreviewProvider
@@ -239,7 +242,7 @@ private fun NavigationIconOrNull(
     }} else null
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
     val focusRequester = remember { FocusRequester() }
@@ -253,13 +256,21 @@ private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> U
             .padding(end = 17.dp)
             .focusRequester(focusRequester),
         colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = MaterialTheme.colors.background,
+            backgroundColor = MaterialTheme.colors.background
+        ),
+        textStyle = LocalTextStyle.current.copy(
+            textDecoration = TextDecoration.None,
+            fontSize = 18.sp
         ),
         value = searchQuery,
         onValueChange = onSearchQueryChanged,
         maxLines = 1,
         singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Ascii,
+            autoCorrect = false,
+            imeAction = ImeAction.Done
+        ),
         keyboardActions = KeyboardActions(onDone = {
             keyboardController?.hide()
         })
