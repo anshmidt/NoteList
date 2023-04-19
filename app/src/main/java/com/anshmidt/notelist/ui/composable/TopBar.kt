@@ -48,7 +48,8 @@ fun TopBar(
     onAddNotesFromClipboardClicked: () -> Unit,
     onEmptyTrashClicked: () -> Unit,
     onSearchIconClicked: () -> Unit,
-    onSearchQueryChanged: (String) -> Unit
+    onSearchQueryChanged: (String) -> Unit,
+    onClearSearchFieldIconClicked: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -79,6 +80,8 @@ fun TopBar(
                 MoreIcon(onClick = {
                     isMenuExpanded = !isMenuExpanded
                 })
+            } else {
+                ClearSearchFieldIcon(onClearSearchFieldIconClicked = onClearSearchFieldIconClicked)
             }
             DropdownMenu(
                 expanded = isMenuExpanded,
@@ -194,6 +197,17 @@ private fun SearchIcon(onSearchIconClicked: () -> Unit) {
 }
 
 @Composable
+private fun ClearSearchFieldIcon(onClearSearchFieldIconClicked: () -> Unit) {
+    IconButton(onClick = onClearSearchFieldIconClicked) {
+        Icon(
+            imageVector = Icons.Filled.Close,
+            contentDescription = null,
+            tint = MaterialTheme.colors.primary
+        )
+    }
+}
+
+@Composable
 private fun DoneIcon(onDoneIconClicked: () -> Unit) {
     IconButton(onClick = onDoneIconClicked) {
         Icon(
@@ -242,7 +256,7 @@ private fun NavigationIconOrNull(
     }} else null
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
     val focusRequester = remember { FocusRequester() }
