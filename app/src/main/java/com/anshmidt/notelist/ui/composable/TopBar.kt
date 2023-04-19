@@ -270,6 +270,7 @@ private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> U
             .padding(end = 17.dp)
             .focusRequester(focusRequester),
         colors = TextFieldDefaults.textFieldColors(
+            textColor = MaterialTheme.colors.primary,
             backgroundColor = MaterialTheme.colors.background
         ),
         textStyle = LocalTextStyle.current.copy(
@@ -277,6 +278,12 @@ private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> U
             fontSize = 18.sp
         ),
         value = searchQuery,
+        placeholder = {
+            Text(
+                text = stringResource(id = R.string.search_field_hint),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.2f)
+            )
+        },
         onValueChange = onSearchQueryChanged,
         maxLines = 1,
         singleLine = true,

@@ -28,4 +28,6 @@
     <string name="priority_minor">Minor</string>
     <string name="priority_normal">Normal</string>
     <string name="priority_major">Major</string>
+
+    <string name="search_field_hint">Search notes</string>
 </resources>
