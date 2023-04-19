@@ -247,12 +247,12 @@ private fun NavigationIconOrNull(
     onUpIconInTrashClicked: () -> Unit,
     onUpIconForSearchClicked: () -> Unit
 ): @Composable (() -> Unit)? {
-    return if (screenMode is ScreenMode.Edit) {{
+    return if (searchQuery != null) {{
+        UpIcon(onUpIconForSearchClicked)
+    }} else if (screenMode is ScreenMode.Edit) {{
         DoneIcon(onDoneIconClicked)
     }} else if (screenMode is ScreenMode.Trash) {{
         UpIcon(onUpIconInTrashClicked)
-    }} else if (searchQuery != null) {{
-        UpIcon(onUpIconForSearchClicked)
     }} else null
 }
 

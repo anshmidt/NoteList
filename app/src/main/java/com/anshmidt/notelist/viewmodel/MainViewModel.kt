@@ -253,7 +253,11 @@ class MainViewModel(
 
     fun onUpIconForSearchClicked() {
         _searchQueryState.value = null
-        displayNotes()
+        if (_screenModeState.value == ScreenMode.Trash) {
+            displayNotesInTrash()
+        } else {
+            displayNotes()
+        }
     }
 
     fun onNoteEdited(note: NoteEntity) {
