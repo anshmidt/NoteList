@@ -114,6 +114,7 @@ fun MainScreen(
                 Notes(
                     notes = notesUiState.notes,
                     screenMode = screenModeState,
+                    searchQuery = searchQueryState,
                     onNoteClicked = { clickedNote ->
                         viewModel.onNoteClicked(clickedNote)
                     },

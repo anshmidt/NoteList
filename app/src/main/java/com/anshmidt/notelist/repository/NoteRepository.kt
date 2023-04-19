@@ -22,6 +22,10 @@ class NoteRepository(
         return appDatabase.noteDao().getAllNotesInTrash()
     }
 
+    fun getNotesMatchingSearchQuery(searchQuery: String): Flow<List<NoteWithListEntity>> {
+        return appDatabase.noteDao().getNotesMatchingSearchQuery(searchQuery)
+    }
+
     suspend fun moveNoteToTrash(noteId: Int) {
         appDatabase.noteDao().moveNoteToTrash(noteId = noteId)
     }

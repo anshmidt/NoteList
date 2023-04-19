@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 fun Notes(
     notes: List<NoteEntity>,
     screenMode: ScreenMode,
+    searchQuery: String?,
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteDismissed: (NoteEntity) -> Unit,
@@ -47,7 +48,7 @@ fun Notes(
     val coroutineScope = rememberCoroutineScope()
 
     if (notes.isEmpty()) {
-        NoNotesScreen(screenMode)
+        NoNotesScreen(screenMode = screenMode, searchQuery = searchQuery)
         return
     }
 
@@ -471,7 +472,7 @@ fun PriorityHeader(priority: Priority) {
 }
 
 @Composable
-fun NoNotesScreen(screenMode: ScreenMode) {
+fun NoNotesScreen(screenMode: ScreenMode, searchQuery: String?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -479,15 +480,23 @@ fun NoNotesScreen(screenMode: ScreenMode) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = if (screenMode == ScreenMode.Trash) {
-                stringResource(id = R.string.no_notes_in_trash_title)
-            } else {
-                stringResource(id = R.string.no_notes_title)
-            },
-            color = MaterialTheme.colors.onBackground.copy(alpha = 0.4f),
-            textAlign = TextAlign.Center
-        )
+        // If search query is null, but there is no notes to display, an empty screen is shown
+        if (searchQuery == null) {
+            Text(
+                text = getNoNotesScreenTitle(screenMode = screenMode),
+                color = MaterialTheme.colors.onBackground.copy(alpha = 0.4f),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun getNoNotesScreenTitle(screenMode: ScreenMode): String {
+    return if (screenMode == ScreenMode.Trash) {
+        stringResource(id = R.string.no_notes_in_trash_title)
+    } else {
+        stringResource(id = R.string.no_notes_title)
     }
 }
 

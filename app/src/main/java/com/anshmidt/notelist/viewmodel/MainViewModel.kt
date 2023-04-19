@@ -45,7 +45,8 @@ class MainViewModel(
             noteRepository.getNotesInList(lastOpenedListId)
         }.onEach { notes ->
             // Do nothing in case of Trash mode
-            if (_screenModeState.value !is ScreenMode.Trash) {
+            if ((_screenModeState.value !is ScreenMode.Trash) &&
+                (_searchQueryState.value == null)) {
                 val sortedNotes = notes.sortedByDescending { it.timestamp }
                 _notesUiState.value = NotesUiState(notes = sortedNotes)
             }
@@ -55,6 +56,18 @@ class MainViewModel(
     private fun displayNotesInTrash() {
         noteRepository.getAllNotesInTrash().onEach { notesWithListEntity ->
             if (_screenModeState.value == ScreenMode.Trash) {
+                val notes = notesWithListEntity.map { noteWithListEntity ->
+                    noteWithListEntity.toNoteEntity()
+                }
+                val sortedNotes = notes.sortedByDescending { it.timestamp }
+                _notesUiState.value = NotesUiState(notes = sortedNotes)
+            }
+        }.launchIn(viewModelScope + Dispatchers.IO)
+    }
+
+    private fun displayNotesMatchingSearchQuery(searchQuery: String) {
+        noteRepository.getNotesMatchingSearchQuery(searchQuery = searchQuery).onEach { notesWithListEntity ->
+            if (!_searchQueryState.value.isNullOrEmpty()) {
                 val notes = notesWithListEntity.map { noteWithListEntity ->
                     noteWithListEntity.toNoteEntity()
                 }
@@ -142,10 +155,6 @@ class MainViewModel(
                     timestamp = System.currentTimeMillis()
                 )
             }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-
         }
     }
 
@@ -238,6 +247,7 @@ class MainViewModel(
 
     fun onUpIconForSearchClicked() {
         _searchQueryState.value = null
+        displayNotes()
     }
 
     fun onNoteEdited(note: NoteEntity) {
@@ -342,14 +352,24 @@ class MainViewModel(
 
     fun onSearchIconClicked() {
         _searchQueryState.value = ""
+        _notesUiState.value = _notesUiState.value.copy(notes = emptyList())
     }
 
     fun onSearchQueryChanged(newSearchQuery: String) {
         _searchQueryState.value = newSearchQuery
+        // It doesn't make sense to show search results if query too short
+        if (newSearchQuery.length > 1) {
+            displayNotesMatchingSearchQuery(
+                searchQuery = newSearchQuery
+            )
+        } else {
+            _notesUiState.value = _notesUiState.value.copy(notes = emptyList())
+        }
     }
 
     fun onClearSearchFieldIconClicked() {
         _searchQueryState.value = ""
+        _notesUiState.value = _notesUiState.value.copy(notes = emptyList())
     }
 
     companion object {
