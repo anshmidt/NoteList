@@ -265,21 +265,10 @@ class MainViewModel(
                 timestamp = System.currentTimeMillis()
             )
 
-            // If the note is moved from first list to second list, we also update timestamp on both lists
-            val fromList = _listsUiState.value.selectedList
-            val toList = destinationList
-
-            val fromListTimestamp = System.currentTimeMillis()
-            val toListTimestamp = fromListTimestamp + 1  // destination list has more recent timestamp
-
+            // If the note is moved from first list to second list, we also update timestamp on destination list
             listRepository.updateTimestamp(
-                listId = fromList.id,
-                timestamp = fromListTimestamp
-            )
-
-            listRepository.updateTimestamp(
-                listId = toList.id,
-                timestamp = toListTimestamp
+                listId = destinationList.id,
+                timestamp = System.currentTimeMillis()
             )
         }
     }
