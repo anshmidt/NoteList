@@ -433,9 +433,11 @@ internal fun getNoteTextStyle(priority: Priority): TextStyle {
 @Composable
 fun AddNoteButton(
     onAddNoteButtonClicked: () -> Unit,
-    screenMode: ScreenMode
+    screenMode: ScreenMode,
+    searchQuery: String?
 ) {
     if (screenMode == ScreenMode.Trash) return
+    if (searchQuery != null) return
     FloatingActionButton(
         onClick = {
             onAddNoteButtonClicked()
