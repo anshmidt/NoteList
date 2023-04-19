@@ -66,6 +66,7 @@ fun Notes(
             coroutineScope = coroutineScope,
             listState = listState,
             screenMode = screenMode,
+            searchQuery = searchQuery,
             onNoteClicked = onNoteClicked,
             onNoteLongClicked = onNoteLongClicked,
             onNoteEdited = onNoteEdited,
@@ -81,6 +82,7 @@ fun Notes(
             coroutineScope = coroutineScope,
             listState = listState,
             screenMode = screenMode,
+            searchQuery = searchQuery,
             onNoteClicked = onNoteClicked,
             onNoteLongClicked = onNoteLongClicked,
             onNoteEdited = onNoteEdited,
@@ -96,6 +98,7 @@ fun Notes(
             coroutineScope = coroutineScope,
             listState = listState,
             screenMode = screenMode,
+            searchQuery = searchQuery,
             onNoteClicked = onNoteClicked,
             onNoteLongClicked = onNoteLongClicked,
             onNoteEdited = onNoteEdited,
@@ -114,6 +117,7 @@ private fun lazyColumnItemsWithPriorityHeader(
     coroutineScope: CoroutineScope,
     listState: LazyListState,
     screenMode: ScreenMode,
+    searchQuery: String?,
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
@@ -144,6 +148,7 @@ private fun lazyColumnItemsWithPriorityHeader(
             Note(
                 noteEntity = noteEntity,
                 screenMode = screenMode,
+                searchQuery = searchQuery,
                 onNoteClicked = onNoteClicked,
                 onNoteLongClicked = onNoteLongClicked,
                 onNoteEdited = onNoteEdited,
@@ -195,6 +200,7 @@ private fun lazyColumnItemsWithPriorityHeader(
                     Note(
                         noteEntity = noteEntity,
                         screenMode = screenMode,
+                        searchQuery = searchQuery,
                         onNoteClicked = onNoteClicked,
                         onNoteLongClicked = onNoteLongClicked,
                         onNoteEdited = onNoteEdited,
@@ -217,6 +223,7 @@ private fun lazyColumnItemsWithPriorityHeader(
 private fun Note(
     noteEntity: NoteEntity,
     screenMode: ScreenMode,
+    searchQuery: String?,
     onNoteClicked: (NoteEntity) -> Unit,
     onNoteLongClicked: (NoteEntity) -> Unit,
     onNoteEdited: (NoteEntity) -> Unit,
@@ -248,6 +255,7 @@ private fun Note(
         NoteCardContent(
             note = noteEntity,
             screenMode = screenMode,
+            searchQuery = searchQuery,
             isNoteSelected = isSelected,
             onNoteEdited = onNoteEdited,
             listState = listState,
@@ -269,6 +277,7 @@ private fun getNoteBackground(isNoteSelected: Boolean, screenMode: ScreenMode): 
 private fun NoteCardContent(
     note: NoteEntity,
     screenMode: ScreenMode,
+    searchQuery: String?,
     isNoteSelected: Boolean,
     onNoteEdited: (NoteEntity) -> Unit,
     listState: LazyListState,
@@ -281,7 +290,8 @@ private fun NoteCardContent(
     Column {
         ListName(
             listName = note.listName,
-            screenMode = screenMode
+            screenMode = screenMode,
+            searchQuery = searchQuery
         )
         if (shouldDisplayTimestamp) {
             Timestamp(timestamp = note.timestamp)
@@ -323,9 +333,10 @@ fun PriorityTag(priority: Priority) {
 @Composable
 fun ListName(
     listName: String?,
-    screenMode: ScreenMode
+    screenMode: ScreenMode,
+    searchQuery: String?
 ) {
-    if (screenMode is ScreenMode.Trash) {
+    if ((screenMode is ScreenMode.Trash) || (searchQuery != null)) {
         if (!listName.isNullOrEmpty()) {
             Text(
                 text = listName,
