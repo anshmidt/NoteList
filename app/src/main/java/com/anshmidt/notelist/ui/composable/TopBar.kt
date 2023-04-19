@@ -3,17 +3,22 @@ package com.anshmidt.notelist.ui.composable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.R
@@ -66,10 +71,12 @@ fun TopBar(
             onUpIconForSearchClicked = onUpIconForSearchClicked
         ),
         actions = {
-            SearchIcon(onSearchIconClicked = onSearchIconClicked)
-            MoreIcon(onClick = {
-                isMenuExpanded = !isMenuExpanded
-            })
+            if (searchQuery == null) {
+                SearchIcon(onSearchIconClicked = onSearchIconClicked)
+                MoreIcon(onClick = {
+                    isMenuExpanded = !isMenuExpanded
+                })
+            }
             DropdownMenu(
                 expanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false }
@@ -232,16 +239,18 @@ private fun NavigationIconOrNull(
     }} else null
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
     val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
     SideEffect {
         focusRequester.requestFocus()
     }
     TextField(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 2.dp)
+            .padding(end = 17.dp)
             .focusRequester(focusRequester),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = MaterialTheme.colors.background,
@@ -250,5 +259,9 @@ private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> U
         onValueChange = onSearchQueryChanged,
         maxLines = 1,
         singleLine = true,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+            keyboardController?.hide()
+        })
     )
 }
