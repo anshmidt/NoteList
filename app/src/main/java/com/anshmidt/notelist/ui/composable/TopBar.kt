@@ -39,7 +39,8 @@ fun TopBar(
     onCopyListToClipboardClicked: () -> Unit,
     onAddNotesFromClipboardClicked: () -> Unit,
     onEmptyTrashClicked: () -> Unit,
-    onSearchIconClicked: () -> Unit
+    onSearchIconClicked: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -52,7 +53,8 @@ fun TopBar(
                 lists = lists,
                 selectedList = selectedList,
                 onListSelected = onListSelected,
-                onAddNewListButtonClicked = onAddNewListButtonClicked
+                onAddNewListButtonClicked = onAddNewListButtonClicked,
+                onSearchQueryChanged = onSearchQueryChanged
             )
         },
         backgroundColor = Color.Transparent,
@@ -135,10 +137,14 @@ private fun TopBarTitle(
     lists: List<ListEntity>,
     selectedList: ListEntity,
     onListSelected: (ListEntity) -> Unit,
-    onAddNewListButtonClicked: () -> Unit
+    onAddNewListButtonClicked: () -> Unit,
+    onSearchQueryChanged: (String) -> Unit
 ) {
     if (searchQuery != null) {
-        SearchField()
+        SearchField(
+            searchQuery = searchQuery,
+            onSearchQueryChanged = onSearchQueryChanged
+        )
         return
     }
     when (screenMode) {
@@ -227,10 +233,7 @@ private fun NavigationIconOrNull(
 }
 
 @Composable
-private fun SearchField() {
-    val searchQuery by remember {
-        mutableStateOf("")
-    }
+private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
     val focusRequester = remember { FocusRequester() }
     SideEffect {
         focusRequester.requestFocus()
@@ -240,7 +243,12 @@ private fun SearchField() {
             .fillMaxSize()
             .padding(vertical = 2.dp)
             .focusRequester(focusRequester),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = MaterialTheme.colors.background,
+        ),
         value = searchQuery,
-        onValueChange = {}
+        onValueChange = onSearchQueryChanged,
+        maxLines = 1,
+        singleLine = true,
     )
 }

@@ -99,7 +99,8 @@ fun MainScreen(
                     onCopyListToClipboardClicked = viewModel::onCopyListToClipboardClicked,
                     onAddNotesFromClipboardClicked = viewModel::onAddNotesFromClipboardClicked,
                     onEmptyTrashClicked = viewModel::onEmptyTrashClicked,
-                    onSearchIconClicked = viewModel::onSearchIconClicked
+                    onSearchIconClicked = viewModel::onSearchIconClicked,
+                    onSearchQueryChanged = viewModel::onSearchQueryChanged
                 )
             },
             floatingActionButton = {

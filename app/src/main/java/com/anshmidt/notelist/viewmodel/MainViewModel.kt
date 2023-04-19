@@ -344,6 +344,10 @@ class MainViewModel(
         _searchQueryState.value = ""
     }
 
+    fun onSearchQueryChanged(newSearchQuery: String) {
+        _searchQueryState.value = newSearchQuery
+    }
+
     companion object {
         val TAG = MainViewModel::class.java.simpleName
     }
