@@ -30,6 +30,9 @@ class MainViewModel(
     private val _selectedNoteState: MutableStateFlow<NoteEntity?> = MutableStateFlow(null)
     val selectedNoteState: StateFlow<NoteEntity?> = _selectedNoteState.asStateFlow()
 
+    private val _searchQueryState: MutableStateFlow<String?> = MutableStateFlow(null)
+    val searchQueryState: StateFlow<String?> = _searchQueryState.asStateFlow()
+
 
     init {
         displayNotes()
@@ -227,10 +230,14 @@ class MainViewModel(
         }
     }
 
-    fun onUpIconClicked() {
+    fun onUpIconInTrashClicked() {
         // Return from Trash mode to View mode
         _screenModeState.value = ScreenMode.View
         displayNotes()
+    }
+
+    fun onUpIconForSearchClicked() {
+        _searchQueryState.value = null
     }
 
     fun onNoteEdited(note: NoteEntity) {
@@ -331,6 +338,10 @@ class MainViewModel(
             noteRepository.deleteAllNotesThatAreInTrash()
             listRepository.deleteAllListsThatAreInTrash()
         }
+    }
+
+    fun onSearchIconClicked() {
+        _searchQueryState.value = ""
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package com.anshmidt.notelist.ui.composable
 
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -8,6 +9,8 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -23,17 +26,20 @@ import com.anshmidt.notelist.ui.uistate.ScreenMode
 fun TopBar(
     lists: List<ListEntity>,
     screenMode: ScreenMode,
+    searchQuery: String?,
     @PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity,
     onListSelected: (ListEntity) -> Unit,
     onMoveListToTrashClicked: (ListEntity) -> Unit,
     onAddNewListButtonClicked: () -> Unit,
     onDoneIconClicked: () -> Unit,
-    onUpIconClicked: () -> Unit,
+    onUpIconInTrashClicked: () -> Unit,
+    onUpIconForSearchClicked: () -> Unit,
     onRenameListIconClicked: () -> Unit,
     onOpenTrashClicked: () -> Unit,
     onCopyListToClipboardClicked: () -> Unit,
     onAddNotesFromClipboardClicked: () -> Unit,
-    onEmptyTrashClicked: () -> Unit
+    onEmptyTrashClicked: () -> Unit,
+    onSearchIconClicked: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -42,6 +48,7 @@ fun TopBar(
         title = {
             TopBarTitle(
                 screenMode = screenMode,
+                searchQuery = searchQuery,
                 lists = lists,
                 selectedList = selectedList,
                 onListSelected = onListSelected,
@@ -51,11 +58,13 @@ fun TopBar(
         backgroundColor = Color.Transparent,
         navigationIcon = NavigationIconOrNull(
             screenMode = screenMode,
+            searchQuery = searchQuery,
             onDoneIconClicked = onDoneIconClicked,
-            onUpIconClicked = onUpIconClicked
+            onUpIconInTrashClicked = onUpIconInTrashClicked,
+            onUpIconForSearchClicked = onUpIconForSearchClicked
         ),
         actions = {
-            SearchIcon()
+            SearchIcon(onSearchIconClicked = onSearchIconClicked)
             MoreIcon(onClick = {
                 isMenuExpanded = !isMenuExpanded
             })
@@ -122,11 +131,16 @@ fun TopBar(
 @Composable
 private fun TopBarTitle(
     screenMode: ScreenMode,
+    searchQuery: String?,
     lists: List<ListEntity>,
     selectedList: ListEntity,
     onListSelected: (ListEntity) -> Unit,
     onAddNewListButtonClicked: () -> Unit
 ) {
+    if (searchQuery != null) {
+        SearchField()
+        return
+    }
     when (screenMode) {
         is ScreenMode.View, is ScreenMode.Edit -> {
             ListMenu(
@@ -153,8 +167,8 @@ private fun MenuItem(icon: ImageVector, text: String, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SearchIcon() {
-    IconButton(onClick = {/* Do Something*/ }) {
+private fun SearchIcon(onSearchIconClicked: () -> Unit) {
+    IconButton(onClick = onSearchIconClicked) {
         Icon(
             imageVector = Icons.Filled.Search,
             contentDescription = null,
@@ -198,12 +212,35 @@ private fun MoreIcon(onClick: () -> Unit) {
 
 private fun NavigationIconOrNull(
     screenMode: ScreenMode,
+    searchQuery: String?,
     onDoneIconClicked: () -> Unit,
-    onUpIconClicked: () -> Unit
+    onUpIconInTrashClicked: () -> Unit,
+    onUpIconForSearchClicked: () -> Unit
 ): @Composable (() -> Unit)? {
     return if (screenMode is ScreenMode.Edit) {{
         DoneIcon(onDoneIconClicked)
     }} else if (screenMode is ScreenMode.Trash) {{
-        UpIcon(onUpIconClicked)
+        UpIcon(onUpIconInTrashClicked)
+    }} else if (searchQuery != null) {{
+        UpIcon(onUpIconForSearchClicked)
     }} else null
+}
+
+@Composable
+private fun SearchField() {
+    val searchQuery by remember {
+        mutableStateOf("")
+    }
+    val focusRequester = remember { FocusRequester() }
+    SideEffect {
+        focusRequester.requestFocus()
+    }
+    TextField(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 2.dp)
+            .focusRequester(focusRequester),
+        value = searchQuery,
+        onValueChange = {}
+    )
 }

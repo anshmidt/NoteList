@@ -26,6 +26,7 @@ fun MainScreen(
     val notesUiState by viewModel.notesUiState.collectAsState()
     val screenModeState by viewModel.screenModeState.collectAsState()
     val selectedNoteState by viewModel.selectedNoteState.collectAsState()
+    val searchQueryState by viewModel.searchQueryState.collectAsState()
 
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden
@@ -77,6 +78,7 @@ fun MainScreen(
                 TopBar(
                     lists = listsUiState.lists,
                     screenMode = screenModeState,
+                    searchQuery = searchQueryState,
                     selectedList = listsUiState.selectedList,
                     onMoveListToTrashClicked = { selectedList ->
                         viewModel.onMoveListToTrashClicked(selectedList)
@@ -88,14 +90,16 @@ fun MainScreen(
                         newListNameDialogOpened = !newListNameDialogOpened
                     },
                     onDoneIconClicked = viewModel::onDoneIconClicked,
-                    onUpIconClicked = viewModel::onUpIconClicked,
+                    onUpIconInTrashClicked = viewModel::onUpIconInTrashClicked,
+                    onUpIconForSearchClicked = viewModel::onUpIconForSearchClicked,
                     onRenameListIconClicked = {
                         renameListDialogOpened = !renameListDialogOpened
                     },
                     onOpenTrashClicked = viewModel::onOpenTrashClicked,
                     onCopyListToClipboardClicked = viewModel::onCopyListToClipboardClicked,
                     onAddNotesFromClipboardClicked = viewModel::onAddNotesFromClipboardClicked,
-                    onEmptyTrashClicked = viewModel::onEmptyTrashClicked
+                    onEmptyTrashClicked = viewModel::onEmptyTrashClicked,
+                    onSearchIconClicked = viewModel::onSearchIconClicked
                 )
             },
             floatingActionButton = {
