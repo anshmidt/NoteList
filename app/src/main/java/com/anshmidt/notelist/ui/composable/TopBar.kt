@@ -14,6 +14,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -49,7 +50,8 @@ fun TopBar(
     onEmptyTrashClicked: () -> Unit,
     onSearchIconClicked: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
-    onClearSearchFieldIconClicked: () -> Unit
+    onClearSearchFieldIconClicked: () -> Unit,
+    onSearchFieldFocused: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -63,7 +65,8 @@ fun TopBar(
                 selectedList = selectedList,
                 onListSelected = onListSelected,
                 onAddNewListButtonClicked = onAddNewListButtonClicked,
-                onSearchQueryChanged = onSearchQueryChanged
+                onSearchQueryChanged = onSearchQueryChanged,
+                onSearchFieldFocused = onSearchFieldFocused
             )
         },
         backgroundColor = Color.Transparent,
@@ -151,12 +154,14 @@ private fun TopBarTitle(
     selectedList: ListEntity,
     onListSelected: (ListEntity) -> Unit,
     onAddNewListButtonClicked: () -> Unit,
-    onSearchQueryChanged: (String) -> Unit
+    onSearchQueryChanged: (String) -> Unit,
+    onSearchFieldFocused: () -> Unit
 ) {
     if (searchQuery != null) {
         SearchField(
             searchQuery = searchQuery,
-            onSearchQueryChanged = onSearchQueryChanged
+            onSearchQueryChanged = onSearchQueryChanged,
+            onSearchFieldFocused = onSearchFieldFocused
         )
         return
     }
@@ -258,7 +263,11 @@ private fun NavigationIconOrNull(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
+private fun SearchField(
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
+    onSearchFieldFocused: () -> Unit
+) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     SideEffect {
@@ -268,7 +277,12 @@ private fun SearchField(searchQuery: String, onSearchQueryChanged: (String) -> U
         modifier = Modifier
             .fillMaxSize()
             .padding(end = 17.dp)
-            .focusRequester(focusRequester),
+            .focusRequester(focusRequester)
+            .onFocusChanged {
+                if (it.isFocused) {
+                    onSearchFieldFocused()
+                }
+            },
         colors = TextFieldDefaults.textFieldColors(
             textColor = MaterialTheme.colors.primary,
             backgroundColor = MaterialTheme.colors.background

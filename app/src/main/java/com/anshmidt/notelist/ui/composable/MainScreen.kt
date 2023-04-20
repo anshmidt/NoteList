@@ -101,7 +101,8 @@ fun MainScreen(
                     onEmptyTrashClicked = viewModel::onEmptyTrashClicked,
                     onSearchIconClicked = viewModel::onSearchIconClicked,
                     onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                    onClearSearchFieldIconClicked = viewModel::onClearSearchFieldIconClicked
+                    onClearSearchFieldIconClicked = viewModel::onClearSearchFieldIconClicked,
+                    onSearchFieldFocused = viewModel::onSearchFieldFocused
                 )
             },
             floatingActionButton = {

@@ -383,6 +383,11 @@ class MainViewModel(
         _notesUiState.value = _notesUiState.value.copy(notes = emptyList())
     }
 
+    fun onSearchFieldFocused() {
+        // When search field becomes focused, we remove any selection from the note
+        _selectedNoteState.value = null
+    }
+
     companion object {
         val TAG = MainViewModel::class.java.simpleName
     }
