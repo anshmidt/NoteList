@@ -1,1 +1,3 @@
-- Add text styles for displaying priority
+- Search: cannot edit note from search results
+- Bug: when I scroll to the middle of long list, tap note, edit note text,
+then scroll to updated note doesn't work

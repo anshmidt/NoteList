@@ -1,5 +1,6 @@
 package com.anshmidt.notelist.ui.composable
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -247,6 +248,10 @@ private fun Note(
                 }
             ),
         elevation = if (isSelected) 0.dp else 4.dp,
+        border = if (isSelected)
+            BorderStroke(2.dp, MaterialTheme.colors.primary)
+        else
+            BorderStroke(2.dp, Color.Transparent),
         backgroundColor = getNoteBackground(
             isNoteSelected = isSelected,
             screenMode = screenMode
@@ -394,7 +399,7 @@ fun NoteText(
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = Color.Transparent,
-                    focusedBorderColor = MaterialTheme.colors.primary,
+                    focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent
                 ),
                 textStyle = getNoteTextStyle(priority = note.priority)
