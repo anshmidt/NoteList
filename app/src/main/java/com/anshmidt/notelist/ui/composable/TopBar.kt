@@ -1,5 +1,7 @@
 package com.anshmidt.notelist.ui.composable
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +16,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -270,6 +271,9 @@ private fun SearchField(
 ) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
     SideEffect {
         focusRequester.requestFocus()
     }
@@ -277,12 +281,7 @@ private fun SearchField(
         modifier = Modifier
             .fillMaxSize()
             .padding(end = 17.dp)
-            .focusRequester(focusRequester)
-            .onFocusChanged {
-                if (it.isFocused) {
-                    onSearchFieldFocused()
-                }
-            },
+            .focusRequester(focusRequester),
         colors = TextFieldDefaults.textFieldColors(
             textColor = MaterialTheme.colors.primary,
             backgroundColor = MaterialTheme.colors.background
@@ -291,6 +290,7 @@ private fun SearchField(
             textDecoration = TextDecoration.None,
             fontSize = 18.sp
         ),
+        interactionSource = interactionSource,
         value = searchQuery,
         placeholder = {
             Text(
@@ -310,4 +310,8 @@ private fun SearchField(
             keyboardController?.hide()
         })
     )
+
+    if (interactionSource.collectIsPressedAsState().value) {
+        onSearchFieldFocused()
+    }
 }
