@@ -1,5 +1,6 @@
 package com.anshmidt.notelist.ui.composable
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -498,7 +499,8 @@ fun NoNotesScreen(screenMode: ScreenMode, searchQuery: String?) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // If search query is null, but there is no notes to display, an empty screen is shown
+        Log.d("Searchbranch", "displaying NoNotesScreen: searchQuery = $searchQuery")
+        // If search query is not null, but there is no notes to display, an empty screen is shown
         if (searchQuery == null) {
             Text(
                 text = getNoNotesScreenTitle(screenMode = screenMode),

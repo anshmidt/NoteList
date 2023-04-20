@@ -1,5 +1,6 @@
 package com.anshmidt.notelist.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anshmidt.notelist.datasources.database.*
@@ -73,11 +74,15 @@ class MainViewModel(
         }
 
         matchingNotesFlow.onEach { notesWithListEntity ->
+            if (searchQuery != _searchQueryState.value) {
+                Log.d("Searchbranch", "!!!!!Unexpected state!!!!!")
+            }
             if (!_searchQueryState.value.isNullOrEmpty()) {
                 val notes = notesWithListEntity.map { noteWithListEntity ->
                     noteWithListEntity.toNoteEntity()
                 }
                 val sortedNotes = notes.sortedByDescending { it.timestamp }
+                Log.d("Searchbranch", "displaying search results for query '${searchQuery}': ${sortedNotes}")
                 _notesUiState.value = NotesUiState(notes = sortedNotes)
             }
         }.launchIn(viewModelScope + Dispatchers.IO)
@@ -366,6 +371,7 @@ class MainViewModel(
     }
 
     fun onSearchQueryChanged(newSearchQuery: String) {
+        Log.d("Searchbranch", "search query changed to '$newSearchQuery'")
         _searchQueryState.value = newSearchQuery
         // It doesn't make sense to show search results if query too short
         if (newSearchQuery.length > 1) {
@@ -374,6 +380,7 @@ class MainViewModel(
                 screenMode = _screenModeState.value
             )
         } else {
+            Log.d("Searchbranch", "Changing notesUiState to empty list because search query is too short")
             _notesUiState.value = _notesUiState.value.copy(notes = emptyList())
         }
     }
