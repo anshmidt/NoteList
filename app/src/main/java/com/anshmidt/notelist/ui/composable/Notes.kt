@@ -54,27 +54,29 @@ fun Notes(
         return
     }
 
-    LazyColumn(modifier = modifier) {
-        // this first item fixes the issue with not scrolling automatically when new item added
-        item {
-            Spacer(Modifier.height(5.dp))
-        }
+    Log.d("Scrolling", "Redrawing notes. SelectedItem: $selectedItem")
 
-        lazyColumnItemsWithPriorityHeader(
-            lazyListScope = this,
-            priority = Priority.MAJOR,
-            notes = notes.filter { it.priority == Priority.MAJOR },
-            selectedItem = selectedItem,
-            coroutineScope = coroutineScope,
-            listState = listState,
-            screenMode = screenMode,
-            searchQuery = searchQuery,
-            onNoteClicked = onNoteClicked,
-            onNoteLongClicked = onNoteLongClicked,
-            onNoteEdited = onNoteEdited,
-            onNoteDismissed = onNoteDismissed,
-            onNoteFocused = onNoteFocused
-        )
+    LazyColumn(modifier = modifier, state = listState) {
+        // this first item fixes the issue with not scrolling automatically when new item added
+//        item {
+//            Spacer(Modifier.height(5.dp))
+//        }
+
+//        lazyColumnItemsWithPriorityHeader(
+//            lazyListScope = this,
+//            priority = Priority.MAJOR,
+//            notes = notes.filter { it.priority == Priority.MAJOR },
+//            selectedItem = selectedItem,
+//            coroutineScope = coroutineScope,
+//            listState = listState,
+//            screenMode = screenMode,
+//            searchQuery = searchQuery,
+//            onNoteClicked = onNoteClicked,
+//            onNoteLongClicked = onNoteLongClicked,
+//            onNoteEdited = onNoteEdited,
+//            onNoteDismissed = onNoteDismissed,
+//            onNoteFocused = onNoteFocused
+//        )
 
         lazyColumnItemsWithPriorityHeader(
             lazyListScope = this,
@@ -92,21 +94,21 @@ fun Notes(
             onNoteFocused = onNoteFocused
         )
 
-        lazyColumnItemsWithPriorityHeader(
-            lazyListScope = this,
-            priority = Priority.MINOR,
-            notes = notes.filter { it.priority == Priority.MINOR },
-            selectedItem = selectedItem,
-            coroutineScope = coroutineScope,
-            listState = listState,
-            screenMode = screenMode,
-            searchQuery = searchQuery,
-            onNoteClicked = onNoteClicked,
-            onNoteLongClicked = onNoteLongClicked,
-            onNoteEdited = onNoteEdited,
-            onNoteDismissed = onNoteDismissed,
-            onNoteFocused = onNoteFocused
-        )
+//        lazyColumnItemsWithPriorityHeader(
+//            lazyListScope = this,
+//            priority = Priority.MINOR,
+//            notes = notes.filter { it.priority == Priority.MINOR },
+//            selectedItem = selectedItem,
+//            coroutineScope = coroutineScope,
+//            listState = listState,
+//            screenMode = screenMode,
+//            searchQuery = searchQuery,
+//            onNoteClicked = onNoteClicked,
+//            onNoteLongClicked = onNoteLongClicked,
+//            onNoteEdited = onNoteEdited,
+//            onNoteDismissed = onNoteDismissed,
+//            onNoteFocused = onNoteFocused
+//        )
     }
 }
 
@@ -126,20 +128,30 @@ private fun lazyColumnItemsWithPriorityHeader(
     onNoteDismissed: (NoteEntity) -> Unit,
     onNoteFocused: (NoteEntity) -> Unit
 ) {
-    if (notes.isNotEmpty()) {
-        lazyListScope.item {
-            PriorityHeader(priority)
-        }
-    }
+//    if (notes.isNotEmpty()) {
+//        lazyListScope.item {
+//            PriorityHeader(priority)
+//        }
+//    }
 
     lazyListScope.itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
+        Log.d("Scrolling", "Drawing item with index=$index (text='${noteEntity.text}'), (id=${noteEntity.id})")
         val isItemSelected = selectedItem?.let {
             it.id == noteEntity.id
         } ?: false
 
-        if (selectedItem != null) {
-            LaunchedEffect(Unit) {
+        if (isItemSelected) {
+            Log.d("Scrolling", "item is selected: $index")
+//            LaunchedEffect(Unit) {
+//                coroutineScope.launch {
+//                    Log.d("Scrolling", "scrolling to item ${index}")
+//                    listState.scrollToItem(index)
+//                }
+//            }
+
+            SideEffect {
                 coroutineScope.launch {
+                    Log.d("Scrolling", "scrolling to item ${index} (text='${noteEntity.text}')")
                     listState.scrollToItem(index)
                 }
             }
@@ -412,6 +424,7 @@ fun NoteText(
                     .fillMaxWidth()
                     .onFocusEvent { focusState ->
                         if (focusState.isFocused) {
+                            Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
                             onTextFieldFocused(note)
                         }
                     }

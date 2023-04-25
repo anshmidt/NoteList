@@ -185,6 +185,7 @@ class MainViewModel(
 
             if (_screenModeState.value is ScreenMode.View ||
                 _screenModeState.value is ScreenMode.Edit) {
+                Log.d("Scrolling", "viewmodel.onAddNoteButtonClicked(). Changing selectedNoteState to $newNote")
                 _screenModeState.value = ScreenMode.Edit
                 _selectedNoteState.value = newNote
             }
@@ -233,10 +234,12 @@ class MainViewModel(
     fun onNoteClicked(note: NoteEntity) {
         // Switch to Edit mode
         _screenModeState.value = ScreenMode.Edit
+        Log.d("Scrolling", "viewmodel.onNoteClicked(). Changing selectedNoteState to $note")
         _selectedNoteState.value = note
     }
 
     fun onNoteSelected(note: NoteEntity?) {
+        Log.d("Scrolling", "viewmodel.onNoteSelected(). Changing selectedNoteState to $note")
         _selectedNoteState.value = note
     }
 
