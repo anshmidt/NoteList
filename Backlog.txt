@@ -1,4 +1,4 @@
-- Refactor huge set of lambdas passed to Notes
+- Add ability to change priority in Edit mode
 
 - Refactor "isMenuExpanded = false" in menu items
 

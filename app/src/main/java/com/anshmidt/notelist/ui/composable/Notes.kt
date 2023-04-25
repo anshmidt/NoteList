@@ -41,11 +41,7 @@ fun Notes(
     notes: List<NoteEntity>,
     screenMode: ScreenMode,
     searchQuery: String?,
-    onNoteClicked: (NoteEntity) -> Unit,
-    onNoteLongClicked: (NoteEntity) -> Unit,
-    onNoteDismissed: (NoteEntity) -> Unit,
-    onNoteEdited: (NoteEntity) -> Unit,
-    onNoteFocused: (NoteEntity) -> Unit,
+    noteCallbacks: NoteCallbacks,
     selectedItem: NoteEntity?,
     listOpenedEventFlow: SharedFlow<Unit>
 ) {
@@ -99,9 +95,9 @@ fun Notes(
                     noteEntity = noteEntity,
                     screenMode = screenMode,
                     searchQuery = searchQuery,
-                    onNoteClicked = onNoteClicked,
-                    onNoteLongClicked = onNoteLongClicked,
-                    onNoteEdited = onNoteEdited,
+                    onNoteClicked = noteCallbacks.onNoteClicked,
+                    onNoteLongClicked = noteCallbacks.onNoteLongClicked,
+                    onNoteEdited = noteCallbacks.onNoteEdited,
                     listState = listState,
                     isSelected = isItemSelected,
                     coroutineScope = coroutineScope,
@@ -121,7 +117,7 @@ fun Notes(
                             DismissValue.DismissedToStart, DismissValue.DismissedToEnd -> {
                                 if (currentDismissFraction.value >= dismissThreshold &&
                                     currentDismissFraction.value < 1.0f) {
-                                    onNoteDismissed(noteEntity)
+                                    noteCallbacks.onNoteDismissed(noteEntity)
                                     true
                                 } else {
                                     false
@@ -151,13 +147,13 @@ fun Notes(
                             noteEntity = noteEntity,
                             screenMode = screenMode,
                             searchQuery = searchQuery,
-                            onNoteClicked = onNoteClicked,
-                            onNoteLongClicked = onNoteLongClicked,
-                            onNoteEdited = onNoteEdited,
+                            onNoteClicked = noteCallbacks.onNoteClicked,
+                            onNoteLongClicked = noteCallbacks.onNoteLongClicked,
+                            onNoteEdited = noteCallbacks.onNoteEdited,
                             listState = listState,
                             isSelected = isItemSelected,
                             coroutineScope = coroutineScope,
-                            onTextFieldFocused = onNoteFocused
+                            onTextFieldFocused = noteCallbacks.onNoteFocused
                         )
                     },
                     dismissThresholds = { direction ->
@@ -491,6 +487,14 @@ fun Priority.getFontWeight() = when(this) {
     Priority.NORMAL -> FontWeight.Normal
     Priority.MAJOR -> FontWeight.ExtraBold
 }
+
+data class NoteCallbacks(
+    val onNoteClicked: (NoteEntity) -> Unit,
+    val onNoteLongClicked: (NoteEntity) -> Unit,
+    val onNoteDismissed: (NoteEntity) -> Unit,
+    val onNoteEdited: (NoteEntity) -> Unit,
+    val onNoteFocused: (NoteEntity) -> Unit
+)
 
 object Notes {
     const val TAG = "NotesTag"

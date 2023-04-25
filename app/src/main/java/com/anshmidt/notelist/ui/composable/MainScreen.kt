@@ -64,6 +64,28 @@ fun MainScreen(
         onSearchFieldFocused = viewModel::onSearchFieldFocused
     )
 
+    val noteCallbacks = NoteCallbacks(
+        onNoteClicked = { clickedNote ->
+            viewModel.onNoteClicked(clickedNote)
+        },
+        onNoteLongClicked = { longClickedNote ->
+            coroutineScope.launch {
+                if (bottomSheetState.isVisible) bottomSheetState.hide()
+                else bottomSheetState.show()
+            }
+            viewModel.onNoteSelected(longClickedNote)
+        },
+        onNoteDismissed = { dismissedNote ->
+            viewModel.onNoteDismissed(dismissedNote)
+        },
+        onNoteEdited = { editedNote ->
+            viewModel.onNoteEdited(editedNote)
+        },
+        onNoteFocused = { focusedNote ->
+            viewModel.onNoteSelected(focusedNote)
+        }
+    )
+
     BackHandler(bottomSheetState.isVisible) {
         coroutineScope.launch { bottomSheetState.hide() }
     }
@@ -130,31 +152,12 @@ fun MainScreen(
                     notes = notesUiState.notes,
                     screenMode = screenModeState,
                     searchQuery = searchQueryState,
-                    onNoteClicked = { clickedNote ->
-                        viewModel.onNoteClicked(clickedNote)
-                    },
-                    onNoteLongClicked = { longClickedNote ->
-                        coroutineScope.launch {
-                            if (bottomSheetState.isVisible) bottomSheetState.hide()
-                            else bottomSheetState.show()
-                        }
-                        viewModel.onNoteSelected(longClickedNote)
-                    },
-                    onNoteDismissed = { dismissedNote ->
-                        viewModel.onNoteDismissed(dismissedNote)
-                    },
-                    onNoteEdited = { editedNote ->
-                        viewModel.onNoteEdited(editedNote)
-                    },
-                    onNoteFocused = { focusedNote ->
-                        viewModel.onNoteSelected(focusedNote)
-                    },
+                    noteCallbacks = noteCallbacks,
                     selectedItem = selectedNoteState,
                     listOpenedEventFlow = viewModel.listOpenedEventFlow
                 )
             }
         )
-
     }
 
     if (newListNameDialogOpened) {
