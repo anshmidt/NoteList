@@ -73,6 +73,8 @@ fun Notes(
         }
     }
 
+    val shouldShowPriorityHeaders = shouldShowPriorityHeaders(notes)
+
     LazyColumn(modifier = modifier, state = listState) {
         itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
             Log.d("Scrolling", "Drawing item with index=$index (text='${noteEntity.text}'), (id=${noteEntity.id})")
@@ -81,11 +83,11 @@ fun Notes(
                 it.id == noteEntity.id
             } ?: false
 
-            val shouldShowPriorityHeader = true
+            val shouldShowPriorityHeader = shouldShowPriorityHeaders[index]
 
-//        if (shouldShowPriorityHeader) {
-//            PriorityHeader(priority = noteEntity.priority)
-//        }
+            if (shouldShowPriorityHeader) {
+                PriorityHeader(priority = noteEntity.priority)
+            }
 
             // Swipe to dismiss disabled in Trash mode
             if (screenMode is ScreenMode.Trash) {
@@ -161,6 +163,29 @@ fun Notes(
             }
         }
     }
+}
+
+/**
+ * Priority header is displayed only for first item for each priority
+ */
+private fun shouldShowPriorityHeaders(sortedNotes: List<NoteEntity>): List<Boolean> {
+    val result = mutableListOf<Boolean>()
+
+    val firstMajorItemIndex = sortedNotes.indexOfFirst { it.priority == Priority.MAJOR }
+    val firstNormalItemIndex = sortedNotes.indexOfFirst { it.priority == Priority.NORMAL }
+    val firstMinorItemIndex = sortedNotes.indexOfFirst { it.priority == Priority.MINOR }
+
+    for (i in sortedNotes.indices) {
+        if (
+            (i == firstMajorItemIndex) || (i == firstNormalItemIndex) || (i == firstMinorItemIndex)
+        ) {
+            result.add(i, true)
+        } else {
+            result.add(i, false)
+        }
+    }
+
+    return result
 }
 
 
