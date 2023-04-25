@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -17,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -56,7 +57,20 @@ fun Notes(
 
     Log.d("Scrolling", "Redrawing notes. SelectedItem: $selectedItem")
 
+    // Attempt to fix issue with scrolling to newly added note
+    selectedItem?.let { selectedNote ->
+        if (selectedNote.text == "") {
+            SideEffect {
+                coroutineScope.launch {
+                    listState.scrollToItem(0)
+                }
+            }
+        }
+    }
+
     LazyColumn(modifier = modifier, state = listState) {
+
+
         // this first item fixes the issue with not scrolling automatically when new item added
 //        item {
 //            Spacer(Modifier.height(5.dp))
@@ -393,6 +407,9 @@ fun NoteText(
         is ScreenMode.Edit -> {
             val focusRequester = remember { FocusRequester() }
             val bringIntoViewRequester = remember { BringIntoViewRequester() }
+            val interactionSource = remember {
+                MutableInteractionSource()
+            }
             SideEffect {
                 if (isNoteSelected) {
                     coroutineScope.launch {
@@ -417,18 +434,23 @@ fun NoteText(
                 ),
                 textStyle = getNoteTextStyle(priority = note.priority)
                     .copy(fontSize = Notes.NOTE_FONT_SIZE),
+                interactionSource = interactionSource,
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .bringIntoViewRequester(bringIntoViewRequester)
                     .padding(0.dp)
                     .fillMaxWidth()
-                    .onFocusEvent { focusState ->
-                        if (focusState.isFocused) {
-                            Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
-                            onTextFieldFocused(note)
-                        }
-                    }
+//                    .onFocusEvent { focusState ->
+//                        if (focusState.isFocused) {
+//                            Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
+//                            onTextFieldFocused(note)
+//                        }
+//                    }
             )
+            if (interactionSource.collectIsPressedAsState().value) {
+                Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
+                onTextFieldFocused(note)
+            }
         }
         is ScreenMode.View, ScreenMode.Trash -> {
             Text(
