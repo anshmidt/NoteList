@@ -34,6 +34,9 @@ class MainViewModel(
     private val _searchQueryState: MutableStateFlow<String?> = MutableStateFlow(null)
     val searchQueryState: StateFlow<String?> = _searchQueryState.asStateFlow()
 
+    // is used for scrolling notes to top when list is switched
+    private val _listOpenedEventFlow = MutableSharedFlow<Unit>()
+    val listOpenedEventFlow = _listOpenedEventFlow.asSharedFlow()
 
     init {
         displayNotes()
@@ -227,6 +230,7 @@ class MainViewModel(
     fun onListOpened(list: ListEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             listRepository.saveLastOpenedList(list)
+            _listOpenedEventFlow.emit(Unit)
         }
     }
 

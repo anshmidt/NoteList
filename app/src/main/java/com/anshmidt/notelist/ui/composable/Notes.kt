@@ -31,11 +31,13 @@ import com.anshmidt.notelist.datasources.database.Priority
 import com.anshmidt.notelist.datasources.database.TimestampConverter.toHumanReadableDate
 import com.anshmidt.notelist.ui.uistate.ScreenMode
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun Notes(
+    modifier: Modifier,
     notes: List<NoteEntity>,
     screenMode: ScreenMode,
     searchQuery: String?,
@@ -45,7 +47,7 @@ fun Notes(
     onNoteEdited: (NoteEntity) -> Unit,
     onNoteFocused: (NoteEntity) -> Unit,
     selectedItem: NoteEntity?,
-    modifier: Modifier
+    listOpenedEventFlow: SharedFlow<Unit>
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -63,6 +65,15 @@ fun Notes(
                 coroutineScope.launch {
                     listState.scrollToItem(selectedNoteIndex)
                 }
+            }
+        }
+    }
+
+    // When user switches to another list, we scroll to top
+    LaunchedEffect(Unit) {
+        listOpenedEventFlow.collect {
+            coroutineScope.launch {
+                listState.scrollToItem(0)
             }
         }
     }

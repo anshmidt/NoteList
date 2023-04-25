@@ -114,6 +114,7 @@ fun MainScreen(
             },
             content = { padding ->
                 Notes(
+                    modifier = Modifier.padding(padding),
                     notes = notesUiState.notes,
                     screenMode = screenModeState,
                     searchQuery = searchQueryState,
@@ -137,7 +138,7 @@ fun MainScreen(
                         viewModel.onNoteSelected(focusedNote)
                     },
                     selectedItem = selectedNoteState,
-                    modifier = Modifier.padding(padding)
+                    listOpenedEventFlow = viewModel.listOpenedEventFlow
                 )
             }
         )
