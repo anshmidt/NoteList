@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -56,17 +55,12 @@ fun Notes(
         return
     }
 
-    Log.d("Scrolling", "Redrawing notes. SelectedItem: $selectedItem")
-
+    // Scrolling to selected item
     selectedItem?.let { selectedNote ->
         val selectedNoteIndex = notes.indexOf(selectedNote)
         if (selectedNoteIndex >= 0) {
             SideEffect {
                 coroutineScope.launch {
-                    Log.d(
-                        "Scrolling",
-                        "Scrolling to index $selectedNoteIndex because it's index of selected note"
-                    )
                     listState.scrollToItem(selectedNoteIndex)
                 }
             }
@@ -77,7 +71,6 @@ fun Notes(
 
     LazyColumn(modifier = modifier, state = listState) {
         itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
-            Log.d("Scrolling", "Drawing item with index=$index (text='${noteEntity.text}'), (id=${noteEntity.id})")
 
             val isItemSelected = selectedItem?.let {
                 it.id == noteEntity.id
@@ -188,8 +181,6 @@ private fun shouldShowPriorityHeaders(sortedNotes: List<NoteEntity>): List<Boole
     return result
 }
 
-
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Note(
@@ -287,15 +278,9 @@ private fun NoteCardContent(
 @Composable
 fun PriorityTag(priority: Priority) {
     val text = when (priority) {
-//        Priority.MAJOR -> "\uD83D\uDD34"
         Priority.MAJOR -> "◘◘◘"
-//        Priority.MAJOR -> "⚑⚑⚑"
-//        Priority.NORMAL -> "\uD83D\uDFE1"
         Priority.NORMAL -> "◘◘"
-//        Priority.NORMAL -> "⚑⚑"
-//        Priority.MINOR -> "\uD83D\uDFE2"
         Priority.MINOR -> "◘"
-//        Priority.MINOR -> "⚑"
     }
     Text(
         text = text,
@@ -351,9 +336,6 @@ fun NoteText(
         is ScreenMode.Edit -> {
             val focusRequester = remember { FocusRequester() }
             val bringIntoViewRequester = remember { BringIntoViewRequester() }
-            val interactionSource = remember {
-                MutableInteractionSource()
-            }
             SideEffect {
                 if (isNoteSelected) {
                     coroutineScope.launch {
@@ -378,7 +360,6 @@ fun NoteText(
                 ),
                 textStyle = getNoteTextStyle(priority = note.priority)
                     .copy(fontSize = Notes.NOTE_FONT_SIZE),
-                interactionSource = interactionSource,
                 modifier = Modifier
                     .focusRequester(focusRequester)
                     .bringIntoViewRequester(bringIntoViewRequester)
@@ -386,18 +367,10 @@ fun NoteText(
                     .fillMaxWidth()
                     .onFocusEvent { focusState ->
                         if (focusState.isFocused) {
-                            Log.d(
-                                "Scrolling",
-                                "Item is focused, that's why onTextFieldFocused is executed: $note"
-                            )
                             onTextFieldFocused(note)
                         }
                     }
             )
-//            if (interactionSource.collectIsPressedAsState().value) {
-//                Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
-//                onTextFieldFocused(note)
-//            }
         }
         is ScreenMode.View, ScreenMode.Trash -> {
             Text(
