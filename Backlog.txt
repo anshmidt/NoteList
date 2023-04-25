@@ -1,2 +1,10 @@
+- Need to scroll to top when list switched
+
+- Refactor huge set of lambdas passed to Notes
+
 - Bug: when there are 2 search results, and I edit one of them, sometimes search results
 suddenly disappear
+
+- Place cursor at the end when note clicked
+(don't want to implement because currently the solution is complicated, maybe in the next versions
+of Compose it will get better)
