@@ -5,7 +5,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -19,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -58,11 +58,26 @@ fun Notes(
     Log.d("Scrolling", "Redrawing notes. SelectedItem: $selectedItem")
 
     // Attempt to fix issue with scrolling to newly added note
+//    selectedItem?.let { selectedNote ->
+//        if (selectedNote.text == "") {
+//            SideEffect {
+//                coroutineScope.launch {
+//                    listState.scrollToItem(0)
+//                }
+//            }
+//        }
+//    }
+
     selectedItem?.let { selectedNote ->
-        if (selectedNote.text == "") {
+        val selectedNoteIndex = notes.indexOf(selectedNote)
+        if (selectedNoteIndex >= 0) {
             SideEffect {
                 coroutineScope.launch {
-                    listState.scrollToItem(0)
+                    Log.d(
+                        "Scrolling",
+                        "Scrolling to index $selectedNoteIndex because it's index of selected note"
+                    )
+                    listState.scrollToItem(selectedNoteIndex)
                 }
             }
         }
@@ -154,22 +169,22 @@ private fun lazyColumnItemsWithPriorityHeader(
             it.id == noteEntity.id
         } ?: false
 
-        if (isItemSelected) {
-            Log.d("Scrolling", "item is selected: $index")
-//            LaunchedEffect(Unit) {
+//        if (isItemSelected) {
+//            Log.d("Scrolling", "item is selected: $index")
+////            LaunchedEffect(Unit) {
+////                coroutineScope.launch {
+////                    Log.d("Scrolling", "scrolling to item ${index}")
+////                    listState.scrollToItem(index)
+////                }
+////            }
+//
+//            SideEffect {
 //                coroutineScope.launch {
-//                    Log.d("Scrolling", "scrolling to item ${index}")
+//                    Log.d("Scrolling", "scrolling to item ${index} (text='${noteEntity.text}')")
 //                    listState.scrollToItem(index)
 //                }
 //            }
-
-            SideEffect {
-                coroutineScope.launch {
-                    Log.d("Scrolling", "scrolling to item ${index} (text='${noteEntity.text}')")
-                    listState.scrollToItem(index)
-                }
-            }
-        }
+//        }
 
         // Swipe to dismiss disabled in Trash mode
         if (screenMode is ScreenMode.Trash) {
@@ -440,17 +455,17 @@ fun NoteText(
                     .bringIntoViewRequester(bringIntoViewRequester)
                     .padding(0.dp)
                     .fillMaxWidth()
-//                    .onFocusEvent { focusState ->
-//                        if (focusState.isFocused) {
-//                            Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
-//                            onTextFieldFocused(note)
-//                        }
-//                    }
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
+                            onTextFieldFocused(note)
+                        }
+                    }
             )
-            if (interactionSource.collectIsPressedAsState().value) {
-                Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
-                onTextFieldFocused(note)
-            }
+//            if (interactionSource.collectIsPressedAsState().value) {
+//                Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
+//                onTextFieldFocused(note)
+//            }
         }
         is ScreenMode.View, ScreenMode.Trash -> {
             Text(
