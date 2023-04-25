@@ -34,6 +34,7 @@ import com.anshmidt.notelist.ui.uistate.ScreenMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun Notes(
     notes: List<NoteEntity>,
@@ -57,17 +58,6 @@ fun Notes(
 
     Log.d("Scrolling", "Redrawing notes. SelectedItem: $selectedItem")
 
-    // Attempt to fix issue with scrolling to newly added note
-//    selectedItem?.let { selectedNote ->
-//        if (selectedNote.text == "") {
-//            SideEffect {
-//                coroutineScope.launch {
-//                    listState.scrollToItem(0)
-//                }
-//            }
-//        }
-//    }
-
     selectedItem?.let { selectedNote ->
         val selectedNoteIndex = notes.indexOf(selectedNote)
         if (selectedNoteIndex >= 0) {
@@ -84,182 +74,96 @@ fun Notes(
     }
 
     LazyColumn(modifier = modifier, state = listState) {
+        itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
+            Log.d("Scrolling", "Drawing item with index=$index (text='${noteEntity.text}'), (id=${noteEntity.id})")
 
+            val isItemSelected = selectedItem?.let {
+                it.id == noteEntity.id
+            } ?: false
 
-        // this first item fixes the issue with not scrolling automatically when new item added
-//        item {
-//            Spacer(Modifier.height(5.dp))
+            val shouldShowPriorityHeader = true
+
+//        if (shouldShowPriorityHeader) {
+//            PriorityHeader(priority = noteEntity.priority)
 //        }
 
-//        lazyColumnItemsWithPriorityHeader(
-//            lazyListScope = this,
-//            priority = Priority.MAJOR,
-//            notes = notes.filter { it.priority == Priority.MAJOR },
-//            selectedItem = selectedItem,
-//            coroutineScope = coroutineScope,
-//            listState = listState,
-//            screenMode = screenMode,
-//            searchQuery = searchQuery,
-//            onNoteClicked = onNoteClicked,
-//            onNoteLongClicked = onNoteLongClicked,
-//            onNoteEdited = onNoteEdited,
-//            onNoteDismissed = onNoteDismissed,
-//            onNoteFocused = onNoteFocused
-//        )
+            // Swipe to dismiss disabled in Trash mode
+            if (screenMode is ScreenMode.Trash) {
+                Note(
+                    noteEntity = noteEntity,
+                    screenMode = screenMode,
+                    searchQuery = searchQuery,
+                    onNoteClicked = onNoteClicked,
+                    onNoteLongClicked = onNoteLongClicked,
+                    onNoteEdited = onNoteEdited,
+                    listState = listState,
+                    isSelected = isItemSelected,
+                    coroutineScope = coroutineScope,
+                    onTextFieldFocused = {}
+                )
+            } else {
+                val dismissThreshold = 0.6f
+                /**
+                 * SwipeToDismiss from the box causes deletions when threshold not reached but
+                 * swipe is fast. Here's a solution for it using progress fraction.
+                 */
+                val currentDismissFraction = remember { mutableStateOf(0f) }
 
-        lazyColumnItemsWithPriorityHeader(
-            lazyListScope = this,
-            priority = Priority.NORMAL,
-            notes = notes.filter { it.priority == Priority.NORMAL },
-            selectedItem = selectedItem,
-            coroutineScope = coroutineScope,
-            listState = listState,
-            screenMode = screenMode,
-            searchQuery = searchQuery,
-            onNoteClicked = onNoteClicked,
-            onNoteLongClicked = onNoteLongClicked,
-            onNoteEdited = onNoteEdited,
-            onNoteDismissed = onNoteDismissed,
-            onNoteFocused = onNoteFocused
-        )
-
-//        lazyColumnItemsWithPriorityHeader(
-//            lazyListScope = this,
-//            priority = Priority.MINOR,
-//            notes = notes.filter { it.priority == Priority.MINOR },
-//            selectedItem = selectedItem,
-//            coroutineScope = coroutineScope,
-//            listState = listState,
-//            screenMode = screenMode,
-//            searchQuery = searchQuery,
-//            onNoteClicked = onNoteClicked,
-//            onNoteLongClicked = onNoteLongClicked,
-//            onNoteEdited = onNoteEdited,
-//            onNoteDismissed = onNoteDismissed,
-//            onNoteFocused = onNoteFocused
-//        )
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
-private fun lazyColumnItemsWithPriorityHeader(
-    lazyListScope: LazyListScope,
-    priority: Priority,
-    notes: List<NoteEntity>,
-    selectedItem: NoteEntity?,
-    coroutineScope: CoroutineScope,
-    listState: LazyListState,
-    screenMode: ScreenMode,
-    searchQuery: String?,
-    onNoteClicked: (NoteEntity) -> Unit,
-    onNoteLongClicked: (NoteEntity) -> Unit,
-    onNoteEdited: (NoteEntity) -> Unit,
-    onNoteDismissed: (NoteEntity) -> Unit,
-    onNoteFocused: (NoteEntity) -> Unit
-) {
-//    if (notes.isNotEmpty()) {
-//        lazyListScope.item {
-//            PriorityHeader(priority)
-//        }
-//    }
-
-    lazyListScope.itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
-        Log.d("Scrolling", "Drawing item with index=$index (text='${noteEntity.text}'), (id=${noteEntity.id})")
-        val isItemSelected = selectedItem?.let {
-            it.id == noteEntity.id
-        } ?: false
-
-//        if (isItemSelected) {
-//            Log.d("Scrolling", "item is selected: $index")
-////            LaunchedEffect(Unit) {
-////                coroutineScope.launch {
-////                    Log.d("Scrolling", "scrolling to item ${index}")
-////                    listState.scrollToItem(index)
-////                }
-////            }
-//
-//            SideEffect {
-//                coroutineScope.launch {
-//                    Log.d("Scrolling", "scrolling to item ${index} (text='${noteEntity.text}')")
-//                    listState.scrollToItem(index)
-//                }
-//            }
-//        }
-
-        // Swipe to dismiss disabled in Trash mode
-        if (screenMode is ScreenMode.Trash) {
-            Note(
-                noteEntity = noteEntity,
-                screenMode = screenMode,
-                searchQuery = searchQuery,
-                onNoteClicked = onNoteClicked,
-                onNoteLongClicked = onNoteLongClicked,
-                onNoteEdited = onNoteEdited,
-                listState = listState,
-                isSelected = isItemSelected,
-                coroutineScope = coroutineScope,
-                onTextFieldFocused = {}
-            )
-        } else {
-            val dismissThreshold = 0.6f
-            /**
-             * SwipeToDismiss from the box causes deletions when threshold not reached but
-             * swipe is fast. Here's a solution for it using progress fraction.
-             */
-            val currentDismissFraction = remember { mutableStateOf(0f) }
-
-            val dismissState = rememberDismissState(
-                confirmStateChange = { dismissValue ->
-                    when (dismissValue) {
-                        DismissValue.DismissedToStart, DismissValue.DismissedToEnd -> {
-                            if (currentDismissFraction.value >= dismissThreshold &&
-                                currentDismissFraction.value < 1.0f) {
-                                onNoteDismissed(noteEntity)
-                                true
-                            } else {
+                val dismissState = rememberDismissState(
+                    confirmStateChange = { dismissValue ->
+                        when (dismissValue) {
+                            DismissValue.DismissedToStart, DismissValue.DismissedToEnd -> {
+                                if (currentDismissFraction.value >= dismissThreshold &&
+                                    currentDismissFraction.value < 1.0f) {
+                                    onNoteDismissed(noteEntity)
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                            else -> {
                                 false
                             }
                         }
-                        else -> {
-                            false
-                        }
                     }
-                }
-            )
+                )
 
-            SwipeToDismiss(
-                state = dismissState,
-                directions = setOf(
-                    DismissDirection.StartToEnd,
-                    DismissDirection.EndToStart
-                ),
-                background = {
-                    Box {
-                        currentDismissFraction.value = dismissState.progress.fraction
+                SwipeToDismiss(
+                    state = dismissState,
+                    directions = setOf(
+                        DismissDirection.StartToEnd,
+                        DismissDirection.EndToStart
+                    ),
+                    background = {
+                        Box {
+                            currentDismissFraction.value = dismissState.progress.fraction
+                        }
+                    },
+                    modifier = Modifier.animateItemPlacement(),
+                    dismissContent = {
+                        Note(
+                            noteEntity = noteEntity,
+                            screenMode = screenMode,
+                            searchQuery = searchQuery,
+                            onNoteClicked = onNoteClicked,
+                            onNoteLongClicked = onNoteLongClicked,
+                            onNoteEdited = onNoteEdited,
+                            listState = listState,
+                            isSelected = isItemSelected,
+                            coroutineScope = coroutineScope,
+                            onTextFieldFocused = onNoteFocused
+                        )
+                    },
+                    dismissThresholds = { direction ->
+                        FractionalThreshold(dismissThreshold)
                     }
-                },
-                modifier = Modifier.animateItemPlacement(),
-                dismissContent = {
-                    Note(
-                        noteEntity = noteEntity,
-                        screenMode = screenMode,
-                        searchQuery = searchQuery,
-                        onNoteClicked = onNoteClicked,
-                        onNoteLongClicked = onNoteLongClicked,
-                        onNoteEdited = onNoteEdited,
-                        listState = listState,
-                        isSelected = isItemSelected,
-                        coroutineScope = coroutineScope,
-                        onTextFieldFocused = onNoteFocused
-                    )
-                },
-                dismissThresholds = { direction ->
-                    FractionalThreshold(dismissThreshold)
-                }
-            )
+                )
+            }
         }
     }
 }
+
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -457,7 +361,10 @@ fun NoteText(
                     .fillMaxWidth()
                     .onFocusEvent { focusState ->
                         if (focusState.isFocused) {
-                            Log.d("Scrolling", "Item is focused, that's why onTextFieldFocused is executed: $note")
+                            Log.d(
+                                "Scrolling",
+                                "Item is focused, that's why onTextFieldFocused is executed: $note"
+                            )
                             onTextFieldFocused(note)
                         }
                     }

@@ -48,7 +48,7 @@ class MainViewModel(
             // Do nothing in case of Trash mode
             if ((_screenModeState.value !is ScreenMode.Trash) &&
                 (_searchQueryState.value == null)) {
-                val sortedNotes = notes.sortedByDescending { it.timestamp }
+                val sortedNotes = getSortedNotes(notes)
                 _notesUiState.value = NotesUiState(notes = sortedNotes)
             }
         }.launchIn(viewModelScope + Dispatchers.IO)
@@ -60,7 +60,7 @@ class MainViewModel(
                 val notes = notesWithListEntity.map { noteWithListEntity ->
                     noteWithListEntity.toNoteEntity()
                 }
-                val sortedNotes = notes.sortedByDescending { it.timestamp }
+                val sortedNotes = getSortedNotes(notes)
                 _notesUiState.value = NotesUiState(notes = sortedNotes)
             }
         }.launchIn(viewModelScope + Dispatchers.IO)
@@ -81,7 +81,7 @@ class MainViewModel(
                 val notes = notesWithListEntity.map { noteWithListEntity ->
                     noteWithListEntity.toNoteEntity()
                 }
-                val sortedNotes = notes.sortedByDescending { it.timestamp }
+                val sortedNotes = getSortedNotes(notes)
                 Log.d("Searchbranch", "displaying search results for query '${searchQuery}': ${sortedNotes}")
                 _notesUiState.value = NotesUiState(notes = sortedNotes)
             }
@@ -396,6 +396,15 @@ class MainViewModel(
     fun onSearchFieldFocused() {
         // When search field becomes focused, we remove any selection from the note
         _selectedNoteState.value = null
+    }
+
+    private fun getSortedNotes(notes: List<NoteEntity>): List<NoteEntity> {
+        return notes.sortedWith(
+            compareBy(
+                { it.priority },
+                { -it.timestamp }
+            )
+        )
     }
 
     companion object {
