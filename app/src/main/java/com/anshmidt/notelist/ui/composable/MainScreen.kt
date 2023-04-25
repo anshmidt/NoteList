@@ -38,6 +38,32 @@ fun MainScreen(
         mutableStateOf(MoveNoteDialogState(false, null))
     }
 
+    val navigationCallbacks = NavigationCallbacks(
+        onDoneIconClicked = viewModel::onDoneIconClicked,
+        onUpIconInTrashClicked = viewModel::onUpIconInTrashClicked,
+        onUpIconForSearchClicked = viewModel::onUpIconForSearchClicked,
+    )
+
+    val menuCallbacks = MenuCallbacks(
+        onRenameListIconClicked = {
+            renameListDialogOpened = !renameListDialogOpened
+        },
+        onMoveListToTrashClicked = { selectedList ->
+            viewModel.onMoveListToTrashClicked(selectedList)
+        },
+        onOpenTrashClicked = viewModel::onOpenTrashClicked,
+        onCopyListToClipboardClicked = viewModel::onCopyListToClipboardClicked,
+        onAddNotesFromClipboardClicked = viewModel::onAddNotesFromClipboardClicked,
+        onEmptyTrashClicked = viewModel::onEmptyTrashClicked
+    )
+
+    val searchCallbacks = SearchCallbacks(
+        onSearchIconClicked = viewModel::onSearchIconClicked,
+        onSearchQueryChanged = viewModel::onSearchQueryChanged,
+        onClearSearchFieldIconClicked = viewModel::onClearSearchFieldIconClicked,
+        onSearchFieldFocused = viewModel::onSearchFieldFocused
+    )
+
     BackHandler(bottomSheetState.isVisible) {
         coroutineScope.launch { bottomSheetState.hide() }
     }
@@ -80,29 +106,15 @@ fun MainScreen(
                     screenMode = screenModeState,
                     searchQuery = searchQueryState,
                     selectedList = listsUiState.selectedList,
-                    onMoveListToTrashClicked = { selectedList ->
-                        viewModel.onMoveListToTrashClicked(selectedList)
-                    },
                     onListSelected = { selectedList ->
                         viewModel.onListOpened(selectedList)
                     },
                     onAddNewListButtonClicked = {
                         newListNameDialogOpened = !newListNameDialogOpened
                     },
-                    onDoneIconClicked = viewModel::onDoneIconClicked,
-                    onUpIconInTrashClicked = viewModel::onUpIconInTrashClicked,
-                    onUpIconForSearchClicked = viewModel::onUpIconForSearchClicked,
-                    onRenameListIconClicked = {
-                        renameListDialogOpened = !renameListDialogOpened
-                    },
-                    onOpenTrashClicked = viewModel::onOpenTrashClicked,
-                    onCopyListToClipboardClicked = viewModel::onCopyListToClipboardClicked,
-                    onAddNotesFromClipboardClicked = viewModel::onAddNotesFromClipboardClicked,
-                    onEmptyTrashClicked = viewModel::onEmptyTrashClicked,
-                    onSearchIconClicked = viewModel::onSearchIconClicked,
-                    onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                    onClearSearchFieldIconClicked = viewModel::onClearSearchFieldIconClicked,
-                    onSearchFieldFocused = viewModel::onSearchFieldFocused
+                    navigationCallbacks = navigationCallbacks,
+                    menuCallbacks = menuCallbacks,
+                    searchCallbacks = searchCallbacks
                 )
             },
             floatingActionButton = {

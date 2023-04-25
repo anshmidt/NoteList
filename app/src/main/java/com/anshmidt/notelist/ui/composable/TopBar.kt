@@ -39,20 +39,10 @@ fun TopBar(
     searchQuery: String?,
     @PreviewParameter(ListPreviewProvider::class) selectedList: ListEntity,
     onListSelected: (ListEntity) -> Unit,
-    onMoveListToTrashClicked: (ListEntity) -> Unit,
     onAddNewListButtonClicked: () -> Unit,
-    onDoneIconClicked: () -> Unit,
-    onUpIconInTrashClicked: () -> Unit,
-    onUpIconForSearchClicked: () -> Unit,
-    onRenameListIconClicked: () -> Unit,
-    onOpenTrashClicked: () -> Unit,
-    onCopyListToClipboardClicked: () -> Unit,
-    onAddNotesFromClipboardClicked: () -> Unit,
-    onEmptyTrashClicked: () -> Unit,
-    onSearchIconClicked: () -> Unit,
-    onSearchQueryChanged: (String) -> Unit,
-    onClearSearchFieldIconClicked: () -> Unit,
-    onSearchFieldFocused: () -> Unit
+    navigationCallbacks: NavigationCallbacks,
+    menuCallbacks: MenuCallbacks,
+    searchCallbacks: SearchCallbacks
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
@@ -66,26 +56,26 @@ fun TopBar(
                 selectedList = selectedList,
                 onListSelected = onListSelected,
                 onAddNewListButtonClicked = onAddNewListButtonClicked,
-                onSearchQueryChanged = onSearchQueryChanged,
-                onSearchFieldFocused = onSearchFieldFocused
+                onSearchQueryChanged = searchCallbacks.onSearchQueryChanged,
+                onSearchFieldFocused = searchCallbacks.onSearchFieldFocused
             )
         },
         backgroundColor = Color.Transparent,
         navigationIcon = NavigationIconOrNull(
             screenMode = screenMode,
             searchQuery = searchQuery,
-            onDoneIconClicked = onDoneIconClicked,
-            onUpIconInTrashClicked = onUpIconInTrashClicked,
-            onUpIconForSearchClicked = onUpIconForSearchClicked
+            onDoneIconClicked = navigationCallbacks.onDoneIconClicked,
+            onUpIconInTrashClicked = navigationCallbacks.onUpIconInTrashClicked,
+            onUpIconForSearchClicked = navigationCallbacks.onUpIconForSearchClicked
         ),
         actions = {
             if (searchQuery == null) {
-                SearchIcon(onSearchIconClicked = onSearchIconClicked)
+                SearchIcon(onSearchIconClicked = searchCallbacks.onSearchIconClicked)
                 MoreIcon(onClick = {
                     isMenuExpanded = !isMenuExpanded
                 })
             } else {
-                ClearSearchFieldIcon(onClearSearchFieldIconClicked = onClearSearchFieldIconClicked)
+                ClearSearchFieldIcon(onClearSearchFieldIconClicked = searchCallbacks.onClearSearchFieldIconClicked)
             }
             DropdownMenu(
                 expanded = isMenuExpanded,
@@ -97,7 +87,7 @@ fun TopBar(
                         text = stringResource(id = R.string.menu_title_empty_trash),
                         onClick = {
                             isMenuExpanded = false
-                            onEmptyTrashClicked()
+                            menuCallbacks.onEmptyTrashClicked()
                         }
                     )
                 } else {
@@ -106,7 +96,7 @@ fun TopBar(
                         text = stringResource(R.string.menu_title_rename_list),
                         onClick = {
                             isMenuExpanded = false
-                            onRenameListIconClicked()
+                            menuCallbacks.onRenameListIconClicked()
                         }
                     )
                     MenuItem(
@@ -114,7 +104,7 @@ fun TopBar(
                         text = stringResource(R.string.menu_title_move_list_to_trash),
                         onClick = {
                             isMenuExpanded = false
-                            onMoveListToTrashClicked(selectedList)
+                            menuCallbacks.onMoveListToTrashClicked(selectedList)
                         }
                     )
                     MenuItem(
@@ -122,7 +112,7 @@ fun TopBar(
                         text = stringResource(R.string.menu_title_open_trash),
                         onClick = {
                             isMenuExpanded = false
-                            onOpenTrashClicked()
+                            menuCallbacks.onOpenTrashClicked()
                         }
                     )
                     MenuItem(
@@ -130,7 +120,7 @@ fun TopBar(
                         text = stringResource(R.string.menu_title_copy_list_to_clipboard),
                         onClick = {
                             isMenuExpanded = false
-                            onCopyListToClipboardClicked()
+                            menuCallbacks.onCopyListToClipboardClicked()
                         }
                     )
                     MenuItem(
@@ -138,7 +128,7 @@ fun TopBar(
                         text = stringResource(R.string.menu_title_add_notes_from_clipboard),
                         onClick = {
                             isMenuExpanded = false
-                            onAddNotesFromClipboardClicked()
+                            menuCallbacks.onAddNotesFromClipboardClicked()
                         }
                     )
                 }
@@ -315,3 +305,25 @@ private fun SearchField(
         onSearchFieldFocused()
     }
 }
+
+data class NavigationCallbacks(
+    val onDoneIconClicked: () -> Unit,
+    val onUpIconInTrashClicked: () -> Unit,
+    val onUpIconForSearchClicked: () -> Unit,
+)
+
+data class MenuCallbacks(
+    val onRenameListIconClicked: () -> Unit,
+    val onMoveListToTrashClicked: (ListEntity) -> Unit,
+    val onOpenTrashClicked: () -> Unit,
+    val onCopyListToClipboardClicked: () -> Unit,
+    val onAddNotesFromClipboardClicked: () -> Unit,
+    val onEmptyTrashClicked: () -> Unit
+)
+
+data class SearchCallbacks(
+    val onSearchIconClicked: () -> Unit,
+    val onSearchQueryChanged: (String) -> Unit,
+    val onClearSearchFieldIconClicked: () -> Unit,
+    val onSearchFieldFocused: () -> Unit
+)

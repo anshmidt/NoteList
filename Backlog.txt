@@ -1,5 +1,7 @@
 - Refactor huge set of lambdas passed to Notes
 
+- Refactor "isMenuExpanded = false" in menu items
+
 - Bug: when there are 2 search results, and I edit one of them, sometimes search results
 suddenly disappear
 
