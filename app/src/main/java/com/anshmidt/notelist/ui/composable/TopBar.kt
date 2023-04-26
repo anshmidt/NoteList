@@ -44,8 +44,6 @@ fun TopBar(
     menuCallbacks: MenuCallbacks,
     searchCallbacks: SearchCallbacks
 ) {
-    var isMenuExpanded by remember { mutableStateOf(false) }
-
     TopAppBar(
         elevation = 0.dp,
         title = {
@@ -69,73 +67,105 @@ fun TopBar(
             onUpIconForSearchClicked = navigationCallbacks.onUpIconForSearchClicked
         ),
         actions = {
-            if (searchQuery == null) {
-                SearchIcon(onSearchIconClicked = searchCallbacks.onSearchIconClicked)
-                MoreIcon(onClick = {
-                    isMenuExpanded = !isMenuExpanded
-                })
-            } else {
-                ClearSearchFieldIcon(onClearSearchFieldIconClicked = searchCallbacks.onClearSearchFieldIconClicked)
-            }
-            DropdownMenu(
-                expanded = isMenuExpanded,
-                onDismissRequest = { isMenuExpanded = false }
-            ) {
-                if (screenMode == ScreenMode.Trash) {
-                    MenuItem(
-                        icon = Icons.Outlined.PlaylistRemove,
-                        text = stringResource(id = R.string.menu_title_empty_trash),
-                        onClick = {
-                            isMenuExpanded = false
-                            menuCallbacks.onEmptyTrashClicked()
-                        }
-                    )
-                } else {
-                    MenuItem(
-                        icon = Icons.Outlined.Edit,
-                        text = stringResource(R.string.menu_title_rename_list),
-                        onClick = {
-                            isMenuExpanded = false
-                            menuCallbacks.onRenameListIconClicked()
-                        }
-                    )
-                    MenuItem(
-                        icon = Icons.Outlined.DeleteForever,
-                        text = stringResource(R.string.menu_title_move_list_to_trash),
-                        onClick = {
-                            isMenuExpanded = false
-                            menuCallbacks.onMoveListToTrashClicked(selectedList)
-                        }
-                    )
-                    MenuItem(
-                        icon = Icons.Outlined.DeleteSweep,
-                        text = stringResource(R.string.menu_title_open_trash),
-                        onClick = {
-                            isMenuExpanded = false
-                            menuCallbacks.onOpenTrashClicked()
-                        }
-                    )
-                    MenuItem(
-                        icon = Icons.Outlined.ContentCopy,
-                        text = stringResource(R.string.menu_title_copy_list_to_clipboard),
-                        onClick = {
-                            isMenuExpanded = false
-                            menuCallbacks.onCopyListToClipboardClicked()
-                        }
-                    )
-                    MenuItem(
-                        icon = Icons.Outlined.AddToPhotos,
-                        text = stringResource(R.string.menu_title_add_notes_from_clipboard),
-                        onClick = {
-                            isMenuExpanded = false
-                            menuCallbacks.onAddNotesFromClipboardClicked()
-                        }
-                    )
-                }
-            }
+            Menu(
+                searchQuery = searchQuery,
+                searchCallbacks = searchCallbacks,
+                menuItemsData = getMenuItemsData(
+                    screenMode = screenMode,
+                    selectedList = selectedList,
+                    menuCallbacks = menuCallbacks
+                )
+            )
         }
     )
 }
+
+@Composable
+private fun getMenuItemsData(
+    screenMode: ScreenMode,
+    selectedList: ListEntity,
+    menuCallbacks: MenuCallbacks
+): List<MenuItemData> {
+    return if (screenMode == ScreenMode.Trash) {
+        listOf(
+            MenuItemData(
+                icon = Icons.Outlined.PlaylistRemove,
+                text = stringResource(id = R.string.menu_title_empty_trash),
+                onClick = menuCallbacks.onEmptyTrashClicked
+            )
+        )
+    } else {
+        listOf(
+            MenuItemData(
+                icon = Icons.Outlined.Edit,
+                text = stringResource(R.string.menu_title_rename_list),
+                onClick = menuCallbacks.onRenameListIconClicked
+            ),
+            MenuItemData(
+                icon = Icons.Outlined.DeleteForever,
+                text = stringResource(R.string.menu_title_move_list_to_trash),
+                onClick = {
+                    menuCallbacks.onMoveListToTrashClicked(selectedList)
+                }
+            ),
+            MenuItemData(
+                icon = Icons.Outlined.DeleteSweep,
+                text = stringResource(R.string.menu_title_open_trash),
+                onClick = menuCallbacks.onOpenTrashClicked
+            ),
+            MenuItemData(
+                icon = Icons.Outlined.ContentCopy,
+                text = stringResource(R.string.menu_title_copy_list_to_clipboard),
+                onClick = menuCallbacks.onCopyListToClipboardClicked
+            ),
+            MenuItemData(
+                icon = Icons.Outlined.AddToPhotos,
+                text = stringResource(R.string.menu_title_add_notes_from_clipboard),
+                onClick = menuCallbacks.onAddNotesFromClipboardClicked
+            )
+        )
+    }
+}
+
+@Composable
+private fun Menu(
+    searchQuery: String?,
+    searchCallbacks: SearchCallbacks,
+    menuItemsData: List<MenuItemData>
+) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
+    if (searchQuery == null) {
+        SearchIcon(onSearchIconClicked = searchCallbacks.onSearchIconClicked)
+        MoreIcon(onClick = {
+            isMenuExpanded = !isMenuExpanded
+        })
+    } else {
+        ClearSearchFieldIcon(onClearSearchFieldIconClicked = searchCallbacks.onClearSearchFieldIconClicked)
+    }
+
+    DropdownMenu(
+        expanded = isMenuExpanded,
+        onDismissRequest = { isMenuExpanded = false }
+    ) {
+        for (menuItemData in menuItemsData) {
+            MenuItem(
+                icon = menuItemData.icon,
+                text = menuItemData.text,
+                onClick = {
+                    isMenuExpanded = false
+                    menuItemData.onClick()
+                }
+            )
+        }
+    }
+}
+
+data class MenuItemData(
+    val icon: ImageVector,
+    val text: String,
+    val onClick: () -> Unit
+)
 
 @Composable
 private fun TopBarTitle(

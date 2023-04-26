@@ -1,7 +1,5 @@
 - Add ability to change priority in Edit mode
 
-- Refactor "isMenuExpanded = false" in menu items
-
 - Bug: when there are 2 search results, and I edit one of them, sometimes search results
 suddenly disappear
 
