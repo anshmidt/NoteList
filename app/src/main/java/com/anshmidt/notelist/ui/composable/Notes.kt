@@ -53,13 +53,17 @@ fun Notes(
         return
     }
 
-    // Scrolling to selected item
-    selectedItem?.let { selectedNote ->
-        val selectedNoteIndex = notes.indexOf(selectedNote)
-        if (selectedNoteIndex >= 0) {
-            SideEffect {
-                coroutineScope.launch {
-                    listState.scrollToItem(selectedNoteIndex)
+    /**
+     * Scrolling to selected item. We need this only in Edit mode.
+     */
+    if (screenMode == ScreenMode.Edit) {
+        selectedItem?.let { selectedNote ->
+            val selectedNoteIndex = notes.indexOf(selectedNote)
+            if (selectedNoteIndex >= 0) {
+                SideEffect {
+                    coroutineScope.launch {
+                        listState.scrollToItem(selectedNoteIndex)
+                    }
                 }
             }
         }

@@ -1,3 +1,5 @@
+- Implement transition animations
+
 - Add ability to change priority in Edit mode
 
 - Bug: when there are 2 search results, and I edit one of them, sometimes search results
