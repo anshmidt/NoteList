@@ -1,4 +1,5 @@
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -118,6 +119,7 @@ private fun BottomSheetItem(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun PrioritySelector(
     currentPriority: Priority,
@@ -139,11 +141,29 @@ private fun PrioritySelector(
                 onPriorityChanged(priority)
             }
         )
-        Text(
-            text = priority.convertToString(LocalContext.current),
-            style = getNoteTextStyle(priority = priority),
-            fontSize = 20.sp
-        )
+        AnimatedContent(
+            targetState = priority,
+            transitionSpec = {
+                if (initialState.isHigher(targetState)) {
+                    ContentTransform(
+                        targetContentEnter = slideInVertically { height -> height },
+                        initialContentExit = slideOutVertically { height -> -height }
+                    )
+                } else {
+                    ContentTransform(
+                        targetContentEnter = slideInVertically { height -> -height },
+                        initialContentExit = slideOutVertically { height -> height }
+                    )
+                }
+            }
+        ) { targetState ->
+            Text(
+                text = targetState.convertToString(LocalContext.current),
+                style = getNoteTextStyle(priority = priority),
+                fontSize = 20.sp
+            )
+        }
+
         PrioritySelectorIcon(
             imageVector = Icons.Filled.KeyboardArrowUp,
             onClick = {

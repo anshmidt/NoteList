@@ -21,6 +21,14 @@ fun Priority.decrease() = when(this) {
     Priority.MAJOR -> Priority.NORMAL
 }
 
+fun Priority.isHigher(priority2: Priority): Boolean {
+    return this.value < priority2.value
+}
+
+fun Priority.isLower(priority2: Priority): Boolean {
+    return this.value > priority2.value
+}
+
 fun Priority.convertToString(context: Context): String {
     val stringResourceId = when(this) {
         Priority.MINOR -> R.string.priority_minor
