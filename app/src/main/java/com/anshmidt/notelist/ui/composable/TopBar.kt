@@ -1,6 +1,9 @@
 package com.anshmidt.notelist.ui.composable
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Row
@@ -15,6 +18,7 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -142,6 +146,8 @@ private fun Menu(
             isMenuExpanded = !isMenuExpanded
         })
     } else {
+
+
         ClearSearchFieldIcon(onClearSearchFieldIconClicked = searchCallbacks.onClearSearchFieldIconClicked)
     }
 
@@ -182,19 +188,7 @@ private fun TopBarTitle(
 ) {
     AnimatedContent(
         targetState = searchQuery != null,
-        transitionSpec = {
-            if (targetState) {
-                ContentTransform(
-                    targetContentEnter = slideInHorizontally { width -> width },
-                    initialContentExit = slideOutHorizontally { width -> -width }
-                )
-            } else {
-                ContentTransform(
-                    targetContentEnter = slideInHorizontally { width -> -width },
-                    initialContentExit = slideOutHorizontally { width -> width }
-                )
-            }
-        }
+        transitionSpec = { getTitleAnimationContentTransform(targetState) }
     ) { isSearchFieldVisible ->
         if (isSearchFieldVisible) {
             SearchField(
@@ -218,8 +212,6 @@ private fun TopBarTitle(
             }
         }
     }
-
-
 }
 
 @Composable
@@ -245,11 +237,49 @@ private fun SearchIcon(onSearchIconClicked: () -> Unit) {
 
 @Composable
 private fun ClearSearchFieldIcon(onClearSearchFieldIconClicked: () -> Unit) {
-    IconButton(onClick = onClearSearchFieldIconClicked) {
+    var angle by remember { mutableStateOf(0f) }
+    val angleState by animateFloatAsState(
+        targetValue = angle,
+        animationSpec = tween(
+            durationMillis = TopBar.SEARCH_FIELD_APPEARANCE_DURATION,
+            easing = FastOutSlowInEasing
+        )
+    )
+
+    LaunchedEffect(Unit) {
+        angle += 90f
+    }
+    IconButton(
+        onClick = onClearSearchFieldIconClicked
+    ) {
         Icon(
+            modifier = Modifier.rotate(angleState),
             imageVector = Icons.Filled.Close,
             contentDescription = null,
             tint = MaterialTheme.colors.primary
+        )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+private fun getTitleAnimationContentTransform(isSearchFieldVisible: Boolean ): ContentTransform {
+    return if (isSearchFieldVisible) {
+        ContentTransform(
+            targetContentEnter = slideInHorizontally(
+                animationSpec = tween(TopBar.SEARCH_FIELD_APPEARANCE_DURATION)
+            ) { width -> width },
+            initialContentExit = slideOutHorizontally(
+                animationSpec = tween(TopBar.SEARCH_FIELD_APPEARANCE_DURATION)
+            ) { width -> -width }
+        )
+    } else {
+        ContentTransform(
+            targetContentEnter = slideInHorizontally(
+                animationSpec = tween(TopBar.SEARCH_FIELD_APPEARANCE_DURATION)
+            ) { width -> -width },
+            initialContentExit = slideOutHorizontally(
+                animationSpec = tween(TopBar.SEARCH_FIELD_APPEARANCE_DURATION)
+            ) { width -> width }
         )
     }
 }
@@ -378,3 +408,7 @@ data class SearchCallbacks(
     val onClearSearchFieldIconClicked: () -> Unit,
     val onSearchFieldFocused: () -> Unit
 )
+
+object TopBar {
+    const val SEARCH_FIELD_APPEARANCE_DURATION = 300
+}
