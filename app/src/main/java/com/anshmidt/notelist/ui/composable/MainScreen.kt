@@ -96,7 +96,7 @@ fun MainScreen(
                 targetState = targetState
             )
         }
-    ) {
+    ) { targetScreenMode ->
         BackHandler(bottomSheetState.isVisible) {
             coroutineScope.launch { bottomSheetState.hide() }
         }
@@ -138,7 +138,7 @@ fun MainScreen(
                 topBar = {
                     TopBar(
                         lists = listsUiState.lists,
-                        screenMode = screenModeState,
+                        screenMode = targetScreenMode,
                         searchQuery = searchQueryState,
                         selectedList = listsUiState.selectedList,
                         onListSelected = { selectedList ->
@@ -155,7 +155,7 @@ fun MainScreen(
                 floatingActionButton = {
                     AddNoteButton(
                         onAddNoteButtonClicked = viewModel::onAddNoteButtonClicked,
-                        screenMode = screenModeState,
+                        screenMode = targetScreenMode,
                         searchQuery = searchQueryState
                     )
                 },
@@ -163,7 +163,7 @@ fun MainScreen(
                     Notes(
                         modifier = Modifier.padding(padding),
                         notes = notesUiState.notes,
-                        screenMode = screenModeState,
+                        screenMode = targetScreenMode,
                         searchQuery = searchQueryState,
                         noteCallbacks = noteCallbacks,
                         selectedItem = selectedNoteState,
