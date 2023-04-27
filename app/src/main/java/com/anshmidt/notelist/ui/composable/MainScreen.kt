@@ -2,6 +2,7 @@ package com.anshmidt.notelist.ui
 
 import BottomSheet
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,11 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.anshmidt.notelist.ui.composable.*
 import com.anshmidt.notelist.ui.uistate.MoveNoteDialogState
+import com.anshmidt.notelist.ui.uistate.ScreenMode
 import com.anshmidt.notelist.viewmodel.MainViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen(
     viewModel: MainViewModel
@@ -86,112 +88,148 @@ fun MainScreen(
         }
     )
 
-    BackHandler(bottomSheetState.isVisible) {
-        coroutineScope.launch { bottomSheetState.hide() }
-    }
-
-    StatusBar()
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { bottomSheetState.currentValue }
-            .collect {
-                if (bottomSheetState.currentValue == ModalBottomSheetValue.Hidden) {
-                    viewModel.onNoteSelected(null)
-                }
-            }
-    }
-
-    ModalBottomSheetLayout(
-        sheetState = bottomSheetState,
-        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        sheetContent = { BottomSheet(
-            screenMode = screenModeState,
-            selectedNote = selectedNoteState,
-            onPutBackClicked = {
-                viewModel.onPutBackClicked(selectedNoteState)
-                coroutineScope.launch { bottomSheetState.hide() }
-            },
-            onMoveClicked = {
-                moveNoteDialogState = MoveNoteDialogState(true, selectedNoteState)
-                coroutineScope.launch { bottomSheetState.hide() }
-            },
-            onPriorityChanged = { priority ->
-                viewModel.onPriorityChanged(selectedNoteState, priority)
-            }
-        ) },
-        modifier = Modifier.fillMaxSize()
+    AnimatedContent(
+        targetState = screenModeState,
+        transitionSpec = {
+            return@AnimatedContent getScreenAnimationContentTransform(
+                initialState = initialState,
+                targetState = targetState
+            )
+        }
     ) {
-        Scaffold(
-            topBar = {
-                TopBar(
-                    lists = listsUiState.lists,
-                    screenMode = screenModeState,
-                    searchQuery = searchQueryState,
-                    selectedList = listsUiState.selectedList,
-                    onListSelected = { selectedList ->
-                        viewModel.onListOpened(selectedList)
-                    },
-                    onAddNewListButtonClicked = {
-                        newListNameDialogOpened = !newListNameDialogOpened
-                    },
-                    navigationCallbacks = navigationCallbacks,
-                    menuCallbacks = menuCallbacks,
-                    searchCallbacks = searchCallbacks
-                )
-            },
-            floatingActionButton = {
-                AddNoteButton(
-                    onAddNoteButtonClicked = viewModel::onAddNoteButtonClicked,
-                    screenMode = screenModeState,
-                    searchQuery = searchQueryState
-                )
-            },
-            content = { padding ->
-                Notes(
-                    modifier = Modifier.padding(padding),
-                    notes = notesUiState.notes,
-                    screenMode = screenModeState,
-                    searchQuery = searchQueryState,
-                    noteCallbacks = noteCallbacks,
-                    selectedItem = selectedNoteState,
-                    listOpenedEventFlow = viewModel.listOpenedEventFlow
-                )
-            }
-        )
-    }
+        BackHandler(bottomSheetState.isVisible) {
+            coroutineScope.launch { bottomSheetState.hide() }
+        }
 
-    if (newListNameDialogOpened) {
-        ListNameDialog(
-            onDialogDismissed = {
-                newListNameDialogOpened = !newListNameDialogOpened
+        StatusBar()
+
+        LaunchedEffect(Unit) {
+            snapshotFlow { bottomSheetState.currentValue }
+                .collect {
+                    if (bottomSheetState.currentValue == ModalBottomSheetValue.Hidden) {
+                        viewModel.onNoteSelected(null)
+                    }
+                }
+        }
+
+        ModalBottomSheetLayout(
+            sheetState = bottomSheetState,
+            sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            sheetContent = {
+                BottomSheet(
+                    screenMode = screenModeState,
+                    selectedNote = selectedNoteState,
+                    onPutBackClicked = {
+                        viewModel.onPutBackClicked(selectedNoteState)
+                        coroutineScope.launch { bottomSheetState.hide() }
+                    },
+                    onMoveClicked = {
+                        moveNoteDialogState = MoveNoteDialogState(true, selectedNoteState)
+                        coroutineScope.launch { bottomSheetState.hide() }
+                    },
+                    onPriorityChanged = { priority ->
+                        viewModel.onPriorityChanged(selectedNoteState, priority)
+                    }
+                )
             },
-            onListRenamed = { newListName ->
-                viewModel.onNewListNameEntered(newListName = newListName)
-            },
-            currentListName = null
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Scaffold(
+                topBar = {
+                    TopBar(
+                        lists = listsUiState.lists,
+                        screenMode = screenModeState,
+                        searchQuery = searchQueryState,
+                        selectedList = listsUiState.selectedList,
+                        onListSelected = { selectedList ->
+                            viewModel.onListOpened(selectedList)
+                        },
+                        onAddNewListButtonClicked = {
+                            newListNameDialogOpened = !newListNameDialogOpened
+                        },
+                        navigationCallbacks = navigationCallbacks,
+                        menuCallbacks = menuCallbacks,
+                        searchCallbacks = searchCallbacks
+                    )
+                },
+                floatingActionButton = {
+                    AddNoteButton(
+                        onAddNoteButtonClicked = viewModel::onAddNoteButtonClicked,
+                        screenMode = screenModeState,
+                        searchQuery = searchQueryState
+                    )
+                },
+                content = { padding ->
+                    Notes(
+                        modifier = Modifier.padding(padding),
+                        notes = notesUiState.notes,
+                        screenMode = screenModeState,
+                        searchQuery = searchQueryState,
+                        noteCallbacks = noteCallbacks,
+                        selectedItem = selectedNoteState,
+                        listOpenedEventFlow = viewModel.listOpenedEventFlow
+                    )
+                }
+            )
+        }
+
+        if (newListNameDialogOpened) {
+            ListNameDialog(
+                onDialogDismissed = {
+                    newListNameDialogOpened = !newListNameDialogOpened
+                },
+                onListRenamed = { newListName ->
+                    viewModel.onNewListNameEntered(newListName = newListName)
+                },
+                currentListName = null
+            )
+        }
+        if (renameListDialogOpened) {
+            ListNameDialog(
+                onDialogDismissed = {
+                    renameListDialogOpened = !renameListDialogOpened
+                },
+                onListRenamed = { newListName ->
+                    viewModel.onListRenamed(newListName = newListName)
+                },
+                currentListName = listsUiState.selectedList.name
+            )
+        }
+        if (moveNoteDialogState.isOpened) {
+            MoveNoteDialog(
+                lists = listsUiState.lists,
+                onListSelected = { selectedList ->
+                    viewModel.onNoteMovedToAnotherList(
+                        selectedList,
+                        moveNoteDialogState.selectedNote
+                    )
+                    moveNoteDialogState = MoveNoteDialogState(false, null)
+                },
+                onDialogDismissed = {
+                    moveNoteDialogState = MoveNoteDialogState(false, null)
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+private fun getScreenAnimationContentTransform(targetState: ScreenMode, initialState: ScreenMode): ContentTransform {
+    if (targetState == ScreenMode.Trash) {
+        return ContentTransform(
+            targetContentEnter = slideInHorizontally { width -> width },
+            initialContentExit = slideOutHorizontally { width -> -width }
         )
     }
-    if (renameListDialogOpened) {
-        ListNameDialog(
-            onDialogDismissed = {
-                renameListDialogOpened = !renameListDialogOpened
-            },
-            onListRenamed = { newListName ->
-                viewModel.onListRenamed(newListName = newListName)
-            },
-            currentListName = listsUiState.selectedList.name
+    if (initialState == ScreenMode.Trash) {
+        return ContentTransform(
+            targetContentEnter = slideInHorizontally { width -> -width },
+            initialContentExit = slideOutHorizontally { width -> width }
         )
-    }
-    if (moveNoteDialogState.isOpened) {
-        MoveNoteDialog(
-            lists = listsUiState.lists,
-            onListSelected = { selectedList ->
-                viewModel.onNoteMovedToAnotherList(selectedList, moveNoteDialogState.selectedNote)
-                moveNoteDialogState = MoveNoteDialogState(false, null)
-            },
-            onDialogDismissed = {
-                moveNoteDialogState = MoveNoteDialogState(false, null)
-            }
+    } else {
+        return ContentTransform(
+            targetContentEnter = EnterTransition.None,
+            initialContentExit = ExitTransition.None
         )
     }
 }
