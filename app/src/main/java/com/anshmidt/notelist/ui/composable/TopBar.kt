@@ -1,5 +1,6 @@
 package com.anshmidt.notelist.ui.composable
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Row
@@ -167,6 +168,7 @@ data class MenuItemData(
     val onClick: () -> Unit
 )
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun TopBarTitle(
     screenMode: ScreenMode,
@@ -178,27 +180,46 @@ private fun TopBarTitle(
     onSearchQueryChanged: (String) -> Unit,
     onSearchFieldFocused: () -> Unit
 ) {
-    if (searchQuery != null) {
-        SearchField(
-            searchQuery = searchQuery,
-            onSearchQueryChanged = onSearchQueryChanged,
-            onSearchFieldFocused = onSearchFieldFocused
-        )
-        return
-    }
-    when (screenMode) {
-        is ScreenMode.View, is ScreenMode.Edit -> {
-            ListMenu(
-                items = lists,
-                defaultSelectedItem = selectedList,
-                onListSelected = onListSelected,
-                onAddNewListButtonClicked = onAddNewListButtonClicked
+    AnimatedContent(
+        targetState = searchQuery != null,
+        transitionSpec = {
+            if (targetState) {
+                ContentTransform(
+                    targetContentEnter = slideInHorizontally { width -> width },
+                    initialContentExit = slideOutHorizontally { width -> -width }
+                )
+            } else {
+                ContentTransform(
+                    targetContentEnter = slideInHorizontally { width -> -width },
+                    initialContentExit = slideOutHorizontally { width -> width }
+                )
+            }
+        }
+    ) { isSearchFieldVisible ->
+        if (isSearchFieldVisible) {
+            SearchField(
+                searchQuery = searchQuery.orEmpty(),
+                onSearchQueryChanged = onSearchQueryChanged,
+                onSearchFieldFocused = onSearchFieldFocused
             )
-        }
-        is ScreenMode.Trash -> {
-            SelectedListTitle(listTitle = stringResource(id = R.string.trash_screen_title))
+        } else {
+            when (screenMode) {
+                is ScreenMode.View, is ScreenMode.Edit -> {
+                    ListMenu(
+                        items = lists,
+                        defaultSelectedItem = selectedList,
+                        onListSelected = onListSelected,
+                        onAddNewListButtonClicked = onAddNewListButtonClicked
+                    )
+                }
+                is ScreenMode.Trash -> {
+                    SelectedListTitle(listTitle = stringResource(id = R.string.trash_screen_title))
+                }
+            }
         }
     }
+
+
 }
 
 @Composable
