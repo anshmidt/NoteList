@@ -80,7 +80,11 @@ fun Notes(
 
     val shouldShowPriorityHeaders = shouldShowPriorityHeaders(notes)
 
-    LazyColumn(modifier = modifier, state = listState) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(bottom = 80.dp), // prevents content hiding by FAB
+        state = listState
+    ) {
         itemsIndexed(items = notes, key = { _, item -> item.id }) { index, noteEntity ->
 
             val isItemSelected = selectedItem?.let {
