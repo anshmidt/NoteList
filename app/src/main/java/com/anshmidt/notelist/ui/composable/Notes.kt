@@ -221,10 +221,7 @@ private fun Note(
                 }
             ),
         elevation = if (isSelected) 0.dp else 4.dp,
-        border = if (isSelected)
-            BorderStroke(2.dp, MaterialTheme.colors.primary)
-        else
-            BorderStroke(2.dp, Color.Transparent),
+        border = BorderStroke(2.dp, getNoteBorderColor(isNoteSelected = isSelected, screenMode = screenMode)),
         backgroundColor = getNoteBackground(
             isNoteSelected = isSelected,
             screenMode = screenMode
@@ -244,9 +241,21 @@ private fun Note(
 }
 
 @Composable
+private fun getNoteBorderColor(isNoteSelected: Boolean, screenMode: ScreenMode): Color {
+    if (!isNoteSelected) {
+        return Color.Transparent
+    }
+    if ((screenMode is ScreenMode.View || screenMode is ScreenMode.Trash)) {
+        return MaterialTheme.colors.onBackground.copy(alpha = 0.25f)
+    } else {
+        return MaterialTheme.colors.primary
+    }
+}
+
+@Composable
 private fun getNoteBackground(isNoteSelected: Boolean, screenMode: ScreenMode): Color {
     return if (isNoteSelected && (screenMode is ScreenMode.View || screenMode is ScreenMode.Trash))
-        MaterialTheme.colors.onBackground.copy(alpha = 0.4f)
+        MaterialTheme.colors.onBackground.copy(alpha = 0.15f)
     else
         MaterialTheme.colors.background
 }
