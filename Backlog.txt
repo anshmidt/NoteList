@@ -1,9 +1,3 @@
-- Bug: open "To Do" list, force kill app, relaunch app, tap "Add new note" button.
-Result: no automatic scrolling, new note is not selected.
-For some reasons only on that particular list.
-Is reproduced:
-in list "Headphones", "Gift ideas", "Mouse", "My first list"(all notes 1-line normal)
-
 - Add ability to change priority in Edit mode
 
 - Bug: when there are 2 search results, and I edit one of them, sometimes search results

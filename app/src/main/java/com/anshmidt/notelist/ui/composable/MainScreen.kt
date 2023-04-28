@@ -103,13 +103,12 @@ fun MainScreen(
 
         StatusBar()
 
-        LaunchedEffect(Unit) {
-            snapshotFlow { bottomSheetState.currentValue }
-                .collect {
-                    if (bottomSheetState.currentValue == ModalBottomSheetValue.Hidden) {
-                        viewModel.onNoteSelected(null)
-                    }
+        if (bottomSheetState.currentValue != ModalBottomSheetValue.Hidden) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    viewModel.onNoteSelected(null)
                 }
+            }
         }
 
         ModalBottomSheetLayout(
