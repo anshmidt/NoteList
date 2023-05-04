@@ -62,8 +62,15 @@ fun Notes(
             if (selectedNoteIndex >= 0) {
                 SideEffect {
                     coroutineScope.launch {
-                        listState.scrollToItem(selectedNoteIndex)
+                        val isSelectedNoteVisible = listState.layoutInfo.visibleItemsInfo
+                            .indexOfFirst {
+                                it.index == selectedNoteIndex
+                            } != -1
+                        if (!isSelectedNoteVisible) {
+                            listState.scrollToItem(selectedNoteIndex)
+                        }
                     }
+
                 }
             }
         }
