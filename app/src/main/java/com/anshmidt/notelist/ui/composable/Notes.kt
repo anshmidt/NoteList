@@ -409,7 +409,7 @@ fun NoteText(
                 style = getNoteTextStyle(priority = note.priority)
                     .copy(fontSize = Notes.NOTE_FONT_SIZE),
                 modifier = Modifier
-                    .padding(17.dp)
+                    .padding(16.dp)
             )
         }
     }
