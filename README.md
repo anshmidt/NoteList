@@ -3,7 +3,7 @@ NoteList is an Android app for writing notes and organizing them into lists.
 <img src="https://github.com/anshmidt/multialarm/assets/12444628/6853f9d4-3bfd-45ed-8717-d78eb61fe3c7" width="280"/>  
 <br/><br/>
 
-### Key features:
+## Key features:
 - Minimalist interface allows user to create notes and organize them into a list in a matter seconds:  
 <img src="https://github.com/anshmidt/multialarm/assets/12444628/71df3906-1b2c-4c29-a6f7-739c4d500ecd" width="280"/>  
 <br/><br/><br/>
@@ -28,7 +28,7 @@ NoteList is an Android app for writing notes and organizing them into lists.
 <img src="https://github.com/anshmidt/multialarm/assets/12444628/12cdd877-be3e-4539-b301-f9e668fe049c" width="280"/>  
 <br/><br/>
 
-### Used technologies:
+## Used technologies:
 - Jetpack Compose 
 - MVVM 
 - Kotlin Coroutines
