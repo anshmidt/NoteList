@@ -4,7 +4,7 @@ NoteList is an Android app for writing notes and organizing them into lists.
 <br/><br/>
 
 ## Key features:
-- Minimalist interface allows user to create notes and organize them into a list in a matter seconds:  
+- Minimalist interface allows user to create notes and organize them into a list in a matter of seconds:  
 <img src="https://github.com/anshmidt/multialarm/assets/12444628/71df3906-1b2c-4c29-a6f7-739c4d500ecd" width="280"/>  
 <br/><br/><br/>
 
